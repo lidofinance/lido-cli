@@ -48,7 +48,7 @@ voting
   .option('-s, --support <number>', 'support 1 or 0')
   .action(async (options) => {
     const { voteId, support } = options;
-    await votingContract.vote(Number(voteId), Boolean(support), false);
+    await votingContract.vote(Number(voteId), !!Number(support), false);
   });
 
 voting

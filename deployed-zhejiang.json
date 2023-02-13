@@ -114,11 +114,7 @@
     },
     "implementation": "0xe1902cF3d23980160c6644070006514DE998acD4",
     "address": "0x5c7Ba617C0B25835554Fa93D031294aA0878DAb2",
-    "constructorArgs": [
-      12,
-      1675263480,
-      "0x12cd349E19Ab2ADBE478Fc538A66C059Cf40CFeC"
-    ]
+    "constructorArgs": [12, 1675263480, "0x12cd349E19Ab2ADBE478Fc538A66C059Cf40CFeC"]
   },
   "depositSecurityModule": {
     "parameters": {
@@ -151,30 +147,8 @@
     "constructorArgs": [
       "0x12cd349E19Ab2ADBE478Fc538A66C059Cf40CFeC",
       "0xa5F1d7D49F581136Cf6e58B32cBE9a2039C48bA1",
-      [
-        55,
-        500,
-        1000,
-        250,
-        128,
-        5000000,
-        2000,
-        100
-      ],
-      [
-        [
-          "0xa5F1d7D49F581136Cf6e58B32cBE9a2039C48bA1"
-        ],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        []
-      ]
+      [55, 500, 1000, 250, 128, 5000000, 2000, 100],
+      [["0xa5F1d7D49F581136Cf6e58B32cBE9a2039C48bA1"], [], [], [], [], [], [], [], [], []]
     ]
   },
   "withdrawalRequestNFT": {
@@ -184,20 +158,14 @@
     },
     "implementation": "0x27598Ee3A3d579C66DfE3B841bFE39B3a780AC42",
     "address": "0x7D22F2B8319e51055C88778BcD6658c2982c696b",
-    "constructorArgs": [
-      "0xBd63CAf9D3CCb356Df1332604C54AA73e5cf6aB3",
-      "stETH Withdrawal NFT",
-      "unstETH"
-    ]
+    "constructorArgs": ["0xBd63CAf9D3CCb356Df1332604C54AA73e5cf6aB3", "stETH Withdrawal NFT", "unstETH"]
   },
   "aragonEnsLabelName": "aragonpm",
   "ensAddress": "0xACb31cCbfECaD2232a8933Cd4FA9649535eACD33",
   "ensFactoryAddress": "0x6fAbc785c2d626e81505eac76574F07a6d51D6fA",
   "ensFactoryConstructorArgs": [],
   "kernelBaseAddress": "0xCF0b35b96A45C4E2f16a10f99392836836956560",
-  "kernelBaseConstructorArgs": [
-    true
-  ],
+  "kernelBaseConstructorArgs": [true],
   "aclBaseAddress": "0xA5D16CC72cbDF95727da0e1e6e247941b28fa4A0",
   "aclBaseConstructorArgs": [],
   "evmScriptRegistryFactoryAddress": "0xf25E73be6C5467f8D877e82655DDB8dC32Af8Da7",
@@ -344,36 +312,24 @@
   },
   "wstETH": {
     "address": "0xBd63CAf9D3CCb356Df1332604C54AA73e5cf6aB3",
-    "constructorArgs": [
-      "0xEC9ac956D7C7fE5a94919fD23BAc4a42f950A403"
-    ]
+    "constructorArgs": ["0xEC9ac956D7C7fE5a94919fD23BAc4a42f950A403"]
   },
   "withdrawalVault": {
     "address": "0x8c5cBA32B36FCbC04e7b15bA9b2fe14057590c6E",
-    "constructorArgs": [
-      "0xEC9ac956D7C7fE5a94919fD23BAc4a42f950A403",
-      "0xd41bCbbeE0C74758DEe7Ff02d31aEe8AbB0ab6fA"
-    ]
+    "constructorArgs": ["0xEC9ac956D7C7fE5a94919fD23BAc4a42f950A403", "0xd41bCbbeE0C74758DEe7Ff02d31aEe8AbB0ab6fA"]
   },
   "executionLayerRewardsVault": {
     "address": "0x216157a53e180CfA0e7b8407BA6EBbAf8Da3c0c4",
-    "constructorArgs": [
-      "0xEC9ac956D7C7fE5a94919fD23BAc4a42f950A403",
-      "0xd41bCbbeE0C74758DEe7Ff02d31aEe8AbB0ab6fA"
-    ]
+    "constructorArgs": ["0xEC9ac956D7C7fE5a94919fD23BAc4a42f950A403", "0xd41bCbbeE0C74758DEe7Ff02d31aEe8AbB0ab6fA"]
   },
   "beaconChainDepositor": {
     "address": "0x7697992a07eCB022f63660d2b6B0922F5555cd76",
-    "constructorArgs": [
-      "0x4242424242424242424242424242424242424242"
-    ]
+    "constructorArgs": ["0x4242424242424242424242424242424242424242"]
   },
   "stakingRouter": {
     "implementation": "0xC3dB1BF45df778A04D3c0434D2b03e060C9AA133",
     "address": "0xDd7d15490748a803AeC6987046311AF76a5A6502",
-    "constructorArgs": [
-      "0x4242424242424242424242424242424242424242"
-    ]
+    "constructorArgs": ["0x4242424242424242424242424242424242424242"]
   },
   "hashConsensusForValidatorsExitBus": {
     "address": "0x9C784a15dFb9407afec84682429cba19d6A6c9DB",

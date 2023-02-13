@@ -1,10 +1,10 @@
-import { lidoAddress, lidoContract } from "../contracts";
-import { encodeCallScript, calcStakeLimitIncreasePerBlock } from "../utils";
+import { lidoAddress, lidoContract } from '../contracts';
+import { encodeCallScript, calcStakeLimitIncreasePerBlock } from '../utils';
 
 export const resumeProtocol = () => {
   const call = {
     to: lidoAddress,
-    data: lidoContract.interface.encodeFunctionData("resume"),
+    data: lidoContract.interface.encodeFunctionData('resume'),
   };
 
   const encoded = encodeCallScript([call]);
@@ -14,7 +14,7 @@ export const resumeProtocol = () => {
 export const resumeStaking = () => {
   const call = {
     to: lidoAddress,
-    data: lidoContract.interface.encodeFunctionData("resumeStaking"),
+    data: lidoContract.interface.encodeFunctionData('resumeStaking'),
   };
 
   const encoded = encodeCallScript([call]);
@@ -22,15 +22,11 @@ export const resumeStaking = () => {
 };
 
 export const setStakingLimit = (dailyStakingLimit: bigint) => {
-  const stakeLimitIncreasePerBlock =
-    calcStakeLimitIncreasePerBlock(dailyStakingLimit);
+  const stakeLimitIncreasePerBlock = calcStakeLimitIncreasePerBlock(dailyStakingLimit);
 
   const call = {
     to: lidoAddress,
-    data: lidoContract.interface.encodeFunctionData("setStakingLimit", [
-      dailyStakingLimit,
-      stakeLimitIncreasePerBlock,
-    ]),
+    data: lidoContract.interface.encodeFunctionData('setStakingLimit', [dailyStakingLimit, stakeLimitIncreasePerBlock]),
   };
 
   const encoded = encodeCallScript([call]);

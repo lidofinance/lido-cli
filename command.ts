@@ -1,2 +1,2 @@
-import { Command } from "commander";
+import { Command } from 'commander';
 export const program = new Command();
