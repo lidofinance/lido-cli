@@ -4,6 +4,7 @@ import { program } from '../command';
 import { tmContract } from '../contracts';
 import { grantPermission, revokePermission, resumeLidoAndSetStakingLimit, votingForward } from '../scripts';
 import { addParsingCommands } from './common';
+import { getRolePositionByAddress } from '../utils';
 
 const tokenManager = program.command('token-manager');
 addParsingCommands(tokenManager, tmContract);
@@ -31,7 +32,8 @@ tokenManager
   .action(async (options) => {
     const { entity, app, role } = options;
 
-    const [aclCalldata] = await grantPermission(entity, app, role);
+    const rolePosition = await getRolePositionByAddress(app, role);
+    const [aclCalldata] = await grantPermission(entity, app, rolePosition);
     const [votingCalldata] = votingForward(aclCalldata);
 
     await tmContract.forward(votingCalldata);
@@ -46,7 +48,8 @@ tokenManager
   .action(async (options) => {
     const { entity, app, role } = options;
 
-    const [aclCalldata] = await revokePermission(entity, app, role);
+    const rolePosition = await getRolePositionByAddress(app, role);
+    const [aclCalldata] = await revokePermission(entity, app, rolePosition);
     const [votingCalldata] = votingForward(aclCalldata);
 
     await tmContract.forward(votingCalldata);

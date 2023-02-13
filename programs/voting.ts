@@ -46,17 +46,16 @@ voting
 
 voting
   .command('vote')
-  .option('-v, --vote-id <number>', 'vote id')
-  .option('-s, --support <number>', 'support 1 or 0')
-  .action(async (options) => {
-    const { voteId, support } = options;
+  .argument('<number>', 'vote id')
+  .option('-s, --support <number>', 'support 1 or 0', '1')
+  .action(async (voteId, options) => {
+    const { support } = options;
     await votingContract.vote(Number(voteId), !!Number(support), false);
   });
 
 voting
-  .command('execute-vote')
-  .option('-v, --vote-id <number>', 'vote id')
-  .action(async (options) => {
-    const { voteId } = options;
+  .command('execute')
+  .argument('<number>', 'vote id')
+  .action(async (voteId) => {
     await votingContract.executeVote(Number(voteId));
   });

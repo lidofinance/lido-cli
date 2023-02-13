@@ -34,4 +34,27 @@ nor
   .action(async (options) => {
     const { name, address } = options;
     await norContract.addNodeOperator(name, address);
+    console.log('operator added');
+  });
+
+nor
+  .command('add-key')
+  .option('-o, --operator-id <number>', 'node operator id')
+  .option('-c, --count <number>', 'keys count')
+  .option('-p, --public-keys <string>', 'public keys')
+  .option('-s, --signatures <string>', 'signatures')
+  .action(async (options) => {
+    const { operatorId, count, publicKeys, signatures } = options;
+    await norContract.addSigningKeys(operatorId, count, publicKeys, signatures);
+    console.log('key added');
+  });
+
+nor
+  .command('set-limit')
+  .option('-o, --operator-id <number>', 'node operator id')
+  .option('-l, --limit <number>', 'staking limit')
+  .action(async (options) => {
+    const { operatorId, limit } = options;
+    await norContract.setNodeOperatorStakingLimit(operatorId, limit);
+    console.log('limit is set');
   });

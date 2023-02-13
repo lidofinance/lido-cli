@@ -18,7 +18,8 @@ export const addAccessControlSubCommands = (command: Command, contract: Contract
     .option('-a, --address <string>', 'address', wallet.address)
     .action(async (options) => {
       const { address, role } = options;
-      const result = await contract.canPerform(address, role, []);
+      const rolePosition = await getRolePosition(contract, role);
+      const result = await contract.canPerform(address, rolePosition, []);
       console.log('can perform', result);
     });
 
