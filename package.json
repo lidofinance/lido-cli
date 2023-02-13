@@ -4,13 +4,16 @@
     "start": "ts-node index",
     "accounting-oracle": "ts-node index accounting-oracle",
     "acl": "ts-node index acl",
+    "dsm": "ts-node index dsm",
     "exit-bus-oracle": "ts-node index exit-bus-oracle",
     "lido": "ts-node index lido",
+    "locator": "ts-node index locator",
     "nor": "ts-node index nor",
     "scripts": "ts-node index scripts",
     "staking-router": "ts-node index staking-router",
     "token-manager": "ts-node index token-manager",
-    "voting": "ts-node index voting"
+    "voting": "ts-node index voting",
+    "withdrawal-request": "ts-node index withdrawal-request"
   },
   "devDependencies": {
     "@types/node": "^18.13.0",
