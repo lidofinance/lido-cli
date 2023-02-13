@@ -46,3 +46,8 @@ router
     await stakingRouterContract.updateRefundedValidatorsCount(moduleId, nodeOperatorId, refundedValidators);
     console.log('refunded validators updated');
   });
+
+router.command('withdrawal-credentials').action(async () => {
+  const withdrawalCredentials = await stakingRouterContract.getWithdrawalCredentials();
+  console.log('withdrawal credentials', withdrawalCredentials);
+});
