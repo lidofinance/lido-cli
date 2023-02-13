@@ -15,7 +15,7 @@ router
   .command('add-module')
   .option('-n, --name <string>', 'staking module name')
   .option('-a, --address <string>', 'staking module address')
-  .option('-t, --target-share <number>', 'target share in basis points: 100 = 1%, 10000 = 100%', '10000')
+  .option('-s, --target-share <number>', 'target share in basis points: 100 = 1%, 10000 = 100%', '10000')
   .option('-f, --module-fee <number>', 'module share in basis points: 100 = 1%, 10000 = 100%', '500')
   .option('-t, --treasury-fee <number>', 'treasury share in basis points: 100 = 1%, 10000 = 100%', '500')
   .action(async (options) => {
@@ -27,7 +27,7 @@ router
 router
   .command('update-module')
   .argument('<number>', 'module id')
-  .option('-t, --target-share <number>', 'target share in basis points: 100 = 1%, 10000 = 100%', '10000')
+  .option('-s, --target-share <number>', 'target share in basis points: 100 = 1%, 10000 = 100%', '10000')
   .option('-f, --module-fee <number>', 'module share in basis points: 100 = 1%, 10000 = 100%', '500')
   .option('-t, --treasury-fee <number>', 'treasury share in basis points: 100 = 1%, 10000 = 100%', '500')
   .action(async (moduleId, options) => {
