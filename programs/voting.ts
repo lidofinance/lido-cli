@@ -1,8 +1,10 @@
 import { formatEther } from 'ethers';
 import { program } from '../command';
 import { votingContract } from '../contracts';
+import { addParsingCommands } from './common';
 
 const voting = program.command('voting');
+addParsingCommands(voting, votingContract);
 
 voting
   .command('get-vote')

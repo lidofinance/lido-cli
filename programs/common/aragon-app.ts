@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import { Contract } from 'ethers';
 import { aclContract } from '../../contracts';
+import { getRolePosition } from '../../utils';
 import { wallet } from '../../wallet';
 
 export const addAragonAppSubCommands = (command: Command, contract: Contract) => {
@@ -18,7 +19,8 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
     .option('-a, --address <string>', 'address', wallet.address)
     .action(async (options) => {
       const { address, role } = options;
-      const result = await contract.canPerform(address, role, []);
+      const rolePosition = await getRolePosition(contract, role);
+      const result = await contract.canPerform(address, rolePosition, []);
       console.log('can perform', result);
     });
 
@@ -27,7 +29,8 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
     .option('-r, --role <string>', 'role')
     .action(async (options) => {
       const { role } = options;
-      const manager = await aclContract.getPermissionManager(contract.getAddress(), role);
+      const rolePosition = await getRolePosition(contract, role);
+      const manager = await aclContract.getPermissionManager(contract.getAddress(), rolePosition);
       console.log('manager', manager);
     });
 
@@ -37,7 +40,8 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
     .option('-r, --role <string>', 'role')
     .action(async (options) => {
       const { address, role } = options;
-      const permission = await aclContract.hasPermission(address, contract.getAddress(), role);
+      const rolePosition = await getRolePosition(contract, role);
+      const permission = await aclContract.hasPermission(address, contract.getAddress(), rolePosition);
       console.log('permission', permission);
     });
 };

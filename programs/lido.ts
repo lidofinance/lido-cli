@@ -1,10 +1,11 @@
 import { formatEther } from 'ethers';
 import { program } from '../command';
 import { lidoContract } from '../contracts';
-import { addAccessControlSubCommands } from './common';
+import { addAccessControlSubCommands, addParsingCommands } from './common';
 
 const lido = program.command('lido');
 addAccessControlSubCommands(lido, lidoContract);
+addParsingCommands(lido, lidoContract);
 
 lido.command('total-supply').action(async () => {
   const totalSupply = await lidoContract.totalSupply();

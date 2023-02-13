@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import { Contract } from 'ethers';
+import { getRolePosition } from '../../utils';
 import { wallet } from '../../wallet';
 
 export const addAccessControlSubCommands = (command: Command, contract: Contract) => {
@@ -24,18 +25,20 @@ export const addAccessControlSubCommands = (command: Command, contract: Contract
   command
     .command('grant-role')
     .option('-r, --role <string>', 'role')
-    .option('-a, --address <string>', 'address')
+    .option('-a, --address <string>', 'address', wallet.address)
     .action(async (options) => {
       const { role, address } = options;
-      await contract.grantRole(role, address);
+      const rolePosition = await getRolePosition(contract, role);
+      await contract.grantRole(rolePosition, address);
     });
 
   command
     .command('revoke-role')
     .option('-r, --role <string>', 'role')
-    .option('-a, --address <string>', 'address')
+    .option('-a, --address <string>', 'address', wallet.address)
     .action(async (options) => {
       const { role, address } = options;
-      await contract.revokeRole(role, address);
+      const rolePosition = await getRolePosition(contract, role);
+      await contract.revokeRole(rolePosition, address);
     });
 };

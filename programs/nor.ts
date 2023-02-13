@@ -1,9 +1,10 @@
 import { program } from '../command';
 import { norContract } from '../contracts';
-import { addAragonAppSubCommands } from './common';
+import { addAragonAppSubCommands, addParsingCommands } from './common';
 
 const nor = program.command('nor');
 addAragonAppSubCommands(nor, norContract);
+addParsingCommands(nor, norContract);
 
 nor.command('operators').action(async () => {
   const total = await norContract.getNodeOperatorsCount();

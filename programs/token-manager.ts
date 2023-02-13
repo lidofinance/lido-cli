@@ -3,8 +3,10 @@ import { wallet } from '../wallet';
 import { program } from '../command';
 import { tmContract } from '../contracts';
 import { grantPermission, revokePermission, resumeLidoAndSetStakingLimit, votingForward } from '../scripts';
+import { addParsingCommands } from './common';
 
 const tokenManager = program.command('token-manager');
+addParsingCommands(tokenManager, tmContract);
 
 tokenManager
   .command('start-protocol')

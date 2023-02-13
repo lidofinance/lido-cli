@@ -1,9 +1,10 @@
 import { program } from '../command';
 import { consensusForAccountingContract } from '../contracts';
-import { addAccessControlSubCommands } from './common';
+import { addAccessControlSubCommands, addParsingCommands } from './common';
 
 const oracle = program.command('accounting-consensus');
 addAccessControlSubCommands(oracle, consensusForAccountingContract);
+addParsingCommands(oracle, consensusForAccountingContract);
 
 oracle.command('members').action(async () => {
   const [addresses, lastReportedSlots] = await consensusForAccountingContract.getMembers();

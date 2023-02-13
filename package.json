@@ -2,14 +2,15 @@
   "license": "MIT",
   "scripts": {
     "start": "ts-node index",
-    "lido": "ts-node index lido",
-    "acl": "ts-node index acl",
-    "scripts": "ts-node index scripts",
-    "token-manager": "ts-node index token-manager",
-    "voting": "ts-node index voting",
     "accounting-oracle": "ts-node index accounting-oracle",
+    "acl": "ts-node index acl",
     "exit-bus-oracle": "ts-node index exit-bus-oracle",
-    "nor": "ts-node index nor"
+    "lido": "ts-node index lido",
+    "nor": "ts-node index nor",
+    "scripts": "ts-node index scripts",
+    "staking-router": "ts-node index staking-router",
+    "token-manager": "ts-node index token-manager",
+    "voting": "ts-node index voting"
   },
   "devDependencies": {
     "@types/node": "^18.13.0",

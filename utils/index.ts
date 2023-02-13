@@ -1,2 +1,3 @@
 export * from './scripts';
-export * from './stakingLimit';
+export * from './staking-limit';
+export * from './role-position';
