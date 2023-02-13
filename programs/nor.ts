@@ -12,7 +12,7 @@ nor.command('operators').action(async () => {
 });
 
 nor
-  .command('get-operator')
+  .command('operator')
   .argument('<number>', 'operator id')
   .action(async (operatorId) => {
     const operator = await norContract.getNodeOperator(operatorId, true);
@@ -20,7 +20,7 @@ nor
   });
 
 nor
-  .command('get-operator-summary')
+  .command('operator-summary')
   .argument('<number>', 'operator id')
   .action(async (operatorId) => {
     const summary = await norContract.getNodeOperatorSummary(operatorId);
@@ -38,7 +38,7 @@ nor
   });
 
 nor
-  .command('add-key')
+  .command('add-keys')
   .option('-o, --operator-id <number>', 'node operator id')
   .option('-c, --count <number>', 'keys count')
   .option('-p, --public-keys <string>', 'public keys')
@@ -46,7 +46,7 @@ nor
   .action(async (options) => {
     const { operatorId, count, publicKeys, signatures } = options;
     await norContract.addSigningKeys(operatorId, count, publicKeys, signatures);
-    console.log('key added');
+    console.log('keys added', count);
   });
 
 nor
