@@ -1,6 +1,7 @@
 import { formatEther } from 'ethers';
 import { program } from '../command';
 import { votingContract } from '../contracts';
+import { executeVote, voteAgainst, voteFor } from '../utils';
 import { addParsingCommands } from './common';
 
 const voting = program.command('voting');
@@ -50,12 +51,17 @@ voting
   .option('-s, --support <number>', 'support 1 or 0', '1')
   .action(async (voteId, options) => {
     const { support } = options;
-    await votingContract.vote(Number(voteId), !!Number(support), false);
+
+    if (Number(support) == 1) {
+      await voteFor(voteId);
+    } else {
+      await voteAgainst(voteId);
+    }
   });
 
 voting
   .command('execute')
   .argument('<number>', 'vote id')
   .action(async (voteId) => {
-    await votingContract.executeVote(Number(voteId));
+    await executeVote(voteId);
   });

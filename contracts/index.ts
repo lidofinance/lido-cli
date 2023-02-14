@@ -4,6 +4,7 @@ export * from './lido';
 export * from './locator';
 export * from './nor';
 export * from './oracles';
+export * from './proxy';
 export * from './staking-router';
 export * from './token-manager';
 export * from './voting';

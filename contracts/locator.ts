@@ -5,3 +5,5 @@ import abi from '../abi/LidoLocator.json';
 
 export const locatorAddress = deployed['lidoLocator'].address;
 export const locatorContract = new Contract(locatorAddress, abi, wallet);
+
+export const getLocatorContract = (address: string) => new Contract(address, abi, wallet);

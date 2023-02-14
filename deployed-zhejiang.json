@@ -304,7 +304,9 @@
   "lidoLocator": {
     "implementation": "0x0803c6c1e02BD3e6c0d71f9d1683c9a5dd854Ca9",
     "address": "0x12cd349E19Ab2ADBE478Fc538A66C059Cf40CFeC",
-    "constructorArgs": []
+    "constructorArgs": [],
+    "DSMasEOAimplementation": "0xB721677885739D497e46FeE38239207E4638090D",
+    "initialImplementation": "0xdCc52ef394aACDDA187297Eff390271C1dF29768"
   },
   "eip712StETH": {
     "address": "0x43607a3a1CE1a68015Fe92a79209c71C171529CA",

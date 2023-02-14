@@ -1,9 +1,11 @@
 import { program } from '../command';
-import { locatorContract } from '../contracts';
-import { addParsingCommands } from './common';
+import { getLocatorContract, locatorContract } from '../contracts';
+import { compareContractCalls } from '../utils';
+import { addOssifiableProxyCommands, addParsingCommands } from './common';
 
 const locator = program.command('locator');
 addParsingCommands(locator, locatorContract);
+addOssifiableProxyCommands(locator, locatorContract);
 
 locator.command('core').action(async () => {
   const components = await locatorContract.coreComponents();
@@ -17,6 +19,29 @@ locator.command('core').action(async () => {
     treasury,
     withdrawalQueue,
     withdrawalVault,
+  });
+});
+
+locator.command('oracle-components').action(async () => {
+  const components = await locatorContract.oracleReportComponentsForLido();
+  const [
+    accountingOracle,
+    elRewardsVault,
+    oracleReportSanityChecker,
+    burner,
+    withdrawalQueue,
+    withdrawalVault,
+    postTokenRebaseReceiver,
+  ] = components;
+
+  console.log('components', {
+    accountingOracle,
+    elRewardsVault,
+    oracleReportSanityChecker,
+    burner,
+    withdrawalQueue,
+    withdrawalVault,
+    postTokenRebaseReceiver,
   });
 });
 
@@ -84,3 +109,31 @@ locator.command('withdrawal-vault').action(async () => {
   const address = await locatorContract.withdrawalVault();
   console.log('address', address);
 });
+
+locator
+  .command('compare-implementations')
+  .argument('<string>', 'first implementation address')
+  .argument('<string>', 'second implementation address')
+  .action(async (firstAddress, secondAddress) => {
+    const firstContract = getLocatorContract(firstAddress);
+    const secondContract = getLocatorContract(secondAddress);
+
+    await compareContractCalls(
+      [firstContract, secondContract],
+      [
+        { method: 'accountingOracle' },
+        { method: 'depositSecurityModule' },
+        { method: 'elRewardsVault' },
+        { method: 'legacyOracle' },
+        { method: 'lido' },
+        { method: 'oracleReportSanityChecker' },
+        { method: 'postTokenRebaseReceiver' },
+        { method: 'burner' },
+        { method: 'stakingRouter' },
+        { method: 'treasury' },
+        { method: 'validatorsExitBusOracle' },
+        { method: 'withdrawalQueue' },
+        { method: 'withdrawalVault' },
+      ],
+    );
+  });

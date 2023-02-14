@@ -6,6 +6,5 @@ export * from './locator';
 export * from './nor';
 export * from './scripts';
 export * from './staking-router';
-export * from './token-manager';
 export * from './voting';
 export * from './withdrawal-request';
