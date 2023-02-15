@@ -13,13 +13,13 @@ export const addAccessControlSubCommands = (command: Command, contract: Contract
     });
 
   command
-    .command('can-perform')
+    .command('has-role')
     .option('-r, --role <string>', 'role')
     .option('-a, --address <string>', 'address', wallet.address)
     .action(async (options) => {
       const { address, role } = options;
       const rolePosition = await getRolePosition(contract, role);
-      const result = await contract.canPerform(address, rolePosition, []);
+      const result = await contract.hasRole(rolePosition, address);
       console.log('can perform', result);
     });
 
