@@ -38,6 +38,11 @@ lido.command('is-staking-paused').action(async () => {
   console.log('is staking paused', isStakingPaused);
 });
 
+lido.command('buffered-ether').action(async () => {
+  const bufferedEther = await lidoContract.getBufferedEther();
+  console.log('buffered ether', formatEther(bufferedEther));
+});
+
 lido
   .command('deposit')
   .argument('<number>', 'max deposits count')

@@ -4,6 +4,6 @@ const chainId = 1337803;
 const url = 'http://35.228.211.212:8545';
 
 const network = new Network('zhejiang', chainId);
-const options = { staticNetwork: network };
+const options = { staticNetwork: network, batchMaxCount: 1 };
 
 export const provider = new JsonRpcProvider(url, network, options);

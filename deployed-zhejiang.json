@@ -305,8 +305,8 @@
     "implementation": "0x0803c6c1e02BD3e6c0d71f9d1683c9a5dd854Ca9",
     "address": "0x12cd349E19Ab2ADBE478Fc538A66C059Cf40CFeC",
     "constructorArgs": [],
-    "DSMasEOAimplementation": "0xB721677885739D497e46FeE38239207E4638090D",
-    "initialImplementation": "0xdCc52ef394aACDDA187297Eff390271C1dF29768"
+    "initialImplementation": "0xdCc52ef394aACDDA187297Eff390271C1dF29768",
+    "newImplementation": "0x683c4A6FB4A49Ce49f04E84a7301a2075D809844"
   },
   "eip712StETH": {
     "address": "0x43607a3a1CE1a68015Fe92a79209c71C171529CA",
@@ -347,8 +347,7 @@
     ]
   },
   "oracleDaemonConfig": {
-    "implementation": "0xce59E362b6a91bC090775B230e4EFe791d5005FB",
-    "address": "0x2663f77bee97abFE76551b47342F5FAD3a9BDDdC",
+    "address": "0xce59E362b6a91bC090775B230e4EFe791d5005FB",
     "constructorArgs": ["0xa5F1d7D49F581136Cf6e58B32cBE9a2039C48bA1", ["0xa5F1d7D49F581136Cf6e58B32cBE9a2039C48bA1"]]
   }
 }

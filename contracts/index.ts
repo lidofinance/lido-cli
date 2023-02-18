@@ -1,4 +1,5 @@
 export * from './aragon';
+export * from './burner';
 export * from './dsm';
 export * from './lido';
 export * from './locator';

@@ -8,10 +8,13 @@ export const compareContractCalls = async (contracts: Contract[], calls: Contrac
   for (const { method, args = [] } of calls) {
     const cols = await Promise.all(
       contracts.map(async (contract) => {
-        const value = await contract[method](...args);
         const key = await contract.getAddress();
-
-        return [key, value];
+        try {
+          const value = await contract[method](...args);
+          return [key, value];
+        } catch (_error) {
+          return [key, 'error'];
+        }
       }),
     );
 

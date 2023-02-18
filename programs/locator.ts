@@ -110,6 +110,11 @@ locator.command('withdrawal-vault').action(async () => {
   console.log('address', address);
 });
 
+locator.command('oracle-config').action(async () => {
+  const address = await locatorContract.oracleDaemonConfig();
+  console.log('address', address);
+});
+
 locator
   .command('compare-implementations')
   .argument('<string>', 'first implementation address')
@@ -134,6 +139,7 @@ locator
         { method: 'validatorsExitBusOracle' },
         { method: 'withdrawalQueue' },
         { method: 'withdrawalVault' },
+        { method: 'oracleDaemonConfig' },
       ],
     );
   });

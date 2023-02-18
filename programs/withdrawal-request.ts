@@ -1,30 +1,12 @@
-import { MaxUint256, toBeHex } from 'ethers';
+import { formatEther, MaxUint256, toBeHex } from 'ethers';
 import { program } from '../command';
 import { withdrawalRequestContract } from '../contracts';
-import { addAccessControlSubCommands, addParsingCommands } from './common';
+import { addAccessControlSubCommands, addParsingCommands, addPauseUntilSubCommands } from './common';
 
 const withdrawal = program.command('withdrawal-request');
 addAccessControlSubCommands(withdrawal, withdrawalRequestContract);
 addParsingCommands(withdrawal, withdrawalRequestContract);
-
-withdrawal.command('is-paused').action(async () => {
-  const paused = await withdrawalRequestContract.isPaused();
-  console.log('paused', paused);
-});
-
-withdrawal.command('resume').action(async () => {
-  await withdrawalRequestContract.resume();
-  console.log('resumed');
-});
-
-withdrawal
-  .command('pause')
-  .option('-d, --duration <string>', 'pause duration', toBeHex(MaxUint256))
-  .action(async (options) => {
-    const { duration } = options;
-    await withdrawalRequestContract.pause(duration);
-    console.log('paused');
-  });
+addPauseUntilSubCommands(withdrawal, withdrawalRequestContract);
 
 withdrawal
   .command('request')
@@ -55,4 +37,9 @@ withdrawal.command('bunker-start').action(async () => {
   } else {
     console.log('bunker start', new Date(Number(timestamp) * 1000));
   }
+});
+
+withdrawal.command('unfinalized-steth').action(async () => {
+  const unfinalizedStETH = await withdrawalRequestContract.unfinalizedStETH();
+  console.log('unfinalized stETH', formatEther(unfinalizedStETH));
 });
