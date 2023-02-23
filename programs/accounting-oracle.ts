@@ -1,7 +1,8 @@
-import { program } from '../command';
-import { accountingOracleContract } from '../contracts';
-import { addAccessControlSubCommands, addParsingCommands } from './common';
+import { program } from '@command';
+import { accountingOracleContract } from '@contracts';
+import { addAccessControlSubCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
 
-const oracle = program.command('accounting-oracle');
+const oracle = program.command('accounting-oracle').description('interact with accounting oracle contract');
 addAccessControlSubCommands(oracle, accountingOracleContract);
+addOssifiableProxyCommands(oracle, accountingOracleContract);
 addParsingCommands(oracle, accountingOracleContract);

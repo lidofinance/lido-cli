@@ -1,5 +1,5 @@
-import { votingAddress, votingContract } from '../contracts';
-import { encodeCallScript } from '../utils';
+import { votingAddress, votingContract } from '@contracts';
+import { encodeCallScript } from '@utils';
 
 export const votingForward = (votingData: string) => {
   const call = {

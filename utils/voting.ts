@@ -1,5 +1,5 @@
 import { ContractTransactionResponse } from 'ethers';
-import { tmContract, votingContract } from '../contracts';
+import { tmContract, votingContract } from '@contracts';
 import { sleep } from './sleep';
 
 export const forwardVoteFromTm = async (votingCalldata: string) => {

@@ -1,9 +1,9 @@
-import { program } from '../command';
-import { getLocatorContract, locatorContract } from '../contracts';
-import { compareContractCalls } from '../utils';
+import { program } from '@command';
+import { getLocatorContract, locatorContract } from '@contracts';
+import { compareContractCalls } from '@utils';
 import { addOssifiableProxyCommands, addParsingCommands } from './common';
 
-const locator = program.command('locator');
+const locator = program.command('locator').description('interact with locator contract');
 addParsingCommands(locator, locatorContract);
 addOssifiableProxyCommands(locator, locatorContract);
 

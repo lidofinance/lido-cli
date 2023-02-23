@@ -1,10 +1,10 @@
 import { formatEther } from 'ethers';
-import { program } from '../command';
-import { votingContract } from '../contracts';
-import { executeVote, voteAgainst, voteFor } from '../utils';
+import { program } from '@command';
+import { votingContract } from '@contracts';
+import { executeVote, voteAgainst, voteFor } from '@utils';
 import { addParsingCommands } from './common';
 
-const voting = program.command('voting');
+const voting = program.command('voting').description('interact with voting contract');
 addParsingCommands(voting, votingContract);
 
 voting

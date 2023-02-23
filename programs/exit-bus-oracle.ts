@@ -1,9 +1,15 @@
-import { program } from '../command';
-import { exitBusOracleContract } from '../contracts';
-import { addAccessControlSubCommands, addParsingCommands, addPauseUntilSubCommands } from './common';
+import { program } from '@command';
+import { exitBusOracleContract } from '@contracts';
+import {
+  addAccessControlSubCommands,
+  addOssifiableProxyCommands,
+  addParsingCommands,
+  addPauseUntilSubCommands,
+} from './common';
 
-const oracle = program.command('exit-bus-oracle');
+const oracle = program.command('exit-bus-oracle').description('interact with validator exit bus oracle contract');
 addAccessControlSubCommands(oracle, exitBusOracleContract);
+addOssifiableProxyCommands(oracle, exitBusOracleContract);
 addParsingCommands(oracle, exitBusOracleContract);
 addPauseUntilSubCommands(oracle, exitBusOracleContract);
 

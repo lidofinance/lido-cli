@@ -1,81 +1,73 @@
 import { Command } from 'commander';
 import { Contract } from 'ethers';
-import { aclContract } from '../../contracts';
-import { createPermission, grantPermission, revokePermission, votingForward } from '../../scripts';
-import { forwardVoteFromTm, getRolePosition, getRolePositionByAddress } from '../../utils';
-import { wallet } from '../../wallet';
+
+import { aclContract } from '@contracts';
+import { createPermission, grantPermission, revokePermission, votingForward } from '@scripts';
+import { forwardVoteFromTm, getRoleHash } from '@utils';
+import { wallet } from '@provider';
 
 export const addAragonAppSubCommands = (command: Command, contract: Contract) => {
   command
     .command('get-role')
-    .argument('<string>', 'role name')
-    .action(async (method) => {
-      const result = await contract[method]();
-      console.log('role', result);
+    .description('returns a hash of the role')
+    .argument('<role>', 'role name')
+    .action(async (role) => {
+      const roleHash = await getRoleHash(contract, role);
+      console.log('role hash', roleHash);
     });
 
   command
     .command('can-perform')
-    .option('-r, --role <string>', 'role')
+    .description('checks if the address can perform the role')
+    .argument('<role>', 'role name or role hash')
     .option('-a, --address <string>', 'address', wallet.address)
-    .action(async (options) => {
-      const { address, role } = options;
-      const rolePosition = await getRolePosition(contract, role);
-      const result = await contract.canPerform(address, rolePosition, []);
+    .action(async (role, options) => {
+      const { address } = options;
+      const roleHash = await getRoleHash(contract, role);
+      const result = await contract.canPerform(address, roleHash, []);
       console.log('can perform', result);
     });
 
   command
     .command('get-permission-manager')
-    .option('-r, --role <string>', 'role')
-    .action(async (options) => {
-      const { role } = options;
-      const rolePosition = await getRolePosition(contract, role);
-      const norAddress = await contract.getAddress();
+    .description('returns the permission manager address')
+    .argument('<role>', 'role name or role hash')
+    .action(async (role) => {
+      const roleHash = await getRoleHash(contract, role);
+      const appAddress = await contract.getAddress();
 
-      const manager = await aclContract.getPermissionManager(norAddress, rolePosition);
+      const manager = await aclContract.getPermissionManager(appAddress, roleHash);
       console.log('manager', manager);
     });
 
   command
     .command('create-permission')
-    .option('-r, --role <string>', 'role')
+    .description('creates the permission')
+    .argument('<role>', 'role name or role hash')
     .option('-m, --manager <string>', 'role manager address', wallet.address)
     .option('-a, --address <string>', 'address that will be able to perform the role', wallet.address)
-    .action(async (options) => {
-      const { manager, address, role } = options;
-      const rolePosition = await getRolePosition(contract, role);
-      const app = await contract.getAddress();
+    .action(async (role, options) => {
+      const { manager, address } = options;
+      const roleHash = await getRoleHash(contract, role);
+      const appAddress = await contract.getAddress();
 
-      const [aclCalldata] = await createPermission(address, app, rolePosition, manager);
+      const [aclCalldata] = await createPermission(address, appAddress, roleHash, manager);
       const [votingCalldata] = votingForward(aclCalldata);
 
       await forwardVoteFromTm(votingCalldata);
     });
 
   command
-    .command('has-permission')
-    .option('-a, --address <string>', 'address', wallet.address)
-    .option('-r, --role <string>', 'role')
-    .action(async (options) => {
-      const { address, role } = options;
-      const rolePosition = await getRolePosition(contract, role);
-      const app = await contract.getAddress();
-
-      const permission = await aclContract.hasPermission(address, app, rolePosition);
-      console.log('permission', permission);
-    });
-
-  command
     .command('grant-permission')
+    .description('grants the permission to the address')
+    .argument('<role>', 'role name or role hash')
     .option('-a, --address <string>', 'address', wallet.address)
-    .option('-r, --role <string>', 'role')
-    .action(async (options) => {
-      const { address, role } = options;
-      const app = await contract.getAddress();
+    .action(async (role, options) => {
+      const { address } = options;
+      const appAddress = await contract.getAddress();
 
-      const rolePosition = await getRolePosition(contract, role);
-      const [aclCalldata] = await grantPermission(address, app, rolePosition);
+      const roleHash = await getRoleHash(contract, role);
+      const [aclCalldata] = await grantPermission(address, appAddress, roleHash);
       const [votingCalldata] = votingForward(aclCalldata);
 
       await forwardVoteFromTm(votingCalldata);
@@ -83,14 +75,15 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
 
   command
     .command('revoke-permission')
+    .description('revokes the permission from the address')
+    .argument('<role>', 'role name or role hash')
     .option('-a, --address <string>', 'address', wallet.address)
-    .option('-r, --role <string>', 'role')
-    .action(async (options) => {
-      const { address, role } = options;
-      const app = await contract.getAddress();
+    .action(async (role, options) => {
+      const { address } = options;
+      const appAddress = await contract.getAddress();
 
-      const rolePosition = await getRolePosition(contract, role);
-      const [aclCalldata] = await revokePermission(address, app, rolePosition);
+      const roleHash = await getRoleHash(contract, role);
+      const [aclCalldata] = await revokePermission(address, appAddress, roleHash);
       const [votingCalldata] = votingForward(aclCalldata);
 
       await forwardVoteFromTm(votingCalldata);

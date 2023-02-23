@@ -1,8 +1,8 @@
 import { parseEther } from 'ethers';
-import { program } from '../command';
-import { resumeLidoAndSetStakingLimit, resumeProtocol, resumeStaking, setStakingLimit } from '../scripts';
+import { program } from '@command';
+import { resumeLidoAndSetStakingLimit, resumeProtocol, resumeStaking, setStakingLimit } from '@scripts';
 
-const scripts = program.command('scripts');
+const scripts = program.command('scripts').description('aragon scripts builder');
 
 scripts.command('resume-protocol').action(async () => {
   const [encoded] = resumeProtocol();

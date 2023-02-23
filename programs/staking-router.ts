@@ -1,8 +1,8 @@
-import { program } from '../command';
-import { stakingRouterContract } from '../contracts';
+import { program } from '@command';
+import { stakingRouterContract } from '@contracts';
 import { addAccessControlSubCommands, addParsingCommands } from './common';
 
-const router = program.command('staking-router');
+const router = program.command('staking-router').description('interact with staking router contract');
 addAccessControlSubCommands(router, stakingRouterContract);
 addParsingCommands(router, stakingRouterContract);
 

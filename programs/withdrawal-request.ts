@@ -1,10 +1,16 @@
 import { formatEther, MaxUint256, toBeHex } from 'ethers';
-import { program } from '../command';
-import { withdrawalRequestContract } from '../contracts';
-import { addAccessControlSubCommands, addParsingCommands, addPauseUntilSubCommands } from './common';
+import { program } from '@command';
+import { withdrawalRequestContract } from '@contracts';
+import {
+  addAccessControlSubCommands,
+  addOssifiableProxyCommands,
+  addParsingCommands,
+  addPauseUntilSubCommands,
+} from './common';
 
-const withdrawal = program.command('withdrawal-request');
+const withdrawal = program.command('withdrawal-request').description('interact with withdrawal request contract');
 addAccessControlSubCommands(withdrawal, withdrawalRequestContract);
+addOssifiableProxyCommands(withdrawal, withdrawalRequestContract);
 addParsingCommands(withdrawal, withdrawalRequestContract);
 addPauseUntilSubCommands(withdrawal, withdrawalRequestContract);
 

@@ -1,10 +1,10 @@
 import { Contract } from 'ethers';
-import { wallet } from '../wallet';
-import deployed from '../deployed-zhejiang.json';
-import consensusAbi from '../abi/HashConsensus.json';
-import accountingAbi from '../abi/AccountingOracle.json';
-import exitBusAbi from '../abi/ValidatorsExitBusOracle.json';
-import configAbi from '../abi/OracleDaemonConfig.json';
+import { wallet } from '@provider';
+import deployed from 'deployed-zhejiang.json';
+import consensusAbi from 'abi/HashConsensus.json';
+import accountingAbi from 'abi/AccountingOracle.json';
+import exitBusAbi from 'abi/ValidatorsExitBusOracle.json';
+import configAbi from 'abi/OracleDaemonConfig.json';
 
 export const accountingOracleAddress = deployed['accountingOracle'].address;
 export const accountingOracleContract = new Contract(accountingOracleAddress, accountingAbi, wallet);

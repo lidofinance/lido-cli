@@ -1,9 +1,9 @@
-import { toBeHex } from 'ethers';
-import { program } from '../command';
-import { oracleConfigContract } from '../contracts';
+import { hexlify, toBeHex, zeroPadValue } from 'ethers';
+import { program } from '@command';
+import { oracleConfigContract } from '@contracts';
 import { addAccessControlSubCommands, addParsingCommands } from './common';
 
-const config = program.command('oracle-config');
+const config = program.command('oracle-config').description('interact with oracle config contract');
 addAccessControlSubCommands(config, oracleConfigContract);
 addParsingCommands(config, oracleConfigContract);
 
@@ -20,7 +20,8 @@ config
   .argument('<string>', 'key')
   .argument('<string>', 'value')
   .action(async (key, value) => {
-    await oracleConfigContract.set(key, toBeHex(Number(value)));
+    const hexValue = zeroPadValue(toBeHex(Number(value)), 32);
+    await oracleConfigContract.set(key, hexValue);
     console.log('value set');
   });
 
@@ -29,7 +30,8 @@ config
   .argument('<string>', 'key')
   .argument('<string>', 'value')
   .action(async (key, value) => {
-    await oracleConfigContract.update(key, toBeHex(Number(value)));
+    const hexValue = zeroPadValue(toBeHex(Number(value)), 32);
+    await oracleConfigContract.update(key, hexValue);
     console.log('value updated');
   });
 
@@ -52,7 +54,12 @@ config.command('known').action(async () => {
     'PREDICTION_DURATION_IN_SLOTS',
     'PREDICTION_PERCENTILE_EL_REWARDS_BP',
     'PREDICTION_PERCENTILE_CL_REWARDS_BP',
+    'FINALIZATION_DEFAULT_SHIFT',
+    'FINALIZATION_MAX_NEGATIVE_REBASE_SHIFT',
   ];
   const list = await oracleConfigContract.getList(knownKeys);
-  console.log('list', list);
+
+  list.forEach((item, index) => {
+    console.log(knownKeys[index], Number(item));
+  });
 });

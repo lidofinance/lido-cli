@@ -1,5 +1,5 @@
-import { lidoAddress, lidoContract } from '../contracts';
-import { encodeCallScript, calcStakeLimitIncreasePerBlock } from '../utils';
+import { lidoAddress, lidoContract } from '@contracts';
+import { encodeCallScript, calcStakeLimitIncreasePerBlock } from '@utils';
 
 export const resumeProtocol = () => {
   const call = {

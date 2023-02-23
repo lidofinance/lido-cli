@@ -1,5 +1,5 @@
-import { aclContract } from '../contracts';
-import { encodeCallScript } from '../utils';
+import { aclContract } from '@contracts';
+import { encodeCallScript } from '@utils';
 
 export const grantPermission = async (entity: string, app: string, role: string) => {
   const call = {

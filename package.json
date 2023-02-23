@@ -2,10 +2,12 @@
   "license": "MIT",
   "scripts": {
     "start": "ts-node index",
+    "accounting-consensus": "ts-node index accounting-consensus",
     "accounting-oracle": "ts-node index accounting-oracle",
     "acl": "ts-node index acl",
     "burner": "ts-node index burner",
     "dsm": "ts-node index dsm",
+    "exit-bus-consensus": "ts-node index exit-bus-consensus",
     "exit-bus-oracle": "ts-node index exit-bus-oracle",
     "lido": "ts-node index lido",
     "locator": "ts-node index locator",
@@ -21,6 +23,7 @@
     "@types/node": "^18.13.0",
     "dotenv": "^16.0.3",
     "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.1.2",
     "typescript": "^4.9.5"
   },
   "dependencies": {
