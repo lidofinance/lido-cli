@@ -33,6 +33,14 @@ lido
   });
 
 lido
+  .command('total-shares')
+  .description('returns total shares')
+  .action(async () => {
+    const totalShares = await lidoContract.getTotalShares();
+    console.log('total shares', formatEther(totalShares));
+  });
+
+lido
   .command('is-stopped')
   .description('returns is protocol stopped')
   .action(async () => {

@@ -2,6 +2,7 @@ import { program } from '@command';
 import { exitBusOracleContract } from '@contracts';
 import {
   addAccessControlSubCommands,
+  addBaseOracleCommands,
   addOssifiableProxyCommands,
   addParsingCommands,
   addPauseUntilSubCommands,
@@ -9,6 +10,7 @@ import {
 
 const oracle = program.command('exit-bus-oracle').description('interact with validator exit bus oracle contract');
 addAccessControlSubCommands(oracle, exitBusOracleContract);
+addBaseOracleCommands(oracle, exitBusOracleContract);
 addOssifiableProxyCommands(oracle, exitBusOracleContract);
 addParsingCommands(oracle, exitBusOracleContract);
 addPauseUntilSubCommands(oracle, exitBusOracleContract);

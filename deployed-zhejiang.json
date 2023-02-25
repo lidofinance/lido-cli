@@ -143,7 +143,7 @@
       "maxValidatorExitRequestsPerReport": 2000,
       "maxAccountingExtraDataListItemsCount": 100
     },
-    "address": "0xC9F35dfd24588A2db1398d60B3391CC14CA00C3B",
+    "address": "0x5dE66f1E2fC2BEAFA802D6b8fB00805745266BCb",
     "constructorArgs": [
       "0x12cd349E19Ab2ADBE478Fc538A66C059Cf40CFeC",
       "0xa5F1d7D49F581136Cf6e58B32cBE9a2039C48bA1",
@@ -306,7 +306,7 @@
     "address": "0x12cd349E19Ab2ADBE478Fc538A66C059Cf40CFeC",
     "constructorArgs": [],
     "initialImplementation": "0xdCc52ef394aACDDA187297Eff390271C1dF29768",
-    "newImplementation": "0x683c4A6FB4A49Ce49f04E84a7301a2075D809844"
+    "newImplementation": "0x2BFE0Bd5BCa77178F43a9DAE0B93348e0Bc8cCEC"
   },
   "eip712StETH": {
     "address": "0x43607a3a1CE1a68015Fe92a79209c71C171529CA",

@@ -1,3 +1,4 @@
+export * from './abi';
 export * from './compare-calls';
 export * from './role-hash';
 export * from './scripts';

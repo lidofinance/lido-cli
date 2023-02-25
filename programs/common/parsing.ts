@@ -21,7 +21,7 @@ export const addParsingCommands = (command: Command, contract: Contract) => {
   command
     .command('parse-error')
     .description('decodes transaction revert reason with ABI')
-    .argument('<data>', 'transaction revert reason')
+    .argument('<reason>', 'transaction revert reason')
     .action(async (errorData) => {
       const result = contract.interface.parseError(errorData);
       console.log(result);
