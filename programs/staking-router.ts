@@ -6,13 +6,17 @@ const router = program.command('staking-router').description('interact with stak
 addAccessControlSubCommands(router, stakingRouterContract);
 addParsingCommands(router, stakingRouterContract);
 
-router.command('modules').action(async () => {
-  const modules = await stakingRouterContract.getStakingModules();
-  console.log('modules', modules);
-});
+router
+  .command('modules')
+  .description('returns staking modules')
+  .action(async () => {
+    const modules = await stakingRouterContract.getStakingModules();
+    console.log('modules', modules);
+  });
 
 router
   .command('add-module')
+  .description('adds staking module')
   .option('-n, --name <string>', 'staking module name')
   .option('-a, --address <string>', 'staking module address')
   .option('-s, --target-share <number>', 'target share in basis points: 100 = 1%, 10000 = 100%', '10000')
@@ -26,6 +30,7 @@ router
 
 router
   .command('update-module')
+  .description('updates staking module parameters')
   .argument('<module-id>', 'module id')
   .option('-s, --target-share <number>', 'target share in basis points: 100 = 1%, 10000 = 100%', '10000')
   .option('-f, --module-fee <number>', 'module share in basis points: 100 = 1%, 10000 = 100%', '500')
@@ -38,6 +43,7 @@ router
 
 router
   .command('update-refunded-validators')
+  .description('updates refunded validators count')
   .argument('<module-id>', 'module id')
   .option('-o, --node-operator-id <number>', 'node operator id')
   .option('-v, --refunded-validators <number>', 'refunded validators')
@@ -47,13 +53,17 @@ router
     console.log('refunded validators updated');
   });
 
-router.command('withdrawal-credentials').action(async () => {
-  const withdrawalCredentials = await stakingRouterContract.getWithdrawalCredentials();
-  console.log('withdrawal credentials', withdrawalCredentials);
-});
+router
+  .command('withdrawal-credentials')
+  .description('returns withdrawal credentials')
+  .action(async () => {
+    const withdrawalCredentials = await stakingRouterContract.getWithdrawalCredentials();
+    console.log('withdrawal credentials', withdrawalCredentials);
+  });
 
 router
   .command('is-paused')
+  .description('returns if module is paused')
   .argument('<module-id>', 'module id')
   .action(async (moduleId) => {
     const isPaused = await stakingRouterContract.getStakingModuleIsDepositsPaused(moduleId);
@@ -62,6 +72,7 @@ router
 
 router
   .command('last-deposit-block')
+  .description('returns last deposit block for module')
   .argument('<module-id>', 'module id')
   .action(async (moduleId) => {
     const block = await stakingRouterContract.getStakingModuleLastDepositBlock(moduleId);
@@ -70,6 +81,7 @@ router
 
 router
   .command('is-active')
+  .description('returns if module is active')
   .argument('<module-id>', 'module id')
   .action(async (moduleId) => {
     const block = await stakingRouterContract.getStakingModuleIsActive(moduleId);
@@ -78,6 +90,7 @@ router
 
 router
   .command('nonce')
+  .description('returns module nonce')
   .argument('<module-id>', 'module id')
   .action(async (moduleId) => {
     const nonce = await stakingRouterContract.getStakingModuleNonce(moduleId);
@@ -86,6 +99,7 @@ router
 
 router
   .command('max-deposits')
+  .description('returns max deposits count for staking module')
   .argument('<module-id>', 'module id')
   .action(async (moduleId) => {
     const deposits = await stakingRouterContract.getStakingModuleMaxDepositsCount(moduleId);
@@ -94,6 +108,7 @@ router
 
 router
   .command('allocation')
+  .description('returns deposits allocation')
   .argument('<deposits>', 'deposits count')
   .action(async (depositsCount) => {
     const allocation = await stakingRouterContract.getDepositsAllocation(depositsCount);

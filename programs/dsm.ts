@@ -40,7 +40,7 @@ dsm
 dsm
   .command('set-max-deposits')
   .description('sets the max amount of deposits per transaction')
-  .argument('<number>', 'max deposits per block')
+  .argument('<deposits>', 'max deposits per block')
   .action(async (maxDeposits) => {
     await dsmContract.setMaxDeposits(maxDeposits);
     console.log('value set');
@@ -91,7 +91,7 @@ dsm
 dsm
   .command('set-quorum')
   .description('sets the guardians quorum')
-  .argument('<number>', 'new guardians quorum')
+  .argument('<quorum>', 'new guardians quorum')
   .action(async (quorum) => {
     await dsmContract.setGuardianQuorum(quorum);
     console.log('value set');

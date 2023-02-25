@@ -6,14 +6,18 @@ const nor = program.command('nor').description('interact with node operator regi
 addAragonAppSubCommands(nor, norContract);
 addParsingCommands(nor, norContract);
 
-nor.command('operators').action(async () => {
-  const total = await norContract.getNodeOperatorsCount();
-  console.log('total', total);
-});
+nor
+  .command('operators')
+  .description('returns operators count')
+  .action(async () => {
+    const total = await norContract.getNodeOperatorsCount();
+    console.log('total', total);
+  });
 
 nor
   .command('operator')
-  .argument('<number>', 'operator id')
+  .description('returns operator')
+  .argument('<operator-id>', 'operator id')
   .action(async (operatorId) => {
     const operator = await norContract.getNodeOperator(operatorId, true);
     console.log('operator', operator);
@@ -21,7 +25,8 @@ nor
 
 nor
   .command('operator-summary')
-  .argument('<number>', 'operator id')
+  .description('returns operator summary')
+  .argument('<operator-id>', 'operator id')
   .action(async (operatorId) => {
     const summary = await norContract.getNodeOperatorSummary(operatorId);
     console.log('operator summary', summary);
@@ -29,6 +34,7 @@ nor
 
 nor
   .command('add-operator')
+  .description('adds node operator')
   .option('-n, --name <string>', 'operator name')
   .option('-a, --address <string>', 'reward address')
   .action(async (options) => {
@@ -39,6 +45,7 @@ nor
 
 nor
   .command('add-keys')
+  .description('adds signing keys')
   .option('-o, --operator-id <number>', 'node operator id')
   .option('-c, --count <number>', 'keys count')
   .option('-p, --public-keys <string>', 'public keys')
@@ -51,6 +58,7 @@ nor
 
 nor
   .command('set-limit')
+  .description('sets staking limit')
   .option('-o, --operator-id <number>', 'node operator id')
   .option('-l, --limit <number>', 'staking limit')
   .action(async (options) => {

@@ -59,8 +59,8 @@ lido
 lido
   .command('deposit')
   .description('deposit buffered ether')
-  .argument('<number>', 'max deposits count')
-  .argument('<number>', 'staking module id')
+  .argument('<deposits>', 'max deposits count')
+  .argument('<module-id>', 'staking module id')
   .action(async (maxDepositCount, moduleId) => {
     await lidoContract.deposit(maxDepositCount, moduleId, '0x');
     console.log('deposited');

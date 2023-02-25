@@ -15,6 +15,7 @@ addPauseUntilSubCommands(oracle, exitBusOracleContract);
 
 oracle
   .command('exit-requests')
+  .description('returns exit requests')
   .option('-b, --blocks <number>', 'duration in blocks', '7200')
   .action(async (options) => {
     const { blocks } = options;

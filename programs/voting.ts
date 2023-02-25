@@ -9,7 +9,8 @@ addParsingCommands(voting, votingContract);
 
 voting
   .command('get-vote')
-  .argument('<number>', 'vote id')
+  .description('returns vote by id')
+  .argument('<vote-id>', 'vote id')
   .action(async (voteId) => {
     const vote = await votingContract.getVote(voteId);
 
@@ -30,13 +31,17 @@ voting
     });
   });
 
-voting.command('votes').action(async () => {
-  const votes = await votingContract.votesLength();
-  console.log('votes', Number(votes));
-});
+voting
+  .command('votes')
+  .description('returns votes length')
+  .action(async () => {
+    const votes = await votingContract.votesLength();
+    console.log('votes', Number(votes));
+  });
 
 voting
   .command('new-vote')
+  .description('creates new vote')
   .option('-s, --script <string>', 'execution script', '')
   .option('-m, --meta <string>', 'meta data', '')
   .action(async (options) => {
@@ -47,7 +52,8 @@ voting
 
 voting
   .command('vote')
-  .argument('<number>', 'vote id')
+  .description('votes for or against vote')
+  .argument('<vote-id>', 'vote id')
   .option('-s, --support <number>', 'support 1 or 0', '1')
   .action(async (voteId, options) => {
     const { support } = options;
@@ -61,7 +67,8 @@ voting
 
 voting
   .command('execute')
-  .argument('<number>', 'vote id')
+  .description('executes vote')
+  .argument('<vote-id>', 'vote id')
   .action(async (voteId) => {
     await executeVote(voteId);
   });
