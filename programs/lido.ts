@@ -65,3 +65,11 @@ lido
     await lidoContract.deposit(maxDepositCount, moduleId, '0x');
     console.log('deposited');
   });
+
+lido
+  .command('depositable-ether')
+  .description('returns depositable ether amount')
+  .action(async () => {
+    const amount = await lidoContract.getDepositableEther();
+    console.log('depositable ether', formatEther(amount));
+  });

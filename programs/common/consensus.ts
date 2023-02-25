@@ -86,4 +86,13 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
       await contract.setFrameConfig(epochsPerFrame, fastlane);
       console.log('frame config set');
     });
+
+  command
+    .command('get-member-state')
+    .description('sets the frame config')
+    .argument('<address>', 'member address')
+    .action(async (address) => {
+      const state = await contract.getConsensusStateForMember(address, { blockTag: 157214 });
+      console.log('member state', state);
+    });
 };
