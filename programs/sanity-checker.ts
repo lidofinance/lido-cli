@@ -22,3 +22,12 @@ sanityChecker
     await sanityCheckerContract.setShareRateDeviationBPLimit(Number(limit));
     console.log('updated');
   });
+
+sanityChecker
+  .command('set-annual-cl-increase-limit')
+  .description('sets annual cl increase limit')
+  .argument('<limit>', 'annual cl increase limit in BP')
+  .action(async (limit) => {
+    await sanityCheckerContract.setAnnualBalanceIncreaseBPLimit(Number(limit));
+    console.log('updated');
+  });

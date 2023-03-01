@@ -1,5 +1,6 @@
-import { formatEther, MaxUint256, toBeHex } from 'ethers';
+import { formatEther, MaxUint256, parseEther } from 'ethers';
 import { program } from '@command';
+import { wallet } from '@provider';
 import { withdrawalRequestContract } from '@contracts';
 import {
   addAccessControlSubCommands,
@@ -17,11 +18,12 @@ addPauseUntilSubCommands(withdrawal, withdrawalRequestContract);
 withdrawal
   .command('request')
   .description('request withdrawal')
-  .option('-a, --amount <string>', 'stETH amount')
-  .action(async (options) => {
-    const { amount } = options;
-    const [requestId] = await withdrawalRequestContract.requestWithdrawals([amount]);
-    console.log('request id', requestId);
+  .argument('<amount>', 'stETH amount')
+  .option('-a, --address <string>', 'owner address', wallet.address)
+  .action(async (amount, options) => {
+    const { address } = options;
+    const result = await withdrawalRequestContract.requestWithdrawals([parseEther(amount)], address);
+    console.log('result', result);
   });
 
 withdrawal

@@ -1,5 +1,6 @@
-import { formatEther, parseEther } from 'ethers';
+import { formatEther, MaxUint256, parseEther, toBeHex } from 'ethers';
 import { program } from '@command';
+import { wallet } from '@provider';
 import { lidoContract } from '@contracts';
 import { forwardVoteFromTm } from '@utils';
 import { resumeLidoAndSetStakingLimit, votingForward } from '@scripts';
@@ -80,4 +81,24 @@ lido
   .action(async () => {
     const amount = await lidoContract.getDepositableEther();
     console.log('depositable ether', formatEther(amount));
+  });
+
+lido
+  .command('approve')
+  .argument('<spender>', 'spender address')
+  .option('-a, --amount <number>', 'amount', toBeHex(MaxUint256))
+  .action(async (spender, options) => {
+    const { amount } = options;
+    await lidoContract.approve(spender, amount);
+    console.log('approved');
+  });
+
+lido
+  .command('allowance')
+  .argument('<spender>', 'spender address')
+  .option('-o, --owner <string>', 'owner address', wallet.address)
+  .action(async (spender, options) => {
+    const { owner } = options;
+    const allowance = await lidoContract.allowance(owner, spender);
+    console.log('allowance', allowance);
   });

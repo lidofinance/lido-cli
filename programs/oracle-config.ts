@@ -1,4 +1,4 @@
-import { hexlify, toBeHex, zeroPadValue } from 'ethers';
+import { toBeHex, zeroPadValue } from 'ethers';
 import { program } from '@command';
 import { oracleConfigContract } from '@contracts';
 import { addAccessControlSubCommands, addParsingCommands } from './common';
@@ -55,7 +55,7 @@ config
       'NORMALIZED_CL_PER_EPOCH',
       'NORMALIZED_CL_MISTAKE_BP',
       'REBASE_CHECK_NEAREST_EPOCH_DISTANCE',
-      'REBASE_CHECK_FAR_EPOCH_DISTANCE',
+      'REBASE_CHECK_DISTANT_EPOCH_DISTANCE',
       'VALIDATOR_DELAYED_TIMEOUT_IN_SLOTS',
       'VALIDATOR_DELINQUENT_TIMEOUT_IN_SLOTS',
       'PREDICTION_DURATION_IN_SLOTS',
