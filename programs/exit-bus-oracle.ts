@@ -34,3 +34,11 @@ oracle
 
     console.log('events', requests);
   });
+
+oracle
+  .command('format-list')
+  .description('returns exit requests')
+  .action(async () => {
+    const value = await exitBusOracleContract.DATA_FORMAT_LIST();
+    console.log('value', value);
+  });

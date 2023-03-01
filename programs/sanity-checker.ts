@@ -11,27 +11,7 @@ sanityChecker
   .description('returns oracle report limits')
   .action(async () => {
     const limits = await sanityCheckerContract.getOracleReportLimits();
-    const {
-      churnValidatorsPerDayLimit,
-      oneOffCLBalanceDecreaseBPLimit,
-      annualBalanceIncreaseBPLimit,
-      shareRateDeviationBPLimit,
-      requestTimestampMargin,
-      maxPositiveTokenRebase,
-      maxValidatorExitRequestsPerReport,
-      maxAccountingExtraDataListItemsCount,
-    } = limits;
-
-    console.log('limits', {
-      churnValidatorsPerDayLimit,
-      oneOffCLBalanceDecreaseBPLimit,
-      annualBalanceIncreaseBPLimit,
-      shareRateDeviationBPLimit,
-      requestTimestampMargin,
-      maxPositiveTokenRebase,
-      maxValidatorExitRequestsPerReport,
-      maxAccountingExtraDataListItemsCount,
-    });
+    console.log('limits', limits.toObject());
   });
 
 sanityChecker

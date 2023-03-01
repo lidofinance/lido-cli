@@ -13,22 +13,7 @@ voting
   .argument('<vote-id>', 'vote id')
   .action(async (voteId) => {
     const vote = await votingContract.getVote(voteId);
-
-    const { open, executed, startDate, snapshotBlock, supportRequired } = vote;
-    const { minAcceptQuorum, yea, nay, script, phase } = vote;
-
-    console.log('vote', {
-      open,
-      executed,
-      phase,
-      startDate,
-      snapshotBlock,
-      supportRequired: formatEther(supportRequired),
-      minAcceptQuorum: formatEther(minAcceptQuorum),
-      yea: formatEther(yea),
-      nay: formatEther(nay),
-      script,
-    });
+    console.log('vote', vote.toObject());
   });
 
 voting
@@ -63,6 +48,7 @@ voting
     } else {
       await voteAgainst(voteId);
     }
+    console.log('voted');
   });
 
 voting
@@ -71,4 +57,5 @@ voting
   .argument('<vote-id>', 'vote id')
   .action(async (voteId) => {
     await executeVote(voteId);
+    console.log('executed');
   });

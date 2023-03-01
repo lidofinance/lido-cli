@@ -29,7 +29,7 @@ nor
   .argument('<operator-id>', 'operator id')
   .action(async (operatorId) => {
     const summary = await norContract.getNodeOperatorSummary(operatorId);
-    console.log('operator summary', summary);
+    console.log('operator summary', summary.toObject());
   });
 
 nor

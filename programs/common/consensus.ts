@@ -56,24 +56,24 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .command('current-frame')
     .description('returns the current frame')
     .action(async () => {
-      const { refSlot, reportProcessingDeadlineSlot } = await contract.getCurrentFrame();
-      console.log('frame', { refSlot, reportProcessingDeadlineSlot });
+      const frame = await contract.getCurrentFrame();
+      console.log('frame', frame.toObject());
     });
 
   command
     .command('chain-config')
     .description('returns the chain config')
     .action(async () => {
-      const { slotsPerEpoch, secondsPerSlot, genesisTime } = await contract.getChainConfig();
-      console.log('config', { slotsPerEpoch, secondsPerSlot, genesisTime });
+      const config = await contract.getChainConfig();
+      console.log('config', config.toObject());
     });
 
   command
     .command('frame-config')
     .description('returns the frame config')
     .action(async () => {
-      const { initialEpoch, epochsPerFrame, fastLaneLengthSlots } = await contract.getFrameConfig();
-      console.log('config', { initialEpoch, epochsPerFrame, fastLaneLengthSlots });
+      const config = await contract.getFrameConfig();
+      console.log('config', config.toObject());
     });
 
   command
@@ -92,7 +92,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .description('sets the frame config')
     .argument('<address>', 'member address')
     .action(async (address) => {
-      const state = await contract.getConsensusStateForMember(address, { blockTag: 157214 });
+      const state = await contract.getConsensusStateForMember(address);
       console.log('member state', state);
     });
 };
