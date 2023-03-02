@@ -52,8 +52,8 @@ config
   .description('get known values')
   .action(async () => {
     const knownKeys = [
-      'NORMALIZED_CL_PER_EPOCH',
-      'NORMALIZED_CL_MISTAKE_BP',
+      'NORMALIZED_CL_REWARD_PER_EPOCH',
+      'NORMALIZED_CL_REWARD_MISTAKE_RATE_BP',
       'REBASE_CHECK_NEAREST_EPOCH_DISTANCE',
       'REBASE_CHECK_DISTANT_EPOCH_DISTANCE',
       'VALIDATOR_DELAYED_TIMEOUT_IN_SLOTS',
