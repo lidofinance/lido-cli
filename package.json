@@ -13,6 +13,7 @@
     "locator": "ts-node index locator",
     "nor": "ts-node index nor",
     "oracle-config": "ts-node index oracle-config",
+    "role": "ts-node index role",
     "sanity-checker": "ts-node index sanity-checker",
     "scripts": "ts-node index scripts",
     "staking-router": "ts-node index staking-router",

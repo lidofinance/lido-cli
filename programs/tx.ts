@@ -1,8 +1,7 @@
 import { program } from '@command';
 import { provider } from '@provider';
 import { getAllAbi } from '@utils';
-import { Contract, Interface, parseEther } from 'ethers';
-import { lstatSync, readdirSync } from 'fs';
+import { parseEther } from 'ethers';
 
 const tx = program.command('tx').description('transaction utils');
 

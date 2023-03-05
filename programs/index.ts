@@ -8,6 +8,7 @@ export * from './lido';
 export * from './locator';
 export * from './nor';
 export * from './oracle-config';
+export * from './role';
 export * from './sanity-checker';
 export * from './scripts';
 export * from './staking-router';
