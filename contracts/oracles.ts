@@ -1,22 +1,22 @@
 import { Contract } from 'ethers';
 import { wallet } from '@provider';
-import deployed from 'deployed-zhejiang.json';
+import { getDeployedAddress } from '@configs';
 import consensusAbi from 'abi/HashConsensus.json';
 import accountingAbi from 'abi/AccountingOracle.json';
 import exitBusAbi from 'abi/ValidatorsExitBusOracle.json';
 import configAbi from 'abi/OracleDaemonConfig.json';
 
-export const accountingOracleAddress = deployed['accountingOracle'].address;
+export const accountingOracleAddress = getDeployedAddress('accountingOracle');
 export const accountingOracleContract = new Contract(accountingOracleAddress, accountingAbi, wallet);
 
-export const exitBusOracleAddress = deployed['validatorsExitBusOracle'].address;
+export const exitBusOracleAddress = getDeployedAddress('validatorsExitBusOracle');
 export const exitBusOracleContract = new Contract(exitBusOracleAddress, exitBusAbi, wallet);
 
-export const consensusForAccountingAddress = deployed['hashConsensusForAccounting'].address;
+export const consensusForAccountingAddress = getDeployedAddress('hashConsensusForAccounting');
 export const consensusForAccountingContract = new Contract(consensusForAccountingAddress, consensusAbi, wallet);
 
-export const consensusForExitBusAddress = deployed['hashConsensusForValidatorsExitBus'].address;
+export const consensusForExitBusAddress = getDeployedAddress('hashConsensusForValidatorsExitBus');
 export const consensusForExitBusContract = new Contract(consensusForExitBusAddress, consensusAbi, wallet);
 
-export const oracleConfigAddress = deployed['oracleDaemonConfig'].address;
+export const oracleConfigAddress = getDeployedAddress('oracleDaemonConfig');
 export const oracleConfigContract = new Contract(oracleConfigAddress, configAbi, wallet);

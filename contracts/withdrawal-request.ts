@@ -1,7 +1,7 @@
 import { Contract } from 'ethers';
 import { wallet } from '@provider';
-import deployed from 'deployed-zhejiang.json';
-import abi from 'abi/WithdrawalRequestNFT.json';
+import { getDeployedAddress } from '@configs';
+import abi from 'abi/withdrawalQueueERC721.json';
 
-export const withdrawalRequestAddress = deployed['withdrawalRequestNFT'].address;
+export const withdrawalRequestAddress = getDeployedAddress('withdrawalQueueERC721');
 export const withdrawalRequestContract = new Contract(withdrawalRequestAddress, abi, wallet);

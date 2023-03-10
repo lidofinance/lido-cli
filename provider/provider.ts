@@ -1,7 +1,8 @@
+import { envs } from '@configs';
 import { JsonRpcProvider, Network } from 'ethers';
 
 const chainId = 1337803;
-const url = 'http://35.228.211.212:8545';
+const url = envs.EL_API_PROVIDER;
 
 const network = new Network('zhejiang', chainId);
 const options = { staticNetwork: network, batchMaxCount: 1 };

@@ -11,6 +11,7 @@
     "baseUrl": ".",
     "paths": {
       "@command": ["command"],
+      "@configs": ["configs"],
       "@contracts": ["contracts"],
       "@provider": ["provider"],
       "@scripts": ["scripts"],
