@@ -1,4 +1,4 @@
-import { formatEther, MaxUint256, parseEther, toBeHex } from 'ethers';
+import { formatEther, MaxUint256, parseEther, toBeHex, ZeroAddress } from 'ethers';
 import { program } from '@command';
 import { wallet } from '@provider';
 import { lidoContract } from '@contracts';
@@ -101,4 +101,14 @@ lido
     const { owner } = options;
     const allowance = await lidoContract.allowance(owner, spender);
     console.log('allowance', allowance);
+  });
+
+lido
+  .command('submit')
+  .argument('<amount>', 'ether amount')
+  .option('-r, --referral <string>', 'referral address', ZeroAddress)
+  .action(async (amount, options) => {
+    const { referral } = options;
+    await lidoContract.submit(referral, { value: parseEther(amount) });
+    console.log('submitted');
   });

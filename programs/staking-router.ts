@@ -11,7 +11,8 @@ router
   .description('returns staking modules')
   .action(async () => {
     const modules = await stakingRouterContract.getStakingModules();
-    console.log('modules', modules);
+    const formattedModules = modules.map((module) => module.toObject());
+    console.log('modules', formattedModules);
   });
 
 router

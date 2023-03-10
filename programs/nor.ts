@@ -20,7 +20,7 @@ nor
   .argument('<operator-id>', 'operator id')
   .action(async (operatorId) => {
     const operator = await norContract.getNodeOperator(operatorId, true);
-    console.log('operator', operator);
+    console.log('operator', operator.toObject());
   });
 
 nor
