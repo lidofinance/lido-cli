@@ -1,5 +1,6 @@
 export * from './accounting-consensus';
 export * from './accounting-oracle';
+export * from './accounts';
 export * from './burner';
 export * from './dsm';
 export * from './exit-bus-consensus';

@@ -4,6 +4,7 @@
     "start": "ts-node index",
     "accounting-consensus": "ts-node index accounting-consensus",
     "accounting-oracle": "ts-node index accounting-oracle",
+    "accounts": "ts-node index accounts",
     "acl": "ts-node index acl",
     "burner": "ts-node index burner",
     "dsm": "ts-node index dsm",
