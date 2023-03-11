@@ -88,6 +88,15 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     });
 
   command
+    .command('update-initial-epoch')
+    .description('updates the initial epoch')
+    .argument('<epoch>', 'initial epoch')
+    .action(async (epoch) => {
+      await contract.updateInitialEpoch(epoch);
+      console.log('initial epoch updated');
+    });
+
+  command
     .command('get-member-state')
     .description('sets the frame config')
     .argument('<address>', 'member address')
