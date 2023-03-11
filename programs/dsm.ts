@@ -107,9 +107,10 @@ dsm
 
 dsm
   .command('can-deposit')
+  .argument('<moduleId>', 'staking module id')
   .description('returns is deposits available')
-  .action(async () => {
-    const canDeposit = await dsmContract.canDeposit();
+  .action(async (moduleId) => {
+    const canDeposit = await dsmContract.canDeposit(moduleId);
     console.log('can deposit', canDeposit);
   });
 
