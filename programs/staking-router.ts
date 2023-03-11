@@ -1,9 +1,10 @@
 import { program } from '@command';
 import { stakingRouterContract } from '@contracts';
-import { addAccessControlSubCommands, addParsingCommands } from './common';
+import { addAccessControlSubCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
 
 const router = program.command('staking-router').description('interact with staking router contract');
 addAccessControlSubCommands(router, stakingRouterContract);
+addOssifiableProxyCommands(router, stakingRouterContract);
 addParsingCommands(router, stakingRouterContract);
 
 router

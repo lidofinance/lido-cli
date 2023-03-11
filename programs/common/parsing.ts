@@ -26,4 +26,13 @@ export const addParsingCommands = (command: Command, contract: Contract) => {
       const result = contract.interface.parseError(errorData);
       console.log(result);
     });
+
+  command
+    .command('parse-method')
+    .description('get method by hash')
+    .argument('<method-hash>', 'method hash')
+    .action(async (method) => {
+      const result = contract.interface.getFunction(method);
+      console.log(result);
+    });
 };
