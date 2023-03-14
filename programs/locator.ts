@@ -52,6 +52,56 @@ locator
   });
 
 locator
+  .command('all')
+  .description('returns all addresses')
+  .action(async () => {
+    const [
+      accountingOracle,
+      elRewardsVault,
+      oracleReportSanityChecker,
+      burner,
+      withdrawalQueue,
+      withdrawalVault,
+      postTokenRebaseReceiver,
+    ] = await locatorContract.oracleReportComponentsForLido();
+
+    const [
+      legacyOracle,
+      validatorsExitBusOracle,
+      depositSecurityModule,
+      lido,
+      stakingRouter,
+      treasury,
+      oracleDaemonConfig,
+    ] = await Promise.all([
+      locatorContract.legacyOracle(),
+      locatorContract.validatorsExitBusOracle(),
+      locatorContract.depositSecurityModule(),
+      locatorContract.lido(),
+      locatorContract.stakingRouter(),
+      locatorContract.treasury(),
+      locatorContract.oracleDaemonConfig(),
+    ]);
+
+    console.log('components', {
+      accountingOracle,
+      elRewardsVault,
+      oracleReportSanityChecker,
+      burner,
+      withdrawalQueue,
+      withdrawalVault,
+      postTokenRebaseReceiver,
+      legacyOracle,
+      validatorsExitBusOracle,
+      depositSecurityModule,
+      lido,
+      stakingRouter,
+      treasury,
+      oracleDaemonConfig,
+    });
+  });
+
+locator
   .command('legacy-oracle')
   .description('returns legacy oracle')
   .action(async () => {
