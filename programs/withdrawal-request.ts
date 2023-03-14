@@ -27,6 +27,35 @@ withdrawal
   });
 
 withdrawal
+  .command('requests')
+  .description('request withdrawal')
+  .argument('<amount>', 'stETH amount')
+  .argument('<requests>', 'requests amount')
+  .option('-a, --address <string>', 'owner address', wallet.address)
+  .action(async (amount, requests, options) => {
+    const { address } = options;
+    const requestsArray = Array(Number(requests)).fill(parseEther(amount));
+    const result = await withdrawalRequestContract.requestWithdrawals(requestsArray, address);
+    console.log('result', result);
+  });
+
+withdrawal
+  .command('last-finalized')
+  .description('returns last finalized request id')
+  .action(async () => {
+    const lastFinalizedRequestId = await withdrawalRequestContract.getLastFinalizedRequestId();
+    console.log('last finalized request id', lastFinalizedRequestId);
+  });
+
+withdrawal
+  .command('last-request')
+  .description('returns last request id')
+  .action(async () => {
+    const lastRequestId = await withdrawalRequestContract.getLastRequestId();
+    console.log('last request id', lastRequestId);
+  });
+
+withdrawal
   .command('claim')
   .description('claim withdrawal')
   .argument('<number>', 'request id')
@@ -61,4 +90,38 @@ withdrawal
   .action(async () => {
     const unfinalizedStETH = await withdrawalRequestContract.unfinalizedStETH();
     console.log('unfinalized stETH', formatEther(unfinalizedStETH));
+  });
+
+withdrawal
+  .command('finalization-batches')
+  .description('returns finalization batches')
+  .option('-s, --max-share-rate <number>', 'max share rate', '1')
+  .option('-r, --max-requests-per-call <number>', 'max requests per call', '1000')
+  .option('-t, --max-timestamp <number>', 'max timestamp', `${Math.floor(Date.now() / 1000)}`)
+  .option('-e, --eth-budget <number>', 'eth budget', '1')
+  .action(async (options) => {
+    const { maxShareRate, maxTimestamp, maxRequestsPerCall, ethBudget } = options;
+    const state = [parseEther(ethBudget), false, Array(36).fill(0), 0];
+
+    const result = await withdrawalRequestContract.calculateFinalizationBatches(
+      BigInt(maxShareRate) * BigInt(1e27),
+      Number(maxTimestamp),
+      Number(maxRequestsPerCall),
+      state,
+    );
+
+    const formattedResult = result.toObject();
+    formattedResult.batches = formattedResult.batches.filter((v) => !!v);
+
+    console.log('result', formattedResult);
+  });
+
+withdrawal
+  .command('user-requests')
+  .description('returns user requests')
+  .option('-a, --address <string>', 'owner address', wallet.address)
+  .action(async (options) => {
+    const { address } = options;
+    const result = await withdrawalRequestContract.getWithdrawalRequests(address);
+    console.log('result', result);
   });
