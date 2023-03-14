@@ -17,6 +17,15 @@ router
   });
 
 router
+  .command('module')
+  .description('returns staking module')
+  .argument('<module-id>', 'staking module id')
+  .action(async (moduleId) => {
+    const module = await stakingRouterContract.getStakingModule(moduleId);
+    console.log('module', module);
+  });
+
+router
   .command('add-module')
   .description('adds staking module')
   .option('-n, --name <string>', 'staking module name')
