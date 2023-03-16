@@ -44,6 +44,16 @@ nor
   });
 
 nor
+  .command('key')
+  .description('returns signing key')
+  .argument('<operator-id>', 'operator id')
+  .argument('<key-id>', 'key id')
+  .action(async (operatorId, keyId) => {
+    const keyData = await norContract.getSigningKey(Number(operatorId), Number(keyId));
+    console.log('key', keyData);
+  });
+
+nor
   .command('add-keys')
   .description('adds signing keys')
   .option('-o, --operator-id <number>', 'node operator id')
