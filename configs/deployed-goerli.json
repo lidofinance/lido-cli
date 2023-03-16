@@ -150,7 +150,9 @@
     "revokable": false
   },
   "wstethContractAddress": "0x6320cD32aA674d2898A68ec82e869385Fc5f7E2f",
-  "wstethContractConstructorArgs": ["0x1643E812aE58766192Cf7D2Cf9567dF2C37e9B7F"],
+  "wstethContractConstructorArgs": [
+    "0x1643E812aE58766192Cf7D2Cf9567dF2C37e9B7F"
+  ],
   "depositorParams": {
     "maxDepositsPerBlock": 0,
     "minDepositBlockDistance": 1200,
@@ -232,7 +234,8 @@
       "epochsPerFrame": 40
     },
     "contract": "HashConsensus",
-    "address": "0x821688406B8000FE3bAa8B074F8e1CbCD72c0035",
+    "_real_address_after_enact": "0x821688406B8000FE3bAa8B074F8e1CbCD72c0035",
+    "address": "0x2B408df484bcE6fBe26ea76Aad70F3598d2d8a37",
     "constructorArgs": [
       32,
       12,
@@ -265,7 +268,8 @@
       "epochsPerFrame": 20
     },
     "contract": "HashConsensus",
-    "address": "0xe47EA5f0406C1A976cE43f97cEdcB8f3dee5484A",
+    "_real_address_after_enact": "0xe47EA5f0406C1A976cE43f97cEdcB8f3dee5484A",
+    "address": "0x151C498C5ecC9219c5058C833cC9fF51c2e286a4",
     "constructorArgs": [
       32,
       12,
@@ -284,7 +288,11 @@
     "implementation": "0x3eb5f9aC4d71f76B5F6B4DE82f7aefFf414c5854",
     "_real_address": "0xb75A55EFab5A8f5224Ae93B34B25741EDd3da98b",
     "address": "0x5995c4C9c141948b2c185fA280D1A1fB65446714",
-    "constructorArgs": [12, 1616508000, "0x1eDf09b5023DC86737b59dE68a8130De878984f5"]
+    "constructorArgs": [
+      12,
+      1616508000,
+      "0x1eDf09b5023DC86737b59dE68a8130De878984f5"
+    ]
   },
   "depositSecurityModule": {
     "parameters": {
@@ -320,8 +328,31 @@
     "constructorArgs": [
       "0x1eDf09b5023DC86737b59dE68a8130De878984f5",
       "0xbc0B67b4553f4CF52a913DE9A6eD0057E2E758Db",
-      [1500, 500, 1000, 250, 2000, 100, 100, 128, 5000000],
-      [["0xbc0B67b4553f4CF52a913DE9A6eD0057E2E758Db"], [], [], [], [], [], [], [], [], []]
+      [
+        1500,
+        500,
+        1000,
+        250,
+        2000,
+        100,
+        100,
+        128,
+        5000000
+      ],
+      [
+        [
+          "0xbc0B67b4553f4CF52a913DE9A6eD0057E2E758Db"
+        ],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ]
     ]
   },
   "withdrawalQueueERC721": {
@@ -332,7 +363,11 @@
     "contract": "WithdrawalQueueERC721",
     "implementation": "0x55bD074b6aC68084667fa4A1a31D38FbD9638D1f",
     "address": "0xCF117961421cA9e546cD7f50bC73abCdB3039533",
-    "constructorArgs": ["0x6320cD32aA674d2898A68ec82e869385Fc5f7E2f", "stETH Withdrawal NFT", "unstETH"]
+    "constructorArgs": [
+      "0x6320cD32aA674d2898A68ec82e869385Fc5f7E2f",
+      "stETH Withdrawal NFT",
+      "unstETH"
+    ]
   },
   "wstETH": {
     "address": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0"
@@ -340,7 +375,12 @@
   "oracleDaemonConfig": {
     "contract": "OracleDaemonConfig",
     "address": "0x081f55c1Eb944E868e8bA48FC9DF701945FE65b3",
-    "constructorArgs": ["0xbc0B67b4553f4CF52a913DE9A6eD0057E2E758Db", ["0xbc0B67b4553f4CF52a913DE9A6eD0057E2E758Db"]]
+    "constructorArgs": [
+      "0xbc0B67b4553f4CF52a913DE9A6eD0057E2E758Db",
+      [
+        "0xbc0B67b4553f4CF52a913DE9A6eD0057E2E758Db"
+      ]
+    ]
   },
   "lidoLocator": {
     "contract": "LidoLocator",
@@ -368,28 +408,40 @@
   "eip712StETH": {
     "contract": "EIP712StETH",
     "address": "0xB4300103FfD326f77FfB3CA54248099Fb29C3b9e",
-    "constructorArgs": ["0x1643E812aE58766192Cf7D2Cf9567dF2C37e9B7F"]
+    "constructorArgs": [
+      "0x1643E812aE58766192Cf7D2Cf9567dF2C37e9B7F"
+    ]
   },
   "withdrawalVault": {
     "contract": "WithdrawalVault",
     "address": "0xAD9928A0863964a901f49e290a2AeAE68bE6EAFb",
-    "constructorArgs": ["0x1643E812aE58766192Cf7D2Cf9567dF2C37e9B7F", "0x4333218072D5d7008546737786663c38B4D561A4"]
+    "constructorArgs": [
+      "0x1643E812aE58766192Cf7D2Cf9567dF2C37e9B7F",
+      "0x4333218072D5d7008546737786663c38B4D561A4"
+    ]
   },
   "executionLayerRewardsVault": {
     "contract": "LidoExecutionLayerRewardsVault",
     "address": "0x27Dec30CC9EfDDDAF04C7CA2737759CBf6405ecb",
-    "constructorArgs": ["0x1643E812aE58766192Cf7D2Cf9567dF2C37e9B7F", "0x4333218072D5d7008546737786663c38B4D561A4"]
+    "constructorArgs": [
+      "0x1643E812aE58766192Cf7D2Cf9567dF2C37e9B7F",
+      "0x4333218072D5d7008546737786663c38B4D561A4"
+    ]
   },
   "beaconChainDepositor": {
     "contract": "BeaconChainDepositor",
     "address": "0xf94De698703575932bfc88DE8b2cd54720D5c4A7",
-    "constructorArgs": ["0xff50ed3d0ec03aC01D4C79aAd74928BFF48a7b2b"]
+    "constructorArgs": [
+      "0xff50ed3d0ec03aC01D4C79aAd74928BFF48a7b2b"
+    ]
   },
   "stakingRouter": {
     "contract": "StakingRouter",
     "implementation": "0x73dC7d1d5B3517141eA43fbFC6d092B6fEaFC20A",
     "_real_address": "0x2fa2Cdd94C11B0e8B50205E1F304e97D9797ae09",
     "address": "0x5e8ec4C8Ca9c26e824a09Cca5737A6027a76A6f3",
-    "constructorArgs": ["0xff50ed3d0ec03aC01D4C79aAd74928BFF48a7b2b"]
+    "constructorArgs": [
+      "0xff50ed3d0ec03aC01D4C79aAd74928BFF48a7b2b"
+    ]
   }
 }
