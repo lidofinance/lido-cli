@@ -125,3 +125,11 @@ withdrawal
     const result = await withdrawalRequestContract.getWithdrawalRequests(address);
     console.log('result', result);
   });
+
+withdrawal
+  .command('max-batches')
+  .description('returns max batches length')
+  .action(async () => {
+    const result = await withdrawalRequestContract.MAX_BATCHES_LENGTH();
+    console.log('result', result);
+  });
