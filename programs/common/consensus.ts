@@ -92,7 +92,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .description('updates the initial epoch')
     .argument('<epoch>', 'initial epoch')
     .action(async (epoch) => {
-      await contract.updateInitialEpoch(epoch);
+      await contract.updateInitialEpoch(Number(epoch));
       console.log('initial epoch updated');
     });
 

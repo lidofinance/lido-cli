@@ -11,6 +11,20 @@ export const addBaseOracleCommands = (command: Command, contract: Contract) => {
     });
 
   command
+    .command('set-consensus-contract')
+    .description('sets consensus contract')
+    .argument('<address>', 'consensus contract address')
+    .action(async (address) => {
+      await contract.setConsensusContract(address);
+      console.log('consensus contract set');
+    });
+
+  command.command('processing-state').action(async () => {
+    const result = await contract.getProcessingState();
+    console.log('result', result);
+  });
+
+  command
     .command('seconds-per-slot')
     .description('returns seconds per slot')
     .action(async () => {
