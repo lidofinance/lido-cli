@@ -125,3 +125,18 @@ router
     const allocation = await stakingRouterContract.getDepositsAllocation(depositsCount);
     console.log('allocation', allocation);
   });
+
+router
+  .command('digests')
+  .description('returns all node operators digests')
+  .argument('<module-id>', 'module id')
+  .action(async (moduleId) => {
+    const digests = await stakingRouterContract.getAllNodeOperatorDigests(moduleId);
+
+    const formattedDigest = digests.map((operator) => ({
+      ...operator.toObject(),
+      summary: operator.summary.toObject(),
+    }));
+
+    console.log('digests', formattedDigest);
+  });
