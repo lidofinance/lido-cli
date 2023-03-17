@@ -104,4 +104,13 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
       const state = await contract.getConsensusStateForMember(address);
       console.log('member state', state);
     });
+
+  command
+    .command('set-report-processor')
+    .description('sets the report processor')
+    .argument('<address>', 'processor address')
+    .action(async (address) => {
+      await contract.setReportProcessor(address);
+      console.log('processor set');
+    });
 };
