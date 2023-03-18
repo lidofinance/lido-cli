@@ -29,6 +29,19 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
     });
 
   command
+    .command('has-permission')
+    .description('checks if the address has the permission')
+    .argument('<role>', 'role name or role hash')
+    .argument('<app>', 'app address')
+    .option('-a, --address <string>', 'address', wallet.address)
+    .action(async (role, app, options) => {
+      const { address } = options;
+      const roleHash = await getRoleHash(contract, role);
+      const result = await aclContract.hasPermission(address, app, roleHash);
+      console.log('has permission', result);
+    });
+
+  command
     .command('get-permission-manager')
     .description('returns the permission manager address')
     .argument('<role>', 'role name or role hash')
