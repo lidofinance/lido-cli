@@ -104,6 +104,24 @@ lido
   });
 
 lido
+  .command('balance')
+  .option('-a, --address <string>', 'user address', wallet.address)
+  .action(async (options) => {
+    const { address } = options;
+    const balance = await lidoContract.balanceOf(address);
+    console.log('balance', formatEther(balance));
+  });
+
+lido
+  .command('transfer')
+  .argument('<recipient>', 'recipient address')
+  .argument('<amount>', 'amount of eth')
+  .action(async (recipient, amount) => {
+    await lidoContract.transfer(recipient, parseEther(amount));
+    console.log('transfered');
+  });
+
+lido
   .command('submit')
   .argument('<amount>', 'ether amount')
   .option('-r, --referral <string>', 'referral address', ZeroAddress)

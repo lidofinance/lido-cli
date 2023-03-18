@@ -117,10 +117,9 @@ dsm
 dsm
   .command('add-guardian')
   .description('adds the new guardian and sets the quorum')
-  .option('-a, --address <string>', 'guardian address')
-  .option('-q, --quorum <string>', 'new quorum')
-  .action(async (options) => {
-    const { address, quorum } = options;
+  .argument('<address>', 'guardian address')
+  .argument('<quorum>', 'new quorum')
+  .action(async (address, quorum) => {
     await dsmContract.addGuardian(address, quorum);
     console.log('guardian added');
   });
