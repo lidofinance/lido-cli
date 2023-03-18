@@ -21,6 +21,15 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     });
 
   command
+    .command('set-quorum')
+    .description('sets the quorum number')
+    .argument('<quorum>', 'quorum number')
+    .action(async (quorum) => {
+      await contract.setQuorum(quorum);
+      console.log('quorum set');
+    });
+
+  command
     .command('consensus-state')
     .description('returns current consensus state for member')
     .option('-a, --address <string>', 'address')
