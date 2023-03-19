@@ -1,9 +1,10 @@
 import { program } from '@command';
 import { dsmContract } from '@contracts';
-import { addParsingCommands } from './common';
+import { addLogsCommands, addParsingCommands } from './common';
 
 const dsm = program.command('dsm').description('interact with deposit security module contract');
 addParsingCommands(dsm, dsmContract);
+addLogsCommands(dsm, dsmContract);
 
 dsm
   .command('owner')

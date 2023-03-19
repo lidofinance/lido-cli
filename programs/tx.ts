@@ -1,6 +1,6 @@
 import { program } from '@command';
 import { provider } from '@provider';
-import { getAllAbi } from '@utils';
+import { buildTraceTree, formatTraceNode, getAllAbi, printTree } from '@utils';
 import { parseEther } from 'ethers';
 
 const tx = program.command('tx').description('transaction utils');
@@ -47,4 +47,13 @@ tx.command('parse-error')
         console.log(name, result);
       }
     });
+  });
+
+tx.command('trace')
+  .argument('<tx-hash>', 'transaction hash')
+  .action(async (txHash) => {
+    const { trace } = await provider.send('trace_replayTransaction', [txHash, ['trace']]);
+    const traceTree = buildTraceTree(trace);
+
+    printTree(traceTree, formatTraceNode);
   });

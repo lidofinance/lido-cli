@@ -1,6 +1,6 @@
 import { program } from '@command';
 import { consensusForExitBusContract } from '@contracts';
-import { addAccessControlSubCommands, addConsensusCommands, addParsingCommands } from './common';
+import { addAccessControlSubCommands, addConsensusCommands, addLogsCommands, addParsingCommands } from './common';
 
 const oracle = program
   .command('exit-bus-consensus')
@@ -8,3 +8,4 @@ const oracle = program
 addAccessControlSubCommands(oracle, consensusForExitBusContract);
 addParsingCommands(oracle, consensusForExitBusContract);
 addConsensusCommands(oracle, consensusForExitBusContract);
+addLogsCommands(oracle, consensusForExitBusContract);

@@ -1,10 +1,11 @@
 import { program } from '@command';
 import { sanityCheckerContract } from '@contracts';
-import { addAccessControlSubCommands, addConsensusCommands, addParsingCommands } from './common';
+import { addAccessControlSubCommands, addLogsCommands, addParsingCommands } from './common';
 
 const sanityChecker = program.command('sanity-checker').description('interact with sanity checker contract');
 addAccessControlSubCommands(sanityChecker, sanityCheckerContract);
 addParsingCommands(sanityChecker, sanityCheckerContract);
+addLogsCommands(sanityChecker, sanityCheckerContract);
 
 sanityChecker
   .command('limits')

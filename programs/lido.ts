@@ -4,11 +4,12 @@ import { wallet } from '@provider';
 import { lidoContract } from '@contracts';
 import { forwardVoteFromTm } from '@utils';
 import { resumeLidoAndSetStakingLimit, votingForward } from '@scripts';
-import { addAragonAppSubCommands, addParsingCommands } from './common';
+import { addAragonAppSubCommands, addLogsCommands, addParsingCommands } from './common';
 
 const lido = program.command('lido').description('interact with lido contract');
 addAragonAppSubCommands(lido, lidoContract);
 addParsingCommands(lido, lidoContract);
+addLogsCommands(lido, lidoContract);
 
 lido
   .command('start-protocol')

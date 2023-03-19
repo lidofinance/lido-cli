@@ -3,6 +3,7 @@ import { accountingOracleContract } from '@contracts';
 import {
   addAccessControlSubCommands,
   addBaseOracleCommands,
+  addLogsCommands,
   addOssifiableProxyCommands,
   addParsingCommands,
 } from './common';
@@ -12,6 +13,7 @@ addAccessControlSubCommands(oracle, accountingOracleContract);
 addBaseOracleCommands(oracle, accountingOracleContract);
 addOssifiableProxyCommands(oracle, accountingOracleContract);
 addParsingCommands(oracle, accountingOracleContract);
+addLogsCommands(oracle, accountingOracleContract);
 
 oracle
   .command('extra-data-format')

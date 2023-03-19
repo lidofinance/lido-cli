@@ -4,6 +4,7 @@ import { wallet } from '@provider';
 import { withdrawalRequestContract } from '@contracts';
 import {
   addAccessControlSubCommands,
+  addLogsCommands,
   addOssifiableProxyCommands,
   addParsingCommands,
   addPauseUntilSubCommands,
@@ -14,6 +15,7 @@ addAccessControlSubCommands(withdrawal, withdrawalRequestContract);
 addOssifiableProxyCommands(withdrawal, withdrawalRequestContract);
 addParsingCommands(withdrawal, withdrawalRequestContract);
 addPauseUntilSubCommands(withdrawal, withdrawalRequestContract);
+addLogsCommands(withdrawal, withdrawalRequestContract);
 
 withdrawal
   .command('request')

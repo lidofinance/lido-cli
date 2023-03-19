@@ -1,11 +1,12 @@
 import { toBeHex, zeroPadValue } from 'ethers';
 import { program } from '@command';
 import { oracleConfigContract } from '@contracts';
-import { addAccessControlSubCommands, addParsingCommands } from './common';
+import { addAccessControlSubCommands, addLogsCommands, addParsingCommands } from './common';
 
 const config = program.command('oracle-config').description('interact with oracle config contract');
 addAccessControlSubCommands(config, oracleConfigContract);
 addParsingCommands(config, oracleConfigContract);
+addLogsCommands(config, oracleConfigContract);
 
 config
   .command('get')

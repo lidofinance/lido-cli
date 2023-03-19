@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import { Contract } from 'ethers';
 
-import { aclContract } from '@contracts';
+import { aclContract, kernelContract } from '@contracts';
 import { createPermission, grantPermission, revokePermission, votingForward } from '@scripts';
 import { forwardVoteFromTm, getRoleHash } from '@utils';
 import { wallet } from '@provider';
@@ -32,12 +32,30 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
     .command('has-permission')
     .description('checks if the address has the permission')
     .argument('<role>', 'role name or role hash')
-    .argument('<app>', 'app address')
     .option('-a, --address <string>', 'address', wallet.address)
-    .action(async (role, app, options) => {
+    .action(async (role, options) => {
       const { address } = options;
       const roleHash = await getRoleHash(contract, role);
-      const result = await aclContract.hasPermission(address, app, roleHash);
+      const appAddress = await contract.getAddress();
+
+      console.log('kernel address', await kernelContract.getAddress());
+      console.log('args', address, appAddress, roleHash, '0x');
+
+      const result = await kernelContract.hasPermission(address, appAddress, roleHash, '0x');
+      console.log('has permission', result);
+    });
+
+  command
+    .command('acl-has-permission')
+    .description('checks if the address has the permission')
+    .argument('<role>', 'role name or role hash')
+    .option('-a, --address <string>', 'address', wallet.address)
+    .action(async (role, options) => {
+      const { address } = options;
+      const roleHash = await getRoleHash(contract, role);
+      const appAddress = await contract.getAddress();
+
+      const result = await aclContract.hasPermission(address, appAddress, roleHash);
       console.log('has permission', result);
     });
 

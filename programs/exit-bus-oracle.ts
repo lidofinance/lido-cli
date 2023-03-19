@@ -3,6 +3,7 @@ import {exitBusOracleContract, norContract} from '@contracts';
 import {
   addAccessControlSubCommands,
   addBaseOracleCommands,
+  addLogsCommands,
   addOssifiableProxyCommands,
   addParsingCommands,
   addPauseUntilSubCommands,
@@ -14,6 +15,7 @@ addBaseOracleCommands(oracle, exitBusOracleContract);
 addOssifiableProxyCommands(oracle, exitBusOracleContract);
 addParsingCommands(oracle, exitBusOracleContract);
 addPauseUntilSubCommands(oracle, exitBusOracleContract);
+addLogsCommands(oracle, exitBusOracleContract);
 
 oracle
   .command('exit-requests')
