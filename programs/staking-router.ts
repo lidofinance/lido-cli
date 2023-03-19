@@ -140,3 +140,23 @@ router
 
     console.log('digests', formattedDigest);
   });
+
+router
+  .command('active-keys')
+  .description('returns all node operators digests')
+  .argument('<module-id>', 'module id')
+  .action(async (moduleId) => {
+    const digests = await stakingRouterContract.getAllNodeOperatorDigests(moduleId);
+
+    const activeKeys = digests.map((operator) => {
+      const { totalDepositedValidators, totalExitedValidators } = operator.summary.toObject();
+
+      return {
+        operatorId: Number(operator.id),
+        activeKeys: Number(totalDepositedValidators - totalExitedValidators),
+      };
+    });
+
+    const sortedKeys = activeKeys.sort((a, b) => a.activeKeys - b.activeKeys);
+    console.table(sortedKeys);
+  });
