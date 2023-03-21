@@ -1,5 +1,5 @@
 import { program } from '@command';
-import { stakingRouterContract } from '@contracts';
+import { norContract, stakingRouterContract } from '@contracts';
 import { addAccessControlSubCommands, addLogsCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
 
 const router = program.command('staking-router').description('interact with staking router contract');
@@ -157,6 +157,29 @@ router
         activeKeys: Number(totalDepositedValidators - totalExitedValidators),
       };
     });
+
+    const sortedKeys = activeKeys.sort((a, b) => a.activeKeys - b.activeKeys);
+    console.table(sortedKeys);
+  });
+
+router
+  .command('active-keys-detail')
+  .description('returns all node operators digests with details')
+  .argument('<module-id>', 'module id')
+  .action(async (moduleId) => {
+    const digests = await stakingRouterContract.getAllNodeOperatorDigests(moduleId);
+
+    const activeKeys = await Promise.all(digests.map(async (operator) => {
+      const { totalDepositedValidators, totalExitedValidators } = operator.summary.toObject();
+
+      const operatorName = (await norContract.getNodeOperator(Number(operator.id), true))?.name ?? 'undefined';
+
+      return {
+        operatorId: Number(operator.id),
+        operatorName: operatorName,
+        activeKeys: Number(totalDepositedValidators - totalExitedValidators),
+      };
+    }));
 
     const sortedKeys = activeKeys.sort((a, b) => a.activeKeys - b.activeKeys);
     console.table(sortedKeys);
