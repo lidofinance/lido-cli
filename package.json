@@ -1,26 +1,7 @@
 {
   "license": "MIT",
   "scripts": {
-    "start": "ts-node index",
-    "accounting-consensus": "ts-node index accounting-consensus",
-    "accounting-oracle": "ts-node index accounting-oracle",
-    "accounts": "ts-node index accounts",
-    "acl": "ts-node index acl",
-    "burner": "ts-node index burner",
-    "dsm": "ts-node index dsm",
-    "exit-bus-consensus": "ts-node index exit-bus-consensus",
-    "exit-bus-oracle": "ts-node index exit-bus-oracle",
-    "lido": "ts-node index lido",
-    "locator": "ts-node index locator",
-    "nor": "ts-node index nor",
-    "oracle-config": "ts-node index oracle-config",
-    "role": "ts-node index role",
-    "sanity-checker": "ts-node index sanity-checker",
-    "scripts": "ts-node index scripts",
-    "staking-router": "ts-node index staking-router",
-    "tx": "ts-node index tx",
-    "voting": "ts-node index voting",
-    "withdrawal-request": "ts-node index withdrawal-request"
+    "testnet": "./testnet.sh"
   },
   "devDependencies": {
     "@swc/core": "^1.3.35",
