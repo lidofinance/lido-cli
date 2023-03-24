@@ -16,6 +16,14 @@ dsm
   });
 
 dsm
+  .command('set-owner')
+  .description('sets the owner of the contract')
+  .argument('<owner>', 'new owner address')
+  .action(async (owner) => {
+    await authorizedCall(dsmContract, 'setOwner', [owner]);
+  });
+
+dsm
   .command('attest-prefix')
   .description('returns the attest prefix for a message')
   .action(async () => {

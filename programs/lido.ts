@@ -89,7 +89,7 @@ lido
   .option('-a, --amount <number>', 'amount', toBeHex(MaxUint256))
   .action(async (spender, options) => {
     const { amount } = options;
-    await contractCallTxWithConfirm(lidoContract, 'approve', [spender, amount]);
+    await contractCallTxWithConfirm(lidoContract, 'approve', [spender, parseEther(amount)]);
   });
 
 lido

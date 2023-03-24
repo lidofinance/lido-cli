@@ -1,9 +1,10 @@
 import { AbstractSigner, Contract } from 'ethers';
 import { votingForward } from '@scripts';
-import { votingAddress } from '@contracts';
+import { aragonAgentAddress, votingAddress } from '@contracts';
 import { encodeCallScript } from './scripts';
 import { forwardVoteFromTm } from './voting';
 import { contractCallTxWithConfirm } from './call-tx';
+import { agentForward } from 'scripts/agent';
 
 export const authorizedCall = async (contract: Contract, method: string, args: any[] = []) => {
   try {
@@ -17,8 +18,14 @@ export const authorizedCall = async (contract: Contract, method: string, args: a
     const passed = await authorizedCallVoting(contract, method, args);
     if (passed) return;
   } catch (error) {
-    console.warn('call through voting failed');
-    console.warn(error);
+    console.warn('call from voting failed');
+  }
+
+  try {
+    const passed = await authorizedCallAgent(contract, method, args);
+    if (passed) return;
+  } catch (error) {
+    console.warn('call from agent failed');
   }
 };
 
@@ -46,7 +53,7 @@ export const authorizedCallVoting = async (contract: Contract, method: string, a
 
   const contractWithoutSigner = contract.connect(provider);
   const result = await contractWithoutSigner[method].staticCall(...args, { from: votingAddress });
-  console.log('call through voting passed successfully', result);
+  console.log('call from voting passed successfully', result);
 
   const call = {
     to: await contract.getAddress(),
@@ -56,6 +63,30 @@ export const authorizedCallVoting = async (contract: Contract, method: string, a
   const encoded = encodeCallScript([call]);
 
   const [votingCalldata] = votingForward(encoded);
+  await forwardVoteFromTm(votingCalldata);
+  return true;
+};
+
+export const authorizedCallAgent = async (contract: Contract, method: string, args: any[] = []) => {
+  const provider = contract.runner?.provider;
+
+  if (!provider) {
+    throw new Error('Provider is not set');
+  }
+
+  const contractWithoutSigner = contract.connect(provider);
+  const result = await contractWithoutSigner[method].staticCall(...args, { from: aragonAgentAddress });
+  console.log('call from agent voting passed successfully', result);
+
+  const call = {
+    to: await contract.getAddress(),
+    data: contract.interface.encodeFunctionData(method, args),
+  };
+
+  const encoded = encodeCallScript([call]);
+
+  const [agentCalldata] = agentForward(encoded);
+  const [votingCalldata] = votingForward(agentCalldata);
   await forwardVoteFromTm(votingCalldata);
   return true;
 };
