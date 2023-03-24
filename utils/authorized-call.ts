@@ -38,7 +38,7 @@ export const authorizedCallEOA = async (contract: Contract, method: string, args
   const signerAddress = await signer.getAddress();
 
   const result = await contract[method].staticCall(...args, { from: signerAddress });
-  console.log('direct call passed successfully', result);
+  console.log('direct call passed successfully');
 
   await contractCallTxWithConfirm(contract, method, args);
   return true;
@@ -53,7 +53,7 @@ export const authorizedCallVoting = async (contract: Contract, method: string, a
 
   const contractWithoutSigner = contract.connect(provider);
   const result = await contractWithoutSigner[method].staticCall(...args, { from: votingAddress });
-  console.log('call from voting passed successfully', result);
+  console.log('call from voting passed successfully');
 
   const call = {
     to: await contract.getAddress(),
@@ -76,7 +76,7 @@ export const authorizedCallAgent = async (contract: Contract, method: string, ar
 
   const contractWithoutSigner = contract.connect(provider);
   const result = await contractWithoutSigner[method].staticCall(...args, { from: aragonAgentAddress });
-  console.log('call from agent voting passed successfully', result);
+  console.log('call from agent voting passed successfully');
 
   const call = {
     to: await contract.getAddress(),

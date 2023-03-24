@@ -114,7 +114,7 @@ lido
 lido
   .command('transfer')
   .argument('<recipient>', 'recipient address')
-  .argument('<amount>', 'amount of eth')
+  .argument('<amount>', 'amount of steth')
   .action(async (recipient, amount) => {
     await contractCallTxWithConfirm(lidoContract, 'transfer', [recipient, parseEther(amount)]);
   });
