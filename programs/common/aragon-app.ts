@@ -2,8 +2,7 @@ import { Command } from 'commander';
 import { Contract } from 'ethers';
 
 import { aclContract, kernelContract } from '@contracts';
-import { createPermission, grantPermission, revokePermission, votingForward } from '@scripts';
-import { forwardVoteFromTm, getRoleHash } from '@utils';
+import { authorizedCall, getRoleHash } from '@utils';
 import { wallet } from '@provider';
 
 export const addAragonAppSubCommands = (command: Command, contract: Contract) => {
@@ -37,9 +36,6 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
       const { address } = options;
       const roleHash = await getRoleHash(contract, role);
       const appAddress = await contract.getAddress();
-
-      console.log('kernel address', await kernelContract.getAddress());
-      console.log('args', address, appAddress, roleHash, '0x');
 
       const result = await kernelContract.hasPermission(address, appAddress, roleHash, '0x');
       console.log('has permission', result);
@@ -82,10 +78,7 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
       const roleHash = await getRoleHash(contract, role);
       const appAddress = await contract.getAddress();
 
-      const [aclCalldata] = await createPermission(address, appAddress, roleHash, manager);
-      const [votingCalldata] = votingForward(aclCalldata);
-
-      await forwardVoteFromTm(votingCalldata);
+      await authorizedCall(aclContract, 'createPermission', [address, appAddress, roleHash, manager]);
     });
 
   command
@@ -96,12 +89,9 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
     .action(async (role, options) => {
       const { address } = options;
       const appAddress = await contract.getAddress();
-
       const roleHash = await getRoleHash(contract, role);
-      const [aclCalldata] = await grantPermission(address, appAddress, roleHash);
-      const [votingCalldata] = votingForward(aclCalldata);
 
-      await forwardVoteFromTm(votingCalldata);
+      await authorizedCall(aclContract, 'grantPermission', [address, appAddress, roleHash]);
     });
 
   command
@@ -112,11 +102,8 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
     .action(async (role, options) => {
       const { address } = options;
       const appAddress = await contract.getAddress();
-
       const roleHash = await getRoleHash(contract, role);
-      const [aclCalldata] = await revokePermission(address, appAddress, roleHash);
-      const [votingCalldata] = votingForward(aclCalldata);
 
-      await forwardVoteFromTm(votingCalldata);
+      await authorizedCall(aclContract, 'revokePermission', [address, appAddress, roleHash]);
     });
 };

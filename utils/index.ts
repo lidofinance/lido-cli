@@ -1,4 +1,7 @@
 export * from './abi';
+export * from './authorized-call';
+export * from './block';
+export * from './call-tx';
 export * from './compare-calls';
 export * from './role-hash';
 export * from './scripts';
@@ -6,5 +9,4 @@ export * from './sleep';
 export * from './staking-limit';
 export * from './trace';
 export * from './tree';
-export * from './tx';
 export * from './voting';

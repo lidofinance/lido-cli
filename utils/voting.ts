@@ -1,12 +1,10 @@
-import { ContractTransactionResponse } from 'ethers';
 import { tmContract, votingContract } from '@contracts';
 import { sleep } from './sleep';
+import { contractCallTx, contractCallTxWithConfirm } from './call-tx';
 
 export const forwardVoteFromTm = async (votingCalldata: string) => {
-  const tx: ContractTransactionResponse = await tmContract.forward(votingCalldata);
-  console.log('forward tx sent', tx.hash);
-
-  await tx.wait();
+  const tx = await contractCallTxWithConfirm(tmContract, 'forward', [votingCalldata]);
+  if (tx == null) return;
   console.log('vote started');
 
   await voteLastVoting();
@@ -17,19 +15,19 @@ export const voteLastVoting = async () => {
   const lastVoteId = Number(votesLength) - 1;
 
   if (lastVoteId == -1) {
-    console.log('no votes');
+    console.warn('no votes');
     return;
   }
 
   const lastVote = await votingContract.getVote(lastVoteId);
 
   if (lastVote.open == false) {
-    console.log('vote is not open');
+    console.warn('vote is not open');
     return;
   }
 
   if (Number(lastVote.phase) !== 0) {
-    console.log('wrong phase');
+    console.warn('wrong phase');
     return;
   }
 
@@ -39,33 +37,18 @@ export const voteLastVoting = async () => {
 };
 
 export const voteFor = async (voteId: number) => {
-  const tx: ContractTransactionResponse = await votingContract.vote(voteId, true, false);
-  console.log('vote tx sent', tx.hash);
-
-  await tx.wait();
+  await contractCallTx(votingContract, 'vote', [voteId, true, false]);
   console.log('vote voted');
-
-  return tx;
 };
 
 export const voteAgainst = async (voteId: number) => {
-  const tx: ContractTransactionResponse = await votingContract.vote(voteId, false, false);
-  console.log('vote tx sent', tx.hash);
-
-  await tx.wait();
+  await contractCallTx(votingContract, 'vote', [voteId, false, false]);
   console.log('vote voted');
-
-  return tx;
 };
 
 export const executeVote = async (voteId: number) => {
-  const tx: ContractTransactionResponse = await votingContract.executeVote(voteId);
-  console.log('executed tx sent', tx.hash);
-
-  await tx.wait();
-  console.log('executed');
-
-  return tx;
+  await contractCallTx(votingContract, 'executeVote', [voteId]);
+  console.log('vote executed');
 };
 
 export const waitForEnd = async (voteId: number) => {

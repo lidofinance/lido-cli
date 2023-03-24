@@ -1,6 +1,6 @@
 import { program } from '@command';
 import { dsmContract } from '@contracts';
-import { wrapTx } from '@utils';
+import { authorizedCall } from '@utils';
 import { addLogsCommands, addParsingCommands } from './common';
 
 const dsm = program.command('dsm').description('interact with deposit security module contract');
@@ -44,7 +44,7 @@ dsm
   .description('sets the max amount of deposits per transaction')
   .argument('<deposits>', 'max deposits per block')
   .action(async (maxDeposits) => {
-    await wrapTx(() => dsmContract.setMaxDeposits(maxDeposits));
+    await authorizedCall(dsmContract, 'setMaxDeposits', [maxDeposits]);
   });
 
 dsm
@@ -60,7 +60,7 @@ dsm
   .description('sets the min deposits distance in blocks')
   .argument('<distance>', 'min deposit block distance')
   .action(async (distance) => {
-    await wrapTx(() => dsmContract.setMinDepositBlockDistance(distance));
+    await authorizedCall(dsmContract, 'setMinDepositBlockDistance', [distance]);
   });
 
 dsm
@@ -76,7 +76,7 @@ dsm
   .description('sets pause message validity period in blocks')
   .argument('<period>', 'validity period blocks')
   .action(async (period) => {
-    await wrapTx(() => dsmContract.setPauseIntentValidityPeriodBlocks(period));
+    await authorizedCall(dsmContract, 'setPauseIntentValidityPeriodBlocks', [period]);
   });
 
 dsm
@@ -92,7 +92,7 @@ dsm
   .description('sets the guardians quorum')
   .argument('<quorum>', 'new guardians quorum')
   .action(async (quorum) => {
-    await wrapTx(() => dsmContract.setGuardianQuorum(quorum));
+    await authorizedCall(dsmContract, 'setGuardianQuorum', [quorum]);
   });
 
 dsm
@@ -118,7 +118,7 @@ dsm
   .argument('<address>', 'guardian address')
   .argument('<quorum>', 'new quorum')
   .action(async (address, quorum) => {
-    await wrapTx(() => dsmContract.addGuardian(address, quorum));
+    await authorizedCall(dsmContract, 'addGuardian', [address, quorum]);
   });
 
 dsm
@@ -128,5 +128,5 @@ dsm
   .option('-q, --quorum <string>', 'new quorum')
   .action(async (options) => {
     const { address, quorum } = options;
-    await wrapTx(() => dsmContract.removeGuardian(address, quorum));
+    await authorizedCall(dsmContract, 'removeGuardian', [address, quorum]);
   });

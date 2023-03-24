@@ -1,6 +1,6 @@
 import { program } from '@command';
 import { stakingRouterContract } from '@contracts';
-import { wrapTx } from '@utils';
+import { authorizedCall } from '@utils';
 import { addAccessControlSubCommands, addLogsCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
 
 const router = program.command('staking-router').description('interact with staking router contract');
@@ -37,7 +37,13 @@ router
   .option('-t, --treasury-fee <number>', 'treasury share in basis points: 100 = 1%, 10000 = 100%', '500')
   .action(async (options) => {
     const { name, address, targetShare, moduleFee, treasuryFee } = options;
-    await wrapTx(() => stakingRouterContract.addStakingModule(name, address, targetShare, moduleFee, treasuryFee));
+    await authorizedCall(stakingRouterContract, 'addStakingModule', [
+      name,
+      address,
+      targetShare,
+      moduleFee,
+      treasuryFee,
+    ]);
   });
 
 router
@@ -49,7 +55,7 @@ router
   .option('-t, --treasury-fee <number>', 'treasury share in basis points: 100 = 1%, 10000 = 100%', '500')
   .action(async (moduleId, options) => {
     const { targetShare, moduleFee, treasuryFee } = options;
-    await wrapTx(() => stakingRouterContract.updateStakingModule(moduleId, targetShare, moduleFee, treasuryFee));
+    await authorizedCall(stakingRouterContract, 'updateStakingModule', [moduleId, targetShare, moduleFee, treasuryFee]);
   });
 
 router
@@ -60,9 +66,11 @@ router
   .option('-v, --refunded-validators <number>', 'refunded validators')
   .action(async (moduleId, options) => {
     const { nodeOperatorId, refundedValidators } = options;
-    await wrapTx(() =>
-      stakingRouterContract.updateRefundedValidatorsCount(moduleId, nodeOperatorId, refundedValidators),
-    );
+    await authorizedCall(stakingRouterContract, 'updateRefundedValidatorsCount', [
+      moduleId,
+      nodeOperatorId,
+      refundedValidators,
+    ]);
   });
 
 router
@@ -195,7 +203,12 @@ router
   .argument('<node-operator-id>', 'node operator id')
   .argument('<target-limit>', 'target limit')
   .action(async (moduleId, nodeOperatorId, targetLimit) => {
-    await wrapTx(() => stakingRouterContract.updateTargetValidatorsLimits(moduleId, nodeOperatorId, true, targetLimit));
+    await authorizedCall(stakingRouterContract, 'updateTargetValidatorsLimits', [
+      moduleId,
+      nodeOperatorId,
+      true,
+      targetLimit,
+    ]);
   });
 
 router
@@ -204,5 +217,5 @@ router
   .argument('<module-id>', 'module id')
   .argument('<node-operator-id>', 'node operator id')
   .action(async (moduleId, nodeOperatorId) => {
-    await wrapTx(() => stakingRouterContract.updateTargetValidatorsLimits(moduleId, nodeOperatorId, false, 0));
+    await authorizedCall(stakingRouterContract, 'updateTargetValidatorsLimits', [moduleId, nodeOperatorId, false, 0]);
   });

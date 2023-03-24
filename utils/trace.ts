@@ -122,5 +122,5 @@ export const detectTxDescription = (data: string, value: string) => {
     return result != null;
   });
 
-  return parsed?.iface.parseTransaction(tx) ?? null;
+  return parsed?.iface.parseTransaction(tx) ?? undefined;
 };

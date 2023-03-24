@@ -2,7 +2,7 @@ import { formatEther, MaxUint256, parseEther, toBeHex, ZeroAddress } from 'ether
 import { program } from '@command';
 import { wallet } from '@provider';
 import { lidoContract } from '@contracts';
-import { forwardVoteFromTm, wrapTx } from '@utils';
+import { contractCallTxWithConfirm, forwardVoteFromTm } from '@utils';
 import { resumeLidoAndSetStakingLimit, votingForward } from '@scripts';
 import { addAragonAppSubCommands, addLogsCommands, addParsingCommands } from './common';
 
@@ -68,11 +68,11 @@ lido
 
 lido
   .command('deposit')
-  .description('deposit buffered ether')
+  .description('deposit buffered ether (works only if DSM is set to EOA)')
   .argument('<deposits>', 'max deposits count')
   .argument('<module-id>', 'staking module id')
   .action(async (maxDepositCount, moduleId) => {
-    await wrapTx(() => lidoContract.deposit(maxDepositCount, moduleId, '0x'));
+    await contractCallTxWithConfirm(lidoContract, 'deposit', [maxDepositCount, moduleId, '0x']);
   });
 
 lido
@@ -89,7 +89,7 @@ lido
   .option('-a, --amount <number>', 'amount', toBeHex(MaxUint256))
   .action(async (spender, options) => {
     const { amount } = options;
-    await wrapTx(() => lidoContract.approve(spender, amount));
+    await contractCallTxWithConfirm(lidoContract, 'approve', [spender, amount]);
   });
 
 lido
@@ -116,7 +116,7 @@ lido
   .argument('<recipient>', 'recipient address')
   .argument('<amount>', 'amount of eth')
   .action(async (recipient, amount) => {
-    await wrapTx(() => lidoContract.transfer(recipient, parseEther(amount)));
+    await contractCallTxWithConfirm(lidoContract, 'transfer', [recipient, parseEther(amount)]);
   });
 
 lido
@@ -125,5 +125,5 @@ lido
   .option('-r, --referral <string>', 'referral address', ZeroAddress)
   .action(async (amount, options) => {
     const { referral } = options;
-    await wrapTx(() => lidoContract.submit(referral, { value: parseEther(amount) }));
+    await contractCallTxWithConfirm(lidoContract, 'submit', [referral, { value: parseEther(amount) }]);
   });

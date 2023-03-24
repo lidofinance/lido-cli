@@ -1,6 +1,6 @@
-import { wrapTx } from '@utils';
+import { authorizedCall } from '@utils';
 import { Command } from 'commander';
-import { Contract, parseEther } from 'ethers';
+import { Contract } from 'ethers';
 
 export const addBaseOracleCommands = (command: Command, contract: Contract) => {
   command
@@ -16,7 +16,7 @@ export const addBaseOracleCommands = (command: Command, contract: Contract) => {
     .description('sets consensus contract')
     .argument('<address>', 'consensus contract address')
     .action(async (address) => {
-      await wrapTx(() => contract.setConsensusContract(address));
+      await authorizedCall(contract, 'setConsensusContract', [address]);
     });
 
   command.command('processing-state').action(async () => {

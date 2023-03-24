@@ -3,7 +3,7 @@ import { Contract } from 'ethers';
 export type ContractCalls = { method: string; args?: any[] };
 
 export const compareContractCalls = async (contracts: Contract[], calls: ContractCalls[]) => {
-  const result = [];
+  const result: any[] = [];
 
   for (const { method, args = [] } of calls) {
     const cols = await Promise.all(

@@ -1,0 +1,61 @@
+import { AbstractSigner, Contract } from 'ethers';
+import { votingForward } from '@scripts';
+import { votingAddress } from '@contracts';
+import { encodeCallScript } from './scripts';
+import { forwardVoteFromTm } from './voting';
+import { contractCallTxWithConfirm } from './call-tx';
+
+export const authorizedCall = async (contract: Contract, method: string, args: any[] = []) => {
+  try {
+    const passed = await authorizedCallEOA(contract, method, args);
+    if (passed) return;
+  } catch (error) {
+    console.warn('direct call failed, trying to forward to the voting');
+  }
+
+  try {
+    const passed = await authorizedCallVoting(contract, method, args);
+    if (passed) return;
+  } catch (error) {
+    console.warn('call through voting failed');
+    console.warn(error);
+  }
+};
+
+export const authorizedCallEOA = async (contract: Contract, method: string, args: any[] = []) => {
+  if (!(contract.runner instanceof AbstractSigner)) {
+    throw new Error('Runner is not a signer');
+  }
+
+  const signer = contract.runner;
+  const signerAddress = await signer.getAddress();
+
+  const result = await contract[method].staticCall(...args, { from: signerAddress });
+  console.log('direct call passed successfully', result);
+
+  await contractCallTxWithConfirm(contract, method, args);
+  return true;
+};
+
+export const authorizedCallVoting = async (contract: Contract, method: string, args: any[] = []) => {
+  const provider = contract.runner?.provider;
+
+  if (!provider) {
+    throw new Error('Provider is not set');
+  }
+
+  const contractWithoutSigner = contract.connect(provider);
+  const result = await contractWithoutSigner[method].staticCall(...args, { from: votingAddress });
+  console.log('call through voting passed successfully', result);
+
+  const call = {
+    to: await contract.getAddress(),
+    data: contract.interface.encodeFunctionData(method, args),
+  };
+
+  const encoded = encodeCallScript([call]);
+
+  const [votingCalldata] = votingForward(encoded);
+  await forwardVoteFromTm(votingCalldata);
+  return true;
+};

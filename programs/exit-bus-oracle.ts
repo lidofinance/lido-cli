@@ -1,5 +1,6 @@
 import { program } from '@command';
-import {exitBusOracleContract, norContract} from '@contracts';
+import { exitBusOracleContract, norContract } from '@contracts';
+import { getLatestBlock } from '@utils';
 import {
   addAccessControlSubCommands,
   addBaseOracleCommands,
@@ -23,7 +24,9 @@ oracle
   .option('-b, --blocks <number>', 'duration in blocks', '7200')
   .action(async (options) => {
     const { blocks } = options;
-    const { number: toBlock } = await exitBusOracleContract.runner.provider.getBlock('latest');
+
+    const latestBlock = await getLatestBlock();
+    const toBlock = latestBlock.number;
     const fromBlock = toBlock - Number(blocks);
 
     const events = await exitBusOracleContract.queryFilter('ValidatorExitRequest', fromBlock, toBlock);
@@ -38,28 +41,43 @@ oracle
   });
 
 oracle
-    .command('exit-requests-detail')
-    .description('returns exit requests with details')
-    .option('-b, --blocks <number>', 'duration in blocks', '7200')
-    .action(async (options) => {
-        const { blocks } = options;
-        const { number: toBlock } = await exitBusOracleContract.runner.provider.getBlock('latest');
-        const fromBlock = toBlock - Number(blocks);
+  .command('exit-requests-detail')
+  .description('returns exit requests with details')
+  .option('-b, --blocks <number>', 'duration in blocks', '7200')
+  .action(async (options) => {
+    const { blocks } = options;
 
-        const events = await exitBusOracleContract.queryFilter('ValidatorExitRequest', fromBlock, toBlock);
-        const requests = await Promise.all(events.map(async (event) => {
+    const latestBlock = await getLatestBlock();
+    const toBlock = latestBlock.number;
+    const fromBlock = toBlock - Number(blocks);
+
+    const events = await exitBusOracleContract.queryFilter('ValidatorExitRequest', fromBlock, toBlock);
+    const requests = await Promise.all(
+      events.map(async (event) => {
         if ('args' in event) {
           const [stakingModuleId, nodeOperatorId, validatorIndex, validatorPubkey, timestamp] = event.args;
 
-          const operatorName = stakingModuleId === 1n ? (await norContract.getNodeOperator(nodeOperatorId, true))?.name ?? 'undefined' : '';
+          const operatorName =
+            stakingModuleId === 1n
+              ? (await norContract.getNodeOperator(nodeOperatorId, true))?.name ?? 'undefined'
+              : '';
 
           const timestampDatetime = new Date(Number(timestamp * 1000n)).toISOString();
-          return { stakingModuleId, nodeOperatorId, operatorName, validatorIndex, validatorPubkey, timestamp, timestampDatetime };
+          return {
+            stakingModuleId,
+            nodeOperatorId,
+            operatorName,
+            validatorIndex,
+            validatorPubkey,
+            timestamp,
+            timestampDatetime,
+          };
         }
-        }));
+      }),
+    );
 
-        console.log('events', requests);
-    });
+    console.log('events', requests);
+  });
 
 oracle
   .command('format-list')

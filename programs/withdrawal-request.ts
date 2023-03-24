@@ -9,7 +9,7 @@ import {
   addParsingCommands,
   addPauseUntilSubCommands,
 } from './common';
-import { wrapTx } from '@utils';
+import { contractCallTxWithConfirm } from '@utils';
 
 const withdrawal = program.command('withdrawal-request').description('interact with withdrawal request contract');
 addAccessControlSubCommands(withdrawal, withdrawalRequestContract);
@@ -25,7 +25,7 @@ withdrawal
   .option('-a, --address <string>', 'owner address', wallet.address)
   .action(async (amount, options) => {
     const { address } = options;
-    await wrapTx(() => withdrawalRequestContract.requestWithdrawals([parseEther(amount)], address));
+    await contractCallTxWithConfirm(withdrawalRequestContract, 'requestWithdrawals', [[parseEther(amount)], address]);
   });
 
 withdrawal
@@ -37,7 +37,7 @@ withdrawal
   .action(async (amount, requests, options) => {
     const { address } = options;
     const requestsArray = Array(Number(requests)).fill(parseEther(amount));
-    await wrapTx(() => withdrawalRequestContract.requestWithdrawals(requestsArray, address));
+    await contractCallTxWithConfirm(withdrawalRequestContract, 'requestWithdrawals', [requestsArray, address]);
   });
 
 withdrawal
@@ -61,7 +61,7 @@ withdrawal
   .description('claim withdrawal')
   .argument('<number>', 'request id')
   .action(async (requestId) => {
-    await wrapTx(() => withdrawalRequestContract.claimWithdrawal(requestId));
+    await contractCallTxWithConfirm(withdrawalRequestContract, 'claimWithdrawal', [requestId]);
   });
 
 withdrawal
