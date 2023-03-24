@@ -9,6 +9,7 @@ import {
   addParsingCommands,
   addPauseUntilSubCommands,
 } from './common';
+import { wrapTx } from '@utils';
 
 const withdrawal = program.command('withdrawal-request').description('interact with withdrawal request contract');
 addAccessControlSubCommands(withdrawal, withdrawalRequestContract);
@@ -24,8 +25,7 @@ withdrawal
   .option('-a, --address <string>', 'owner address', wallet.address)
   .action(async (amount, options) => {
     const { address } = options;
-    const result = await withdrawalRequestContract.requestWithdrawals([parseEther(amount)], address);
-    console.log('result', result);
+    await wrapTx(() => withdrawalRequestContract.requestWithdrawals([parseEther(amount)], address));
   });
 
 withdrawal
@@ -37,8 +37,7 @@ withdrawal
   .action(async (amount, requests, options) => {
     const { address } = options;
     const requestsArray = Array(Number(requests)).fill(parseEther(amount));
-    const result = await withdrawalRequestContract.requestWithdrawals(requestsArray, address);
-    console.log('result', result);
+    await wrapTx(() => withdrawalRequestContract.requestWithdrawals(requestsArray, address));
   });
 
 withdrawal
@@ -62,8 +61,7 @@ withdrawal
   .description('claim withdrawal')
   .argument('<number>', 'request id')
   .action(async (requestId) => {
-    await withdrawalRequestContract.claimWithdrawal(requestId);
-    console.log('claimed');
+    await wrapTx(() => withdrawalRequestContract.claimWithdrawal(requestId));
   });
 
 withdrawal
@@ -124,14 +122,14 @@ withdrawal
   .option('-a, --address <string>', 'owner address', wallet.address)
   .action(async (options) => {
     const { address } = options;
-    const result = await withdrawalRequestContract.getWithdrawalRequests(address);
-    console.log('result', result);
+    const requests = await withdrawalRequestContract.getWithdrawalRequests(address);
+    console.log('requests', requests);
   });
 
 withdrawal
   .command('max-batches')
   .description('returns max batches length')
   .action(async () => {
-    const result = await withdrawalRequestContract.MAX_BATCHES_LENGTH();
-    console.log('result', result);
+    const mxaBatches = await withdrawalRequestContract.MAX_BATCHES_LENGTH();
+    console.log('max batches', mxaBatches);
   });

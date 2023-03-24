@@ -6,4 +6,5 @@ export * from './sleep';
 export * from './staking-limit';
 export * from './trace';
 export * from './tree';
+export * from './tx';
 export * from './voting';

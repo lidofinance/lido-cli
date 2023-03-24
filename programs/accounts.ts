@@ -9,6 +9,8 @@ accounts
   .action(async () => {
     const wallet = Wallet.createRandom();
 
-    console.log('address', wallet.address);
-    console.log('private key', wallet.privateKey);
+    console.table({
+      address: wallet.address,
+      'private key': wallet.privateKey,
+    });
   });

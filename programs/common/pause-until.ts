@@ -1,3 +1,4 @@
+import { wrapTx } from '@utils';
 import { Command } from 'commander';
 import { Contract, MaxUint256, toBeHex } from 'ethers';
 
@@ -14,8 +15,7 @@ export const addPauseUntilSubCommands = (command: Command, contract: Contract) =
     .command('resume')
     .description('resumes the contract')
     .action(async () => {
-      await contract.resume();
-      console.log('resumed');
+      await wrapTx(() => contract.resume());
     });
 
   command
@@ -24,7 +24,6 @@ export const addPauseUntilSubCommands = (command: Command, contract: Contract) =
     .option('-d, --duration <string>', 'pause duration', toBeHex(MaxUint256))
     .action(async (options) => {
       const { duration } = options;
-      await contract.pause(duration);
-      console.log('paused');
+      await wrapTx(() => contract.pause(duration));
     });
 };

@@ -1,5 +1,6 @@
 import { program } from '@command';
 import { norContract } from '@contracts';
+import { wrapTx } from '@utils';
 import { addAragonAppSubCommands, addLogsCommands, addParsingCommands } from './common';
 
 const nor = program.command('nor').description('interact with node operator registry contract');
@@ -40,8 +41,7 @@ nor
   .option('-a, --address <string>', 'reward address')
   .action(async (options) => {
     const { name, address } = options;
-    await norContract.addNodeOperator(name, address);
-    console.log('operator added');
+    await wrapTx(() => norContract.addNodeOperator(name, address));
   });
 
 nor
@@ -63,8 +63,7 @@ nor
   .option('-s, --signatures <string>', 'signatures')
   .action(async (options) => {
     const { operatorId, count, publicKeys, signatures } = options;
-    await norContract.addSigningKeys(operatorId, count, publicKeys, signatures);
-    console.log('keys added', count);
+    await wrapTx(() => norContract.addSigningKeys(operatorId, count, publicKeys, signatures));
   });
 
 nor
@@ -74,6 +73,5 @@ nor
   .option('-l, --limit <number>', 'staking limit')
   .action(async (options) => {
     const { operatorId, limit } = options;
-    await norContract.setNodeOperatorStakingLimit(operatorId, limit);
-    console.log('limit is set');
+    await wrapTx(() => norContract.setNodeOperatorStakingLimit(operatorId, limit));
   });

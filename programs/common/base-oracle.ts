@@ -1,3 +1,4 @@
+import { wrapTx } from '@utils';
 import { Command } from 'commander';
 import { Contract, parseEther } from 'ethers';
 
@@ -15,8 +16,7 @@ export const addBaseOracleCommands = (command: Command, contract: Contract) => {
     .description('sets consensus contract')
     .argument('<address>', 'consensus contract address')
     .action(async (address) => {
-      await contract.setConsensusContract(address);
-      console.log('consensus contract set');
+      await wrapTx(() => contract.setConsensusContract(address));
     });
 
   command.command('processing-state').action(async () => {

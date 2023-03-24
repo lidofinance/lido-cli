@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import { Contract } from 'ethers';
-import { getRoleHash } from '@utils';
+import { getRoleHash, wrapTx } from '@utils';
 import { wallet } from '@provider';
 
 export const addAccessControlSubCommands = (command: Command, contract: Contract) => {
@@ -57,7 +57,7 @@ export const addAccessControlSubCommands = (command: Command, contract: Contract
     .action(async (role, options) => {
       const { address } = options;
       const roleHash = await getRoleHash(contract, role);
-      await contract.grantRole(roleHash, address);
+      await wrapTx(() => contract.grantRole(roleHash, address));
     });
 
   command
@@ -68,6 +68,6 @@ export const addAccessControlSubCommands = (command: Command, contract: Contract
     .action(async (role, options) => {
       const { address } = options;
       const roleHash = await getRoleHash(contract, role);
-      await contract.revokeRole(roleHash, address);
+      await wrapTx(() => contract.revokeRole(roleHash, address));
     });
 };

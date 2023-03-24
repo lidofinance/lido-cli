@@ -1,3 +1,4 @@
+import { wrapTx } from '@utils';
 import { Command } from 'commander';
 import { Contract } from 'ethers';
 
@@ -25,8 +26,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .description('sets the quorum number')
     .argument('<quorum>', 'quorum number')
     .action(async (quorum) => {
-      await contract.setQuorum(quorum);
-      console.log('quorum set');
+      await wrapTx(() => contract.setQuorum(quorum));
     });
 
   command
@@ -46,8 +46,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .option('-q, --quorum <string>', 'quorum')
     .action(async (options) => {
       const { address, quorum } = options;
-      await contract.addMember(address, quorum);
-      console.log('member added');
+      await wrapTx(() => contract.addMember(address, quorum));
     });
 
   command
@@ -57,8 +56,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .option('-q, --quorum <string>', 'quorum')
     .action(async (options) => {
       const { address, quorum } = options;
-      await contract.removeMember(address, quorum);
-      console.log('member removed');
+      await wrapTx(() => contract.removeMember(address, quorum));
     });
 
   command
@@ -92,8 +90,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .option('-f, --fastlane <string>', 'fastlane length slots')
     .action(async (options) => {
       const { epochsPerFrame, fastlane } = options;
-      await contract.setFrameConfig(epochsPerFrame, fastlane);
-      console.log('frame config set');
+      await wrapTx(() => contract.setFrameConfig(epochsPerFrame, fastlane));
     });
 
   command
@@ -101,8 +98,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .description('updates the initial epoch')
     .argument('<epoch>', 'initial epoch')
     .action(async (epoch) => {
-      await contract.updateInitialEpoch(Number(epoch));
-      console.log('initial epoch updated');
+      await wrapTx(() => contract.updateInitialEpoch(Number(epoch)));
     });
 
   command
@@ -119,7 +115,6 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .description('sets the report processor')
     .argument('<address>', 'processor address')
     .action(async (address) => {
-      await contract.setReportProcessor(address);
-      console.log('processor set');
+      await wrapTx(() => contract.setReportProcessor(address));
     });
 };

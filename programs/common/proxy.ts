@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import { Contract } from 'ethers';
 import { getProxyContract } from '@contracts';
+import { wrapTx } from '@utils';
 
 export const addOssifiableProxyCommands = (command: Command, contract: Contract) => {
   const getProxyAddress = async () => await contract.getAddress();
@@ -27,7 +28,6 @@ export const addOssifiableProxyCommands = (command: Command, contract: Contract)
     .description('replace proxy implementation address')
     .argument('<implementation>', 'new implementation')
     .action(async (implementation) => {
-      await proxyContract.proxy__upgradeTo(implementation);
-      console.log('new implementation set');
+      await wrapTx(() => proxyContract.proxy__upgradeTo(implementation));
     });
 };
