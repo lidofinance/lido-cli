@@ -44,6 +44,19 @@ export const contractCallTx = async (contract: Contract, method: string, args: a
     throw new Error('Transaction receipt is not available');
   }
 
-  console.log('tx result', receipt.toJSON());
+  try {
+    console.log('tx logs:');
+
+    receipt.logs.forEach((log) => {
+      const parsedLog = contract.interface.parseLog({
+        data: log.data,
+        topics: log.topics as string[],
+      });
+      console.log(parsedLog);
+    });
+  } catch (error) {
+    console.log('failed to parse logs');
+  }
+
   return [tx, receipt] as const;
 };

@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@adraffy/ens-normalize@1.8.9":
-  version "1.8.9"
-  resolved "https://registry.yarnpkg.com/@adraffy/ens-normalize/-/ens-normalize-1.8.9.tgz#67b3acadebbb551669c9a1da15fac951db795b85"
-  integrity sha512-93OmGCV0vO8+JQ3FHG+gZk/MPHzzMPDRiCiFcCQNTCnHaaxsacO3ScTPGlu2wX2dOtgfalbchPcw1cOYYjHCYQ==
+"@adraffy/ens-normalize@1.9.0":
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/@adraffy/ens-normalize/-/ens-normalize-1.9.0.tgz#223572538f6bea336750039bb43a4016dcc8182d"
+  integrity sha512-iowxq3U30sghZotgl4s/oJRci6WPBfNO5YYgk2cIOMCHr3LeGPcsZjCEr+33Q4N+oV3OABDAtA+pyvWjbvBifQ==
 
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
@@ -200,12 +200,12 @@ dotenv@^16.0.3:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.0.3.tgz#115aec42bac5053db3c456db30cc243a5a836a07"
   integrity sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==
 
-ethers@^6.0.2:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.0.2.tgz#e147424b3464ecca7af23e0e2f0b3b045641ccfd"
-  integrity sha512-YOHvShFjKordVEN7kVcKRp6xhpjq4ggZPcsAVuadXravZ7Z4qOflOEGfIaMnKp2ZQJqyR07iYVD6YVty4dI3Fw==
+ethers@^6.2.2:
+  version "6.2.2"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.2.2.tgz#80b5e972ca71fa159af85c4d60055f21866b15a3"
+  integrity sha512-uh+Dvy3ZfTHZi460h5XApTsPp/fUa372zD5nnXxCZgxbmWW0b/uWFOLE+pdgzcnEdFV1+3bm3P0R8w4jggGeeQ==
   dependencies:
-    "@adraffy/ens-normalize" "1.8.9"
+    "@adraffy/ens-normalize" "1.9.0"
     "@noble/hashes" "1.1.2"
     "@noble/secp256k1" "1.7.1"
     aes-js "4.0.0-beta.3"
