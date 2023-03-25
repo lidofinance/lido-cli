@@ -2,6 +2,7 @@ import { program } from '@command';
 import { stakingRouterContract } from '@contracts';
 import { authorizedCall } from '@utils';
 import { addAccessControlSubCommands, addLogsCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
+import { getStakingModules } from './staking-module';
 
 const router = program.command('staking-router').description('interact with staking router contract');
 addAccessControlSubCommands(router, stakingRouterContract);
@@ -13,9 +14,8 @@ router
   .command('modules')
   .description('returns staking modules')
   .action(async () => {
-    const modules = await stakingRouterContract.getStakingModules();
-    const formattedModules = modules.map((module) => module.toObject());
-    console.log('modules', formattedModules);
+    const modules = await getStakingModules();
+    console.log('modules', modules);
   });
 
 router

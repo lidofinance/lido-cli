@@ -7,6 +7,7 @@ export * from './nor';
 export * from './oracles';
 export * from './proxy';
 export * from './sanity-checker';
+export * from './staking-module';
 export * from './staking-router';
 export * from './token-manager';
 export * from './voting';
