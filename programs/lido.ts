@@ -86,10 +86,10 @@ lido
 lido
   .command('approve')
   .argument('<spender>', 'spender address')
-  .option('-a, --amount <number>', 'amount', toBeHex(MaxUint256))
+  .option('-a, --amount <number>', 'amount', '')
   .action(async (spender, options) => {
-    const { amount } = options;
-    await contractCallTxWithConfirm(lidoContract, 'approve', [spender, parseEther(amount)]);
+    const amount = options.amount ? parseEther(options.amount) : MaxUint256;
+    await contractCallTxWithConfirm(lidoContract, 'approve', [spender, amount]);
   });
 
 lido
