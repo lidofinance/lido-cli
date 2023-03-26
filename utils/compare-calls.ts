@@ -1,9 +1,9 @@
 import { Contract } from 'ethers';
 
-export type ContractCalls = { method: string; args?: any[] };
+export type ContractCalls = { method: string; args?: unknown[] };
 
 export const compareContractCalls = async (contracts: Contract[], calls: ContractCalls[]) => {
-  const result: any[] = [];
+  const result: unknown[] = [];
 
   for (const { method, args = [] } of calls) {
     const cols = await Promise.all(
@@ -19,10 +19,10 @@ export const compareContractCalls = async (contracts: Contract[], calls: Contrac
     );
 
     const row = { method };
-    const [_firstKey, firstValue] = cols[0];
+    const [, firstValue] = cols[0];
 
     cols.forEach(([key, value]) => (row[key] = value));
-    const matched = cols.every(([_key, value]) => value == firstValue);
+    const matched = cols.every(([, value]) => value == firstValue);
 
     result.push({ ...row, matched });
   }

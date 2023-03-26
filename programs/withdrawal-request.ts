@@ -104,7 +104,7 @@ withdrawal
     const state = [parseEther(ethBudget), false, Array(36).fill(0), 0];
 
     const result = await withdrawalRequestContract.calculateFinalizationBatches(
-      BigInt(maxShareRate) * BigInt(1e27),
+      BigInt(maxShareRate) * 10n ** 27n,
       Number(maxTimestamp),
       Number(maxRequestsPerCall),
       state,

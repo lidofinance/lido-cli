@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import { envs } from './envs';
 
 export const getContracts = () => {
-  const fullPath = resolve('configs', envs.DEPLOYED);
+  const fullPath = resolve('configs', envs?.DEPLOYED ?? '');
 
   if (!lstatSync(fullPath).isFile()) {
     throw new Error('Deployed contracts file not found, check .env file');
@@ -29,7 +29,7 @@ export const getDeployedAddress = (contractKey: string) => {
 export const getAddressMap = () => {
   const contracts = getContracts();
 
-  return Object.entries(contracts).reduce((acc, [key, value]: [string, any]) => {
+  return Object.entries(contracts).reduce((acc, [key, value]: [string, Record<string, string>]) => {
     const name = value.contract || key;
     const proxyAddress = value.proxyAddress || (value.implementation && value.address);
     const implementation = value.implementation;

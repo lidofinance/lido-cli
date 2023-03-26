@@ -2,14 +2,14 @@ import chalk from 'chalk';
 import { AbstractSigner, Contract, ContractTransactionResponse } from 'ethers';
 import { confirmTx } from './confirm-tx';
 
-export const contractCallTxWithConfirm = async (contract: Contract, method: string, args: any[]) => {
+export const contractCallTxWithConfirm = async (contract: Contract, method: string, args: unknown[]) => {
   const confirmed = await contractCallConfirm(contract, method, args);
   if (!confirmed) return null;
 
   return await contractCallTx(contract, method, args);
 };
 
-export const contractCallConfirm = async (contract: Contract, method: string, args: any[]) => {
+export const contractCallConfirm = async (contract: Contract, method: string, args: unknown[]) => {
   const provider = contract.runner?.provider;
 
   if (!provider) {
@@ -33,7 +33,7 @@ export const contractCallConfirm = async (contract: Contract, method: string, ar
   return confirmTx(network.name, from, to, `${method}(${parsedArgs})`);
 };
 
-export const contractCallTx = async (contract: Contract, method: string, args: any[]) => {
+export const contractCallTx = async (contract: Contract, method: string, args: unknown[]) => {
   const tx: ContractTransactionResponse = await contract[method](...args);
   console.log('tx sent', chalk.green(tx.hash));
 

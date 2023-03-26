@@ -6,7 +6,7 @@ import { forwardVoteFromTm } from './voting';
 import { contractCallTxWithConfirm } from './call-tx';
 import { agentForward } from 'scripts/agent';
 
-export const authorizedCall = async (contract: Contract, method: string, args: any[] = []) => {
+export const authorizedCall = async (contract: Contract, method: string, args: unknown[] = []) => {
   try {
     const passed = await authorizedCallEOA(contract, method, args);
     if (passed) return;
@@ -29,7 +29,7 @@ export const authorizedCall = async (contract: Contract, method: string, args: a
   }
 };
 
-export const authorizedCallEOA = async (contract: Contract, method: string, args: any[] = []) => {
+export const authorizedCallEOA = async (contract: Contract, method: string, args: unknown[] = []) => {
   if (!(contract.runner instanceof AbstractSigner)) {
     throw new Error('Runner is not a signer');
   }
@@ -37,14 +37,14 @@ export const authorizedCallEOA = async (contract: Contract, method: string, args
   const signer = contract.runner;
   const signerAddress = await signer.getAddress();
 
-  const result = await contract[method].staticCall(...args, { from: signerAddress });
+  await contract[method].staticCall(...args, { from: signerAddress });
   console.log('direct call passed successfully');
 
   await contractCallTxWithConfirm(contract, method, args);
   return true;
 };
 
-export const authorizedCallVoting = async (contract: Contract, method: string, args: any[] = []) => {
+export const authorizedCallVoting = async (contract: Contract, method: string, args: unknown[] = []) => {
   const provider = contract.runner?.provider;
 
   if (!provider) {
@@ -52,7 +52,7 @@ export const authorizedCallVoting = async (contract: Contract, method: string, a
   }
 
   const contractWithoutSigner = contract.connect(provider);
-  const result = await contractWithoutSigner[method].staticCall(...args, { from: votingAddress });
+  await contractWithoutSigner[method].staticCall(...args, { from: votingAddress });
   console.log('call from voting passed successfully');
 
   const call = {
@@ -67,7 +67,7 @@ export const authorizedCallVoting = async (contract: Contract, method: string, a
   return true;
 };
 
-export const authorizedCallAgent = async (contract: Contract, method: string, args: any[] = []) => {
+export const authorizedCallAgent = async (contract: Contract, method: string, args: unknown[] = []) => {
   const provider = contract.runner?.provider;
 
   if (!provider) {
@@ -75,7 +75,7 @@ export const authorizedCallAgent = async (contract: Contract, method: string, ar
   }
 
   const contractWithoutSigner = contract.connect(provider);
-  const result = await contractWithoutSigner[method].staticCall(...args, { from: aragonAgentAddress });
+  await contractWithoutSigner[method].staticCall(...args, { from: aragonAgentAddress });
   console.log('call from agent voting passed successfully');
 
   const call = {

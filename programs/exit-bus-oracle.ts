@@ -1,5 +1,5 @@
 import { program } from '@command';
-import { exitBusOracleContract, norContract } from '@contracts';
+import { exitBusOracleContract } from '@contracts';
 import { getLatestBlock } from '@utils';
 import {
   addAccessControlSubCommands,

@@ -1,6 +1,6 @@
 import { getCachedAddressMap } from '@configs';
 import chalk from 'chalk';
-import { AbiCoder, formatEther, Interface, TransactionDescription } from 'ethers';
+import { AbiCoder, formatEther, TransactionDescription } from 'ethers';
 import { getAllAbi } from './abi';
 import { TreeNode } from './tree';
 

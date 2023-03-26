@@ -7,6 +7,8 @@ export const getAllAbi = () => {
 
   return abiFiles.map((fullPath) => {
     const name = parse(fullPath).name;
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const abi = require(fullPath);
     const iface = new Interface(abi);
 

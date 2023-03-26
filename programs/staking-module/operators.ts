@@ -13,7 +13,7 @@ export const getNodeOperatorIds = (moduleAddress: string) => {
 };
 
 export const getNodeOperators = async (moduleAddress: string): Promise<NodeOperator[]> => {
-  const operatorIdsBigInt: BigInt[] = await getNodeOperatorIds(moduleAddress);
+  const operatorIdsBigInt: bigint[] = await getNodeOperatorIds(moduleAddress);
   const operatorIds = operatorIdsBigInt.map((operatorId) => Number(operatorId));
 
   if (moduleAddress === norAddress) {
