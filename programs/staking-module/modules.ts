@@ -1,4 +1,5 @@
 import { stakingRouterContract } from '@contracts';
+import { Result } from 'ethers';
 
 export type StakingModule = {
   id: number;
@@ -14,7 +15,7 @@ export type StakingModule = {
 };
 
 export const getStakingModules = async (): Promise<StakingModule[]> => {
-  const modules = await stakingRouterContract.getStakingModules();
+  const modules: Result[] = await stakingRouterContract.getStakingModules();
   return modules.map((module) => {
     const {
       id,

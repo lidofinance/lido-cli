@@ -84,7 +84,7 @@ export const formatTraceUnknown = (traceEntity: CleanedTraceEntity): string[] =>
   return [nodeTitle];
 };
 
-export const detectAddress = (address) => {
+export const detectAddress = (address: string) => {
   const addressMap = getCachedAddressMap();
   const loweredAddress = address.toLowerCase();
   const contractName = addressMap[loweredAddress];

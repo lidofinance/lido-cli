@@ -1,4 +1,4 @@
-import { toBeHex, zeroPadValue } from 'ethers';
+import { Result, toBeHex, zeroPadValue } from 'ethers';
 import { program } from '@command';
 import { oracleConfigContract } from '@contracts';
 import { addAccessControlSubCommands, addLogsCommands, addParsingCommands } from './common';
@@ -63,7 +63,7 @@ config
       'FINALIZATION_MAX_NEGATIVE_REBASE_EPOCH_SHIFT',
       'NODE_OPERATOR_NETWORK_PENETRATION_THRESHOLD_BP',
     ];
-    const list = await oracleConfigContract.getList(knownKeys);
+    const list: Result[] = await oracleConfigContract.getList(knownKeys);
 
     list.forEach((item, index) => {
       console.log(knownKeys[index], Number(item));

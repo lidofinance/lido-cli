@@ -111,7 +111,7 @@ withdrawal
     );
 
     const formattedResult = result.toObject();
-    formattedResult.batches = formattedResult.batches.filter((v) => !!v);
+    formattedResult.batches = formattedResult.batches.filter((v: unknown) => !!v);
 
     console.log('result', formattedResult);
   });

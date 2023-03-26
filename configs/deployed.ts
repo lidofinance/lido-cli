@@ -9,7 +9,8 @@ export const getContracts = () => {
     throw new Error('Deployed contracts file not found, check .env file');
   }
 
-  return require(fullPath);
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  return require(fullPath) as Record<string, Record<string, string>>;
 };
 
 export const getContractDeploy = (contractKey: string) => {
@@ -29,7 +30,7 @@ export const getDeployedAddress = (contractKey: string) => {
 export const getAddressMap = () => {
   const contracts = getContracts();
 
-  return Object.entries(contracts).reduce((acc, [key, value]: [string, Record<string, string>]) => {
+  return Object.entries(contracts).reduce((acc, [key, value]) => {
     const name = value.contract || key;
     const proxyAddress = value.proxyAddress || (value.implementation && value.address);
     const implementation = value.implementation;
@@ -48,10 +49,10 @@ export const getAddressMap = () => {
     }
 
     return acc;
-  });
+  }, {} as Record<string, string>);
 };
 
-let addressMapCache;
+let addressMapCache: Record<string, string> | undefined;
 
 export const getCachedAddressMap = () => {
   if (!addressMapCache) {

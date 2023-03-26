@@ -51,7 +51,7 @@ export const authorizedCallVoting = async (contract: Contract, method: string, a
     throw new Error('Provider is not set');
   }
 
-  const contractWithoutSigner = contract.connect(provider);
+  const contractWithoutSigner = contract.connect(provider) as Contract;
   await contractWithoutSigner[method].staticCall(...args, { from: votingAddress });
   console.log('call from voting passed successfully');
 
@@ -74,7 +74,7 @@ export const authorizedCallAgent = async (contract: Contract, method: string, ar
     throw new Error('Provider is not set');
   }
 
-  const contractWithoutSigner = contract.connect(provider);
+  const contractWithoutSigner = contract.connect(provider) as Contract;
   await contractWithoutSigner[method].staticCall(...args, { from: aragonAgentAddress });
   console.log('call from agent voting passed successfully');
 

@@ -18,7 +18,7 @@ export const compareContractCalls = async (contracts: Contract[], calls: Contrac
       }),
     );
 
-    const row = { method };
+    const row: Record<string, string> = { method };
     const [, firstValue] = cols[0];
 
     cols.forEach(([key, value]) => (row[key] = value));

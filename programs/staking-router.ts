@@ -1,6 +1,7 @@
 import { program } from '@command';
 import { stakingRouterContract } from '@contracts';
 import { authorizedCall } from '@utils';
+import { Result } from 'ethers';
 import { addAccessControlSubCommands, addLogsCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
 import { getStakingModules } from './staking-module';
 
@@ -145,7 +146,7 @@ router
       console.log('Module', moduleId);
 
       const digests = await stakingRouterContract.getAllNodeOperatorDigests(moduleId);
-      const formattedDigest = digests.map((operator) => {
+      const formattedDigest = digests.map((operator: Result) => {
         const { id, isActive, summary } = operator.toObject();
         const {
           isTargetLimitActive,
@@ -181,7 +182,7 @@ router
   .description('returns all node operators digests')
   .argument('<module-id>', 'module id')
   .action(async (moduleId) => {
-    const digests = await stakingRouterContract.getAllNodeOperatorDigests(moduleId);
+    const digests: Result[] = await stakingRouterContract.getAllNodeOperatorDigests(moduleId);
 
     const activeKeys = digests.map((operator) => {
       const { totalDepositedValidators, totalExitedValidators } = operator.summary.toObject();
