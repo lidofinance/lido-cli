@@ -1,8 +1,9 @@
-import { getCachedAddressMap } from '@configs';
 import chalk from 'chalk';
-import { AbiCoder, formatEther, TransactionDescription } from 'ethers';
+import { getCachedAddressMap } from '@configs';
+import { AbiCoder, ErrorDescription, formatEther, TransactionDescription } from 'ethers';
 import { getAllAbi } from './abi';
 import { TreeNode } from './tree';
+import { stringify } from './stringify';
 
 export type TraceEntity = {
   traceAddress: number[];
@@ -50,8 +51,10 @@ export const buildTraceTree = <T = CleanedTraceEntity>(trace: TraceEntity[]) => 
 };
 
 const title = chalk.yellow;
+const method = chalk.blue;
 const label = chalk.gray;
 const error = chalk.red;
+const contract = chalk.green;
 
 export const formatTraceNode = (traceEntity: CleanedTraceEntity): string[] => {
   const { type } = traceEntity;
@@ -69,14 +72,23 @@ export const formatTraceCall = (traceEntity: CleanedTraceEntity): string[] => {
   const callFrom = label('from: ') + detectAddress(action.from);
   const callTo = label('to: ') + detectAddress(action.to);
   const callInput = label('input: ') + formatCallInput(action.input, txDescription);
+  const callArgs = txDescription ? label('args: ') + formatArgs(txDescription) : '';
 
   const callValue = label('value: ') + `${formatEther(action.value)} ETH`;
   const callGas = label('gas: ') + formatCallGas(action.gas, result?.gasUsed);
 
+  const baseFields = [nodeTitle, callInput, callArgs, callFrom, callTo, callValue, callGas].filter((v) => v);
+
   const callResult = result?.output ? label('result: ') + formatCallResult(result.output, txDescription) : '';
   const callError = traceError ? label('error: ') + error(traceError) : '';
 
-  return [nodeTitle, callInput, callFrom, callTo, callValue, callGas, callResult, callError].filter((v) => v);
+  if (result && traceError) {
+    const errorDescription = detectErrorDescription(result.output);
+    const callResult = label('result: ') + formatError(result.output, errorDescription);
+    return [...baseFields, callResult, callError];
+  }
+
+  return [...baseFields, callResult, callError];
 };
 
 export const formatTraceUnknown = (traceEntity: CleanedTraceEntity): string[] => {
@@ -84,17 +96,21 @@ export const formatTraceUnknown = (traceEntity: CleanedTraceEntity): string[] =>
   return [nodeTitle];
 };
 
+export const formatArgs = (tx: TransactionDescription) => {
+  return method(stringify(tx.args.toObject()));
+};
+
 export const detectAddress = (address: string) => {
   const addressMap = getCachedAddressMap();
   const loweredAddress = address.toLowerCase();
   const contractName = addressMap[loweredAddress];
 
-  return contractName || address;
+  return contract(contractName || address);
 };
 
 export const formatCallInput = (input: string, tx?: TransactionDescription) => {
   if (!tx) return input;
-  return `${tx.fragment.name}(${tx.args})`;
+  return method(`${tx.fragment.name}(${tx.args})`);
 };
 
 export const formatCallResult = (result: string, tx?: TransactionDescription) => {
@@ -108,6 +124,11 @@ export const formatCallResult = (result: string, tx?: TransactionDescription) =>
   }
 };
 
+export const formatError = (result: string, errorDescription?: ErrorDescription) => {
+  if (!errorDescription) return result;
+  return error(`${errorDescription.fragment.name}(${errorDescription.args})`);
+};
+
 export const formatCallGas = (gas: string, gasUsed?: string) => {
   if (gasUsed == null) return Number(gas);
   return Number(gas) + ', used: ' + Number(gasUsed);
@@ -117,10 +138,13 @@ export const detectTxDescription = (data: string, value: string) => {
   const tx = { data, value };
   const abi = getAllAbi();
 
-  const parsed = abi.find(({ iface }) => {
-    const result = iface.parseTransaction(tx);
-    return result != null;
-  });
-
+  const parsed = abi.find(({ iface }) => iface.parseTransaction(tx));
   return parsed?.iface.parseTransaction(tx) ?? undefined;
+};
+
+export const detectErrorDescription = (reason: string) => {
+  const abi = getAllAbi();
+
+  const parsed = abi.find(({ iface }) => iface.parseError(reason));
+  return parsed?.iface.parseError(reason) ?? undefined;
 };

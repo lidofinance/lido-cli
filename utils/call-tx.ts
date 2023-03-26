@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { AbstractSigner, Contract, ContractTransactionResponse } from 'ethers';
 import { confirmTx } from './confirm-tx';
+import { stringify } from './stringify';
 
 export const contractCallTxWithConfirm = async (contract: Contract, method: string, args: unknown[]) => {
   const confirmed = await contractCallConfirm(contract, method, args);
@@ -26,9 +27,7 @@ export const contractCallConfirm = async (contract: Contract, method: string, ar
   const network = await provider.getNetwork();
   const to = await contract.getAddress();
 
-  const parsedArgs = args.map((arg) =>
-    JSON.stringify(arg, (_key, value) => (typeof value === 'bigint' ? value.toString() : value)),
-  );
+  const parsedArgs = args.map((arg) => stringify(arg));
 
   return confirmTx(network.name, from, to, `${method}(${parsedArgs})`);
 };

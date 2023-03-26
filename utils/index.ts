@@ -7,6 +7,7 @@ export * from './role-hash';
 export * from './scripts';
 export * from './sleep';
 export * from './staking-limit';
+export * from './stringify';
 export * from './trace';
 export * from './tree';
 export * from './voting';
