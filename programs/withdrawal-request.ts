@@ -1,4 +1,4 @@
-import { formatEther, MaxUint256, parseEther } from 'ethers';
+import { formatEther, MaxUint256, parseEther, Result } from 'ethers';
 import { program } from '@command';
 import { wallet } from '@provider';
 import { withdrawalRequestContract } from '@contracts';
@@ -57,11 +57,113 @@ withdrawal
   });
 
 withdrawal
+  .command('user-requests')
+  .description('returns user requests')
+  .option('-a, --address <string>', 'owner address', wallet.address)
+  .action(async (options) => {
+    const { address } = options;
+    const requestIds = await withdrawalRequestContract.getWithdrawalRequests(address);
+    console.log('request ids', requestIds);
+  });
+
+withdrawal
+  .command('status')
+  .description('returns withdrawal status')
+  .option('-a, --address <string>', 'owner address', wallet.address)
+  .option('-l, --limit <number>', 'limit', '100')
+  .action(async (options) => {
+    const { address, limit } = options;
+    const requestIds = await withdrawalRequestContract.getWithdrawalRequests(address);
+    const limitedRequestIds = requestIds.slice(-Number(limit));
+    const requests = await withdrawalRequestContract.getWithdrawalStatus(limitedRequestIds.toArray());
+
+    requests.forEach((request: Result) => {
+      console.log(request.toObject());
+    });
+  });
+
+withdrawal
+  .command('claimable')
+  .description('returns withdrawal status')
+  .option('-a, --address <string>', 'owner address', wallet.address)
+  .option('-l, --limit <number>', 'limit', '100')
+  .action(async (options) => {
+    const { address, limit } = options;
+    const requestIds: Result = await withdrawalRequestContract.getWithdrawalRequests(address);
+    const limitedRequestIds: number[] = requestIds
+      .toArray()
+      .slice(-Number(limit))
+      .map((id) => Number(id))
+      .sort();
+
+    const requests = await withdrawalRequestContract.getWithdrawalStatus(limitedRequestIds);
+
+    const requestsWithId = limitedRequestIds.map((id, index) => ({ id, ...requests[index].toObject() }));
+    const filteredRequests = requestsWithId.filter(
+      (request) => request.isClaimed === false && request.isFinalized === true,
+    );
+
+    const filteredRequestsIds = filteredRequests.map((request) => request.id);
+    console.log(filteredRequestsIds.join(','));
+  });
+
+withdrawal
   .command('claim')
   .description('claim withdrawal')
   .argument('<number>', 'request id')
   .action(async (requestId) => {
     await contractCallTxWithConfirm(withdrawalRequestContract, 'claimWithdrawal', [requestId]);
+  });
+
+withdrawal
+  .command('claim-batch')
+  .description('claim withdrawal')
+  .argument('<request-ids>', 'request ids separated by comma')
+  .action(async (requestIdsString) => {
+    const requestIds = requestIdsString.split(',').map((id: string) => Number(id));
+
+    const firstCheckpointIndex = 1;
+    const lastCheckpointIndex = await withdrawalRequestContract.getLastCheckpointIndex();
+    const hintsResult = await withdrawalRequestContract.findCheckpointHints(
+      requestIds,
+      firstCheckpointIndex,
+      lastCheckpointIndex,
+    );
+    const hints = hintsResult.toArray();
+
+    await contractCallTxWithConfirm(withdrawalRequestContract, 'claimWithdrawals', [requestIds, hints]);
+  });
+
+withdrawal
+  .command('claim-all')
+  .description('claim all claimable withdrawal requests')
+  .option('-l, --limit <number>', 'limit', '100')
+  .action(async (options) => {
+    const { limit } = options;
+    const requestIdsResult: Result = await withdrawalRequestContract.getWithdrawalRequests(wallet.address);
+    const requestIds = requestIdsResult
+      .toArray()
+      .slice(Number(limit))
+      .map((id) => Number(id));
+
+    const requests = await withdrawalRequestContract.getWithdrawalStatus(requestIds);
+    const requestsWithId = requestIds.map((id, index) => ({ id, ...requests[index].toObject() }));
+
+    const claimableRequests = requestsWithId.filter(
+      ({ isClaimed, isFinalized }: Result) => isClaimed === false && isFinalized == true,
+    );
+    const claimableRequestsIds = claimableRequests.map(({ id }) => id);
+
+    const firstCheckpointIndex = 1;
+    const lastCheckpointIndex = await withdrawalRequestContract.getLastCheckpointIndex();
+    const hintsResult = await withdrawalRequestContract.findCheckpointHints(
+      claimableRequestsIds,
+      firstCheckpointIndex,
+      lastCheckpointIndex,
+    );
+    const hints = hintsResult.toArray();
+
+    // await contractCallTxWithConfirm(withdrawalRequestContract, 'claimWithdrawals', [requestIds, hints]);
   });
 
 withdrawal
