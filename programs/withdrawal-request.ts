@@ -104,7 +104,12 @@ withdrawal
     );
 
     const filteredRequestsIds = filteredRequests.map((request) => request.id);
-    console.log(filteredRequestsIds.join(','));
+
+    if (filteredRequestsIds.length) {
+      console.log(filteredRequestsIds.join(','));
+    } else {
+      console.log('no claimable requests');
+    }
   });
 
 withdrawal
@@ -132,38 +137,6 @@ withdrawal
     const hints = hintsResult.toArray();
 
     await contractCallTxWithConfirm(withdrawalRequestContract, 'claimWithdrawals', [requestIds, hints]);
-  });
-
-withdrawal
-  .command('claim-all')
-  .description('claim all claimable withdrawal requests')
-  .option('-l, --limit <number>', 'limit', '100')
-  .action(async (options) => {
-    const { limit } = options;
-    const requestIdsResult: Result = await withdrawalRequestContract.getWithdrawalRequests(wallet.address);
-    const requestIds = requestIdsResult
-      .toArray()
-      .slice(Number(limit))
-      .map((id) => Number(id));
-
-    const requests = await withdrawalRequestContract.getWithdrawalStatus(requestIds);
-    const requestsWithId = requestIds.map((id, index) => ({ id, ...requests[index].toObject() }));
-
-    const claimableRequests = requestsWithId.filter(
-      ({ isClaimed, isFinalized }: Result) => isClaimed === false && isFinalized == true,
-    );
-    const claimableRequestsIds = claimableRequests.map(({ id }) => id);
-
-    const firstCheckpointIndex = 1;
-    const lastCheckpointIndex = await withdrawalRequestContract.getLastCheckpointIndex();
-    const hintsResult = await withdrawalRequestContract.findCheckpointHints(
-      claimableRequestsIds,
-      firstCheckpointIndex,
-      lastCheckpointIndex,
-    );
-    const hints = hintsResult.toArray();
-
-    // await contractCallTxWithConfirm(withdrawalRequestContract, 'claimWithdrawals', [requestIds, hints]);
   });
 
 withdrawal
