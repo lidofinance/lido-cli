@@ -50,6 +50,7 @@ tx.command('parse-error')
   });
 
 tx.command('trace')
+  .description('traces transaction')
   .argument('<tx-hash>', 'transaction hash')
   .action(async (txHash) => {
     const { trace } = await provider.send('trace_replayTransaction', [txHash, ['trace']]);

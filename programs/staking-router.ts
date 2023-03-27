@@ -3,7 +3,7 @@ import { stakingRouterContract } from '@contracts';
 import { authorizedCall } from '@utils';
 import { Result } from 'ethers';
 import { addAccessControlSubCommands, addLogsCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
-import { getStakingModules } from './staking-module';
+import { getNodeOperators, getStakingModules } from './staking-module';
 
 const router = program.command('staking-router').description('interact with staking router contract');
 addAccessControlSubCommands(router, stakingRouterContract);
@@ -140,14 +140,16 @@ router
   .command('digests')
   .description('returns modules digests')
   .action(async () => {
-    const moduleIds = await stakingRouterContract.getStakingModuleIds();
+    const modules = await getStakingModules();
 
-    for (const moduleId of moduleIds) {
-      console.log('Module', moduleId);
+    for (const module of modules) {
+      const operators = await getNodeOperators(module.stakingModuleAddress);
+      const operatorIds = operators.map(({ operatorId }) => operatorId);
 
-      const digests = await stakingRouterContract.getAllNodeOperatorDigests(moduleId);
-      const formattedDigest = digests.map((operator: Result) => {
-        const { id, isActive, summary } = operator.toObject();
+      const digests = await stakingRouterContract.getNodeOperatorDigests(module.id, operatorIds);
+      const operatorsDigests = operators.map((operator, index) => {
+        const { operatorId, name } = operator;
+        const { isActive, summary } = digests[index].toObject();
         const {
           isTargetLimitActive,
           targetValidatorsCount,
@@ -160,7 +162,8 @@ router
         } = summary;
 
         return {
-          id: Number(id),
+          operatorId,
+          name,
           isActive: isActive,
           target: isTargetLimitActive ? targetValidatorsCount : null,
           active: Number(totalDepositedValidators - totalExitedValidators),
@@ -173,7 +176,8 @@ router
         };
       });
 
-      console.table(formattedDigest);
+      console.log('module', module.id, module.stakingModuleAddress);
+      console.table(operatorsDigests);
     }
   });
 
