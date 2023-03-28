@@ -94,7 +94,7 @@ withdrawal
       .toArray()
       .slice(-Number(limit))
       .map((id) => Number(id))
-      .sort();
+      .sort((a, b) => a - b);
 
     const requests = await withdrawalRequestContract.getWithdrawalStatus(limitedRequestIds);
 
