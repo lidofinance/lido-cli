@@ -1,4 +1,4 @@
-import { formatEther, MaxUint256, parseEther, toBeHex, ZeroAddress } from 'ethers';
+import { formatEther, MaxUint256, parseEther, ZeroAddress } from 'ethers';
 import { program } from '@command';
 import { wallet } from '@provider';
 import { lidoContract } from '@contracts';
