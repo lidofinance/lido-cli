@@ -143,6 +143,7 @@ export const detectTxDescription = (data: string, value: string) => {
 };
 
 export const detectErrorDescription = (reason: string) => {
+  if (!reason || reason === '0x') return undefined;
   const abi = getAllAbi();
 
   const parsed = abi.find(({ iface }) => iface.parseError(reason));
