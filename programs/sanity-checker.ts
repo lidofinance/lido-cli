@@ -1,5 +1,6 @@
 import { program } from '@command';
 import { sanityCheckerContract } from '@contracts';
+import { authorizedCall } from '@utils';
 import { addAccessControlSubCommands, addLogsCommands, addParsingCommands } from './common';
 
 const sanityChecker = program.command('sanity-checker').description('interact with sanity checker contract');
@@ -20,8 +21,7 @@ sanityChecker
   .description('sets share rate limit')
   .argument('<limit>', 'share rate limit in BP')
   .action(async (limit) => {
-    await sanityCheckerContract.setShareRateDeviationBPLimit(Number(limit));
-    console.log('updated');
+    await authorizedCall(sanityCheckerContract, 'setShareRateDeviationBPLimit', [Number(limit)]);
   });
 
 sanityChecker
@@ -29,6 +29,13 @@ sanityChecker
   .description('sets annual cl increase limit')
   .argument('<limit>', 'annual cl increase limit in BP')
   .action(async (limit) => {
-    await sanityCheckerContract.setAnnualBalanceIncreaseBPLimit(Number(limit));
-    console.log('updated');
+    await authorizedCall(sanityCheckerContract, 'setAnnualBalanceIncreaseBPLimit', [Number(limit)]);
+  });
+
+sanityChecker
+  .command('set-max-positive-token-rebase')
+  .description('sets max positive token rebase')
+  .argument('<limit>', 'max positive token rebase')
+  .action(async (limit) => {
+    await authorizedCall(sanityCheckerContract, 'setMaxPositiveTokenRebase', [Number(limit)]);
   });

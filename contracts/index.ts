@@ -1,5 +1,6 @@
 export * from './aragon';
 export * from './burner';
+export * from './deposit-contract';
 export * from './dsm';
 export * from './lido';
 export * from './locator';

@@ -8,6 +8,9 @@
   "lidoApmEnsName": "lidopm.eth",
   "lidoApmEnsRegDurationSec": 94608000,
   "daoAragonId": "lido-dao",
+  "depositContract": {
+    "address": "0x4242424242424242424242424242424242424242"
+  },
   "daoInitialSettings": {
     "voting": {
       "minSupportRequired": "500000000000000000",

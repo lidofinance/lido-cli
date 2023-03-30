@@ -138,3 +138,11 @@ dsm
     const { address, quorum } = options;
     await authorizedCall(dsmContract, 'removeGuardian', [address, quorum]);
   });
+
+dsm
+  .command('unpause-deposits')
+  .description('unpauses deposits')
+  .argument('<moduleId>', 'staking module id')
+  .action(async (moduleId) => {
+    await authorizedCall(dsmContract, 'unpauseDeposits', [moduleId]);
+  });
