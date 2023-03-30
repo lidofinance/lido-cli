@@ -1,5 +1,5 @@
 import { BaseContract, Contract } from 'ethers';
-import { wallet } from '@provider';
+import { wallet } from '@providers';
 import { getDeployedAddress } from '@configs';
 import { lidoContract } from './lido';
 import kernelAbi from 'abi/aragon/Kernel.json';

@@ -15,7 +15,7 @@
       "@command": ["command"],
       "@configs": ["configs"],
       "@contracts": ["contracts"],
-      "@provider": ["provider"],
+      "@providers": ["providers"],
       "@scripts": ["scripts"],
       "@utils": ["utils"]
     }

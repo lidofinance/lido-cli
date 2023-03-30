@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import { Contract } from 'ethers';
 import { authorizedCall, getRoleHash } from '@utils';
-import { wallet } from '@provider';
+import { wallet } from '@providers';
 
 export const addAccessControlSubCommands = (command: Command, contract: Contract) => {
   command

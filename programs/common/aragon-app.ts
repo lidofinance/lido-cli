@@ -3,7 +3,7 @@ import { Contract } from 'ethers';
 
 import { aclContract, kernelContract } from '@contracts';
 import { authorizedCall, getRoleHash } from '@utils';
-import { wallet } from '@provider';
+import { wallet } from '@providers';
 
 export const addAragonAppSubCommands = (command: Command, contract: Contract) => {
   command

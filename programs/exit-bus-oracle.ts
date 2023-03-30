@@ -1,6 +1,7 @@
 import { program } from '@command';
 import { exitBusOracleContract } from '@contracts';
-import { getLatestBlock } from '@utils';
+import { exportToCSV, groupByModuleId } from '@utils';
+
 import {
   addAccessControlSubCommands,
   addBaseOracleCommands,
@@ -9,7 +10,13 @@ import {
   addParsingCommands,
   addPauseUntilSubCommands,
 } from './common';
-import { getNodeOperators, getNodeOperatorsMapByModule, getStakingModules } from './staking-module';
+import {
+  fetchLastExitRequests,
+  fetchLastExitRequestsDetailed,
+  formatExitRequests,
+  formatExitRequestsDetailed,
+} from './exit-bus';
+import { getNodeOperators, getStakingModules } from './staking-module';
 
 const oracle = program.command('exit-bus-oracle').description('interact with validator exit bus oracle contract');
 addAccessControlSubCommands(oracle, exitBusOracleContract);
@@ -21,66 +28,52 @@ addLogsCommands(oracle, exitBusOracleContract);
 
 oracle
   .command('exit-requests')
-  .description('returns exit requests')
-  .option('-b, --blocks <number>', 'duration in blocks', '7200')
-  .action(async (options) => {
-    const { blocks } = options;
-
-    const latestBlock = await getLatestBlock();
-    const toBlock = latestBlock.number;
-    const fromBlock = toBlock - Number(blocks);
-
-    const events = await exitBusOracleContract.queryFilter('ValidatorExitRequest', fromBlock, toBlock);
-    const requests = events.map((event) => {
-      if ('args' in event) {
-        const [stakingModuleId, nodeOperatorId, validatorIndex, validatorPubkey, timestamp] = event.args;
-        return { stakingModuleId, nodeOperatorId, validatorIndex, validatorPubkey, timestamp };
-      }
-    });
-
-    console.log('events', requests);
-  });
-
-oracle
-  .command('exit-requests-detail')
   .description('returns exit requests with details')
   .option('-b, --blocks <number>', 'duration in blocks', '7200')
   .action(async (options) => {
     const { blocks } = options;
+    const requests = await fetchLastExitRequests(blocks);
+    const groupedRequests = groupByModuleId(requests);
 
-    const latestBlock = await getLatestBlock();
-    const toBlock = latestBlock.number;
-    const fromBlock = toBlock - Number(blocks);
+    Object.entries(groupedRequests).forEach(([moduleId, requests]) => {
+      const formattedRequests = formatExitRequests(requests);
+      console.log('module', moduleId);
+      console.table(formattedRequests);
+    });
+  });
 
-    const events = await exitBusOracleContract.queryFilter('ValidatorExitRequest', fromBlock, toBlock);
-    const operatorsMap = await getNodeOperatorsMapByModule();
+oracle
+  .command('exit-requests-detailed')
+  .description('returns exit requests with details')
+  .option('-b, --blocks <number>', 'duration in blocks', '7200')
+  .action(async (options) => {
+    const { blocks } = options;
+    const requests = await fetchLastExitRequestsDetailed(blocks);
+    const groupedRequests = groupByModuleId(requests);
 
-    const requests = await Promise.all(
-      events.map(async (event) => {
-        if ('args' in event) {
-          const stakingModuleId = Number(event.args.stakingModuleId);
-          const nodeOperatorId = Number(event.args.nodeOperatorId);
-          const validatorIndex = Number(event.args.validatorIndex);
-          const timestamp = Number(event.args.timestamp);
-          const validatorPubkey = event.args.validatorPubkey;
+    Object.entries(groupedRequests).forEach(([moduleId, requests]) => {
+      const formattedRequests = formatExitRequestsDetailed(requests);
+      console.log('module', moduleId);
+      console.table(formattedRequests);
+    });
+  });
 
-          const operatorName = operatorsMap[stakingModuleId][nodeOperatorId].name;
-          const timestampDatetime = new Date(timestamp * 1000).toISOString();
+oracle
+  .command('exit-requests-detailed-csv')
+  .description('returns exit requests with details')
+  .option('-b, --blocks <number>', 'duration in blocks', '7200')
+  .action(async (options) => {
+    const { blocks } = options;
+    const requests = await fetchLastExitRequestsDetailed(blocks);
+    const groupedRequests = groupByModuleId(requests);
 
-          return {
-            stakingModuleId,
-            nodeOperatorId,
-            operatorName,
-            validatorIndex,
-            validatorPubkey,
-            timestamp,
-            timestampDatetime,
-          };
-        }
+    await Promise.all(
+      Object.entries(groupedRequests).map(async ([moduleId, requests]) => {
+        const formattedRequests = formatExitRequestsDetailed(requests);
+        const fileName = `exit-requests-module-${moduleId}.csv`;
+        await exportToCSV(formattedRequests, fileName);
       }),
     );
-
-    console.log(requests);
   });
 
 oracle

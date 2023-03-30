@@ -1,6 +1,6 @@
 import { formatEther, MaxUint256, parseEther, ZeroAddress } from 'ethers';
 import { program } from '@command';
-import { wallet } from '@provider';
+import { wallet } from '@providers';
 import { lidoContract } from '@contracts';
 import { contractCallTxWithConfirm, forwardVoteFromTm } from '@utils';
 import { resumeLidoAndSetStakingLimit, votingForward } from '@scripts';

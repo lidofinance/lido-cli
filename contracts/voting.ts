@@ -1,5 +1,5 @@
 import { Contract } from 'ethers';
-import { wallet } from '@provider';
+import { wallet } from '@providers';
 import { getDeployedAddress } from '@configs';
 import abi from 'abi/Voting.json';
 
