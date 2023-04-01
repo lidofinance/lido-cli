@@ -1,5 +1,5 @@
 import { program } from '@command';
-import { provider } from '@provider';
+import { provider } from '@providers';
 import { buildTraceTree, formatTraceNode, getAllAbi, printTree } from '@utils';
 import { parseEther } from 'ethers';
 

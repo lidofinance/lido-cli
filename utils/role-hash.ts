@@ -1,5 +1,5 @@
 import { Contract, isHexString } from 'ethers';
-import { wallet } from '@provider';
+import { wallet } from '@providers';
 
 export const getRoleHash = async (contract: Contract, role: string) => {
   if (isHexString(role)) return role;

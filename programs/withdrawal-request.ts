@@ -1,6 +1,6 @@
 import { formatEther, MaxUint256, parseEther, Result } from 'ethers';
 import { program } from '@command';
-import { wallet } from '@provider';
+import { wallet } from '@providers';
 import { withdrawalRequestContract } from '@contracts';
 import {
   addAccessControlSubCommands,
