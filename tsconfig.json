@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "dist",
     "lib": ["DOM", "ES2021"],
     "target": "ES2020",
     "types": ["node"],

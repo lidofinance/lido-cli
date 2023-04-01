@@ -1,7 +1,10 @@
 node_modules
+dist
 .env
 
 .vscode
 .DS_Store
 
 reports/*
+.yarn/releases/yarn-1.22.19.cjs
+.yarnrc
