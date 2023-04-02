@@ -223,6 +223,11 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.13.0.tgz#0400d1e6ce87e9d3032c19eb6c58205b0d3f7850"
   integrity sha512-gC3TazRzGoOnoKAhUx+Q0t8S9Tzs74z7m0ipwGpSqQrleP14hKxP4/JUeEQcD3W1/aIpnWl8pHowI7WokuZpXg==
 
+"@types/omelette@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@types/omelette/-/omelette-0.4.2.tgz#fefaae32c8df08f44d0b9493ea3acf86143e4dcf"
+  integrity sha512-buPQ+d47ECrBzx3rmU3pFm6XTAlBy0AHNWVJXx3l8VAx+ejmvsgcAX2/a3kz6bxMoRSoF0As3Z/hprjw3ZOV6w==
+
 "@types/prompts@^2.4.3":
   version "2.4.3"
   resolved "https://registry.yarnpkg.com/@types/prompts/-/prompts-2.4.3.tgz#999efa34a32e4b42315e9cd78e916ec74285f4c9"
@@ -943,6 +948,11 @@ node-fetch@2:
   integrity sha512-DJm/CJkZkRjKKj4Zi4BsKVZh3ValV5IR5s7LVZnW+6YMh0W1BfNA8XSs6DLMGYlId5F3KnA70uu2qepcR08Qqg==
   dependencies:
     whatwg-url "^5.0.0"
+
+omelette@^0.4.17:
+  version "0.4.17"
+  resolved "https://registry.yarnpkg.com/omelette/-/omelette-0.4.17.tgz#24f3ed85cfdd11d8365f16368c7169f8dc422d73"
+  integrity sha512-UlU69G6Bhu0XFjw3tjFZ0qyiMUjAOR+rdzblA1nLQ8xiqFtxOVlkhM39BlgTpLFx9fxkm6rnxNNRsS5GxE/yww==
 
 once@^1.3.0:
   version "1.4.0"
