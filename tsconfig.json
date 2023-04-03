@@ -13,6 +13,7 @@
     "baseUrl": ".",
     "paths": {
       "@command": ["command"],
+      "@consensus": ["consensus"],
       "@configs": ["configs"],
       "@contracts": ["contracts"],
       "@providers": ["providers"],

@@ -137,3 +137,15 @@ export type ExecutionPayload = {
   block_hash: string;
   transactions: string[];
 };
+
+export type Genesis = {
+  genesis_time: string;
+  genesis_validators_root: string;
+  genesis_fork_version: string;
+};
+
+export type Fork = {
+  previous_version: string;
+  current_version: string;
+  epoch: string;
+};

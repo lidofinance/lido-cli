@@ -1,5 +1,5 @@
 import { exitBusOracleContract, oracleConfigContract } from '@contracts';
-import { FAR_FUTURE_EPOCH, fetchAllValidators, fetchCLBlock, ValidatorContainer } from '@providers';
+import { FAR_FUTURE_EPOCH, fetchAllValidators, fetchBlock, ValidatorContainer } from '@providers';
 import { getLatestBlock, getValidatorsMap } from '@utils';
 import { getNodeOperatorsMapByModule } from '../staking-module';
 
@@ -54,7 +54,7 @@ export const fetchLastExitRequests = async (forBlocks = 7200, toBlock?: number) 
 
 export const fetchLastExitRequestsDetailed = async (forBlocks = 7200) => {
   // fetch latest block on CL
-  const block = await fetchCLBlock('head');
+  const block = await fetchBlock('head');
   const slot = block.message.slot;
   const blockNumber = block.message.body.execution_payload.block_number;
   const blockTimestamp = block.message.body.execution_payload.timestamp;
