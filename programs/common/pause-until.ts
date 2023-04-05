@@ -24,6 +24,6 @@ export const addPauseUntilSubCommands = (command: Command, contract: Contract) =
     .option('-d, --duration <string>', 'pause duration', toBeHex(MaxUint256))
     .action(async (options) => {
       const { duration } = options;
-      await authorizedCall(contract, 'pause', [duration]);
+      await authorizedCall(contract, 'pauseFor', [duration]);
     });
 };
