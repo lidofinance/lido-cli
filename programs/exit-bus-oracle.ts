@@ -15,7 +15,7 @@ import {
   fetchLastExitRequestsDetailed,
   formatExitRequests,
   formatExitRequestsDetailed,
-  groupRequestsByOperator
+  groupRequestsByOperator,
 } from './exit-bus';
 import { getNodeOperators, getStakingModules } from './staking-module';
 
@@ -64,7 +64,6 @@ oracle
       } else {
         console.table(formattedRequests);
       }
-
     });
   });
 

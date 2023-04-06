@@ -1,3 +1,4 @@
+export * from './app-proxy';
 export * from './aragon';
 export * from './burner';
 export * from './deposit-contract';

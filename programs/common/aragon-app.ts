@@ -1,11 +1,14 @@
 import { Command } from 'commander';
 import { Contract } from 'ethers';
 
-import { aclContract, kernelContract } from '@contracts';
+import { aclContract, kernelContract, getAppProxyContract } from '@contracts';
 import { authorizedCall, getRoleHash } from '@utils';
 import { wallet } from '@providers';
 
 export const addAragonAppSubCommands = (command: Command, contract: Contract) => {
+  const getProxyAddress = async () => await contract.getAddress();
+  const proxyContract = getAppProxyContract(getProxyAddress);
+
   command
     .command('get-role')
     .description('returns a hash of the role')
@@ -105,5 +108,24 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
       const roleHash = await getRoleHash(contract, role);
 
       await authorizedCall(aclContract, 'revokePermission', [address, appAddress, roleHash]);
+    });
+
+  command
+    .command('implementation')
+    .description('returns proxy implementation address')
+    .action(async () => {
+      const implementation = await proxyContract.implementation();
+      console.log('implementation', implementation);
+    });
+
+  command
+    .command('implementation-upgrade-to')
+    .description('replace app')
+    .argument('<implementation>', 'new implementation')
+    .action(async (implementation) => {
+      const appId = await proxyContract.appId();
+      const namespace = await kernelContract.APP_BASES_NAMESPACE();
+
+      await authorizedCall(kernelContract, 'setApp', [namespace, appId, implementation]);
     });
 };
