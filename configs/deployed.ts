@@ -24,6 +24,10 @@ export const getDeployedAddress = (contractKey: string) => {
     throw new Error(`Contract ${contractKey} not found`);
   }
 
+  if (typeof contract === 'string') {
+    return contract;
+  }
+
   return contract.proxyAddress || contract.address;
 };
 

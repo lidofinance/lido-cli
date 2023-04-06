@@ -1,9 +1,17 @@
 import { Command } from 'commander';
 import { Contract } from 'ethers';
 
-import { aclContract, kernelContract, getAppProxyContract } from '@contracts';
-import { authorizedCall, getRoleHash } from '@utils';
+import {
+  aclContract,
+  kernelContract,
+  getAppProxyContract,
+  ensContract,
+  getPublicResolverContract,
+  getRepoContract,
+} from '@contracts';
+import { authorizedCall, forwardVoteFromTm, getRoleHash } from '@utils';
 import { wallet } from '@providers';
+import { updateAragonApp, votingForward } from '@scripts';
 
 export const addAragonAppSubCommands = (command: Command, contract: Contract) => {
   const getProxyAddress = async () => await contract.getAddress();
@@ -119,13 +127,33 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
     });
 
   command
+    .command('latest-version')
+    .description('returns latest version of the app')
+    .action(async () => {
+      const appId = await proxyContract.appId();
+
+      const getResolverAddress = () => ensContract.resolver(appId);
+      const resolverContract = getPublicResolverContract(getResolverAddress);
+
+      const getRepoAddress = () => resolverContract.addr(appId);
+      const repoContract = getRepoContract(getRepoAddress);
+
+      const version = await repoContract.getLatest();
+      console.log('version', version.toObject());
+    });
+
+  command
     .command('implementation-upgrade-to')
     .description('replace app')
-    .argument('<implementation>', 'new implementation')
-    .action(async (implementation) => {
+    .argument('<new-version>', 'new version')
+    .argument('<new-implementation>', 'new implementation')
+    .argument('<new-content-uri>', 'new content URI')
+    .action(async (newVersion, newImplementation, newContentURI) => {
       const appId = await proxyContract.appId();
-      const namespace = await kernelContract.APP_BASES_NAMESPACE();
 
-      await authorizedCall(kernelContract, 'setApp', [namespace, appId, implementation]);
+      const [calldata] = await updateAragonApp(newVersion.split(','), newImplementation, newContentURI, appId);
+      const [votingCalldata] = votingForward(calldata);
+
+      await forwardVoteFromTm(votingCalldata);
     });
 };
