@@ -15,6 +15,7 @@ import {
   fetchLastExitRequestsDetailed,
   formatExitRequests,
   formatExitRequestsDetailed,
+  groupRequestsByOperator
 } from './exit-bus';
 import { getNodeOperators, getStakingModules } from './staking-module';
 
@@ -46,15 +47,24 @@ oracle
   .command('exit-requests-detailed')
   .description('returns exit requests with details')
   .option('-b, --blocks <number>', 'duration in blocks', '7200')
+  .option('-a, --agg', 'aggregated per operator')
   .action(async (options) => {
-    const { blocks } = options;
+    const { blocks, agg } = options;
     const requests = await fetchLastExitRequestsDetailed(blocks);
     const groupedRequests = groupByModuleId(requests);
 
     Object.entries(groupedRequests).forEach(([moduleId, requests]) => {
       const formattedRequests = formatExitRequestsDetailed(requests);
+
+      
       console.log('module', moduleId);
-      console.table(formattedRequests);
+      if (agg) {
+        const aggregatedRequestsByOperator = groupRequestsByOperator(formattedRequests);
+        console.table(aggregatedRequestsByOperator);
+      } else {
+        console.table(formattedRequests);
+      }
+
     });
   });
 
