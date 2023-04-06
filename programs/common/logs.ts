@@ -37,10 +37,14 @@ export const addLogsCommands = (command: Command, contract: Contract) => {
       const logs = await provider.getLogs(filter);
 
       const parsedLogs = logs.map((log) => {
-        const foundFragment = contract.interface.getEvent(log.topics[0]);
-        if (!foundFragment) throw new Error('Event Fragment not found');
+        try {
+          const foundFragment = contract.interface.getEvent(log.topics[0]);
+          if (!foundFragment) throw new Error('Event Fragment not found');
 
-        return new EventLog(log, contract.interface, foundFragment);
+          return new EventLog(log, contract.interface, foundFragment);
+        } catch (error) {
+          return log;
+        }
       });
 
       console.log(parsedLogs);
