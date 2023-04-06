@@ -36,7 +36,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .action(async (options) => {
       const { address } = options;
       const state = await contract.getConsensusStateForMember(address);
-      console.log('state', state);
+      console.log('state', state.toObject());
     });
 
   command

@@ -21,7 +21,7 @@ export const addBaseOracleCommands = (command: Command, contract: Contract) => {
 
   command.command('processing-state').action(async () => {
     const result = await contract.getProcessingState();
-    console.log('result', result);
+    console.log('result', result.toObject());
   });
 
   command
@@ -38,6 +38,14 @@ export const addBaseOracleCommands = (command: Command, contract: Contract) => {
     .action(async () => {
       const version = await contract.getConsensusVersion();
       console.log('version', version);
+    });
+
+  command
+    .command('set-consensus-version')
+    .description('sets consensus version')
+    .argument('<version>', 'consensus version')
+    .action(async (version) => {
+      await authorizedCall(contract, 'setConsensusVersion', [version]);
     });
 
   command
