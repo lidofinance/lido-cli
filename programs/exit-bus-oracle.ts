@@ -56,8 +56,8 @@ oracle
     Object.entries(groupedRequests).forEach(([moduleId, requests]) => {
       const formattedRequests = formatExitRequestsDetailed(requests);
 
-      
       console.log('module', moduleId);
+
       if (agg) {
         const aggregatedRequestsByOperator = groupRequestsByOperator(formattedRequests);
         console.table(aggregatedRequestsByOperator);

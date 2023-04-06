@@ -23,7 +23,7 @@ export type GroupedRequestsByOperator = {
   numvals: number,
   wc0x00: number,
   wc0x01: number,
-  exitRequested: number,
+  exitSignaledNYP: number,
   delayed: number,
   exited: number,
   exitedSlashed: number,
@@ -141,19 +141,34 @@ export const formatConsoleExitRequestDetailed = (request: ExitRequestWithValidat
 
 export const groupRequestsByOperator = (items: { noId: number, operatorName:string, validator: number, requestTime: string, wcType: string, status: string, delayed: boolean }[]) => {
   return items.reduce<GroupedRequestsByOperator>((acc, item) => {
-    acc[item.noId] = {
-      name: item.operatorName,
-      numvals: (acc[item.noId]?.numvals || 0) + 1,
-      wc0x00: (item.wcType == '0x00' ? (acc[item.noId]?.wc0x00 + 1) || 1 : 0),
-      wc0x01: (item.wcType == '0x01' ? (acc[item.noId]?.wc0x01 + 1) || 1 : 0),
-      exitRequested: (item.status == 'active_ongoing' ? (acc[item.noId]?.exitRequested + 1) || 1 : (acc[item.noId]?.exitRequested) || 0),
-      delayed: (item.delayed == true ? (acc[item.noId]?.delayed + 1) || 1 : (acc[item.noId]?.delayed) || 0),
-      exited: ( (item.status == 'exited_unslashed' || item.status == 'withdrawal_done' || item.status == 'withdrawal_possible') ? (acc[item.noId]?.exited + 1) || 1 : (acc[item.noId]?.exited) || 0),
-      exitedSlashed: (item.status == 'exited_slashed' ? (acc[item.noId]?.exitedSlashed + 1) || 1 : (acc[item.noId]?.exitedSlashed) || 0),
-      withdrawable: (item.status == 'withdrawal_possible' ? (acc[item.noId]?.withdrawable + 1) || 1 : (acc[item.noId]?.withdrawable) || 0),
-      withdrawn: (item.status == 'withdrawal_done' ? (acc[item.noId]?.withdrawn + 1) || 1 : (acc[item.noId]?.withdrawn) || 0),
-    };
+    const defaultOperatorRequestsStat = {
+      name: '', // need to initialize otherwise it will end up at the end of the object
+      numvals: 0,
+      wc0x00: 0,
+      wc0x01: 0,
+      exitSignaledNYP: 0,
+      delayed: 0,
+      exited: 0,
+      exitedSlashed: 0,
+      withdrawable: 0,
+      withdrawn: 0
+    }
+
+    const operatorRequestsStat = acc[item.noId] ?? { ...defaultOperatorRequestsStat };
+
+    operatorRequestsStat.name = item.operatorName;
+    operatorRequestsStat.numvals += 1;
+    if (item.wcType == '0x00') operatorRequestsStat.wc0x00 += 1;
+    if (item.wcType == '0x01') operatorRequestsStat.wc0x01 += 1;
+    if (item.status == 'active_ongoing') operatorRequestsStat.exitSignaledNYP += 1;
+    if (item.delayed == true ) operatorRequestsStat.delayed += 1;
+    if (item.status == 'exited_unslashed' || item.status == 'withdrawal_done' || item.status == 'withdrawal_possible') operatorRequestsStat.exited += 1;
+    if (item.status == 'exited_slashed') operatorRequestsStat.exitedSlashed += 1;
+    if (item.status == 'withdrawal_possible') operatorRequestsStat.withdrawable += 1;
+    if (item.status == 'withdrawal_done') operatorRequestsStat.withdrawn += 1;
+
+    acc[item.noId] = operatorRequestsStat;
     
     return acc;
-  }, [] as GroupedRequestsByOperator);
+  }, {} as GroupedRequestsByOperator);
 }
