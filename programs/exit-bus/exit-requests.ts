@@ -18,6 +18,19 @@ export type ExitRequestWithValidator = ExitRequest & {
   validator: ValidatorContainer;
 };
 
+export type GroupedRequestsByOperator = {
+  name: string,
+  numvals: number,
+  wc0x00: number,
+  wc0x01: number,
+  exitSignaledNYP: number,
+  delayed: number,
+  exited: number,
+  exitedSlashed: number,
+  withdrawable: number,
+  withdrawn: number
+}[];
+
 export const fetchLastExitRequests = async (forBlocks = 7200, toBlock?: number) => {
   if (!toBlock) {
     const latestBlock = await getLatestBlock();
@@ -124,3 +137,38 @@ export const formatConsoleExitRequestDetailed = (request: ExitRequestWithValidat
 
   return { ...basicFields, wcType, status, delayed: isDelayed };
 };
+
+
+export const groupRequestsByOperator = (items: { noId: number, operatorName:string, validator: number, requestTime: string, wcType: string, status: string, delayed: boolean }[]) => {
+  return items.reduce<GroupedRequestsByOperator>((acc, item) => {
+    const defaultOperatorRequestsStat = {
+      name: '', // need to initialize otherwise it will end up at the end of the object
+      numvals: 0,
+      wc0x00: 0,
+      wc0x01: 0,
+      exitSignaledNYP: 0,
+      delayed: 0,
+      exited: 0,
+      exitedSlashed: 0,
+      withdrawable: 0,
+      withdrawn: 0
+    }
+
+    const operatorRequestsStat = acc[item.noId] ?? { ...defaultOperatorRequestsStat };
+
+    operatorRequestsStat.name = item.operatorName;
+    operatorRequestsStat.numvals += 1;
+    if (item.wcType == '0x00') operatorRequestsStat.wc0x00 += 1;
+    if (item.wcType == '0x01') operatorRequestsStat.wc0x01 += 1;
+    if (item.status == 'active_ongoing') operatorRequestsStat.exitSignaledNYP += 1;
+    if (item.delayed == true ) operatorRequestsStat.delayed += 1;
+    if (item.status == 'exited_unslashed' || item.status == 'withdrawal_done' || item.status == 'withdrawal_possible') operatorRequestsStat.exited += 1;
+    if (item.status == 'exited_slashed') operatorRequestsStat.exitedSlashed += 1;
+    if (item.status == 'withdrawal_possible') operatorRequestsStat.withdrawable += 1;
+    if (item.status == 'withdrawal_done') operatorRequestsStat.withdrawn += 1;
+
+    acc[item.noId] = operatorRequestsStat;
+    
+    return acc;
+  }, {} as GroupedRequestsByOperator);
+}
