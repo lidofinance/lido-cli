@@ -2,7 +2,7 @@ import { formatEther, MaxUint256, parseEther, ZeroAddress } from 'ethers';
 import { program } from '@command';
 import { wallet } from '@providers';
 import { lidoContract } from '@contracts';
-import { contractCallTxWithConfirm, forwardVoteFromTm } from '@utils';
+import { authorizedCall, contractCallTxWithConfirm, forwardVoteFromTm } from '@utils';
 import { resumeLidoAndSetStakingLimit, votingForward } from '@scripts';
 import { addAragonAppSubCommands, addLogsCommands, addParsingCommands } from './common';
 
@@ -126,4 +126,24 @@ lido
   .action(async (amount, options) => {
     const { referral } = options;
     await contractCallTxWithConfirm(lidoContract, 'submit', [referral, { value: parseEther(amount) }]);
+  });
+
+lido
+  .command('staking-limit')
+  .description('returns staking limit')
+  .action(async () => {
+    const limit = await lidoContract.getStakeLimitFullInfo();
+    console.log('staking limit', limit.toObject());
+  });
+
+lido
+  .command('set-staking-limit')
+  .description('sets staking limit')
+  .argument('<max-staking-limit>', 'max staking limit')
+  .argument('<stake-limit-increase-per-block>', 'stake limit increase per block')
+  .action(async (maxStakeLimit, stakeLimitIncreasePerBlock) => {
+    await authorizedCall(lidoContract, 'setStakingLimit', [
+      parseEther(maxStakeLimit),
+      parseEther(stakeLimitIncreasePerBlock),
+    ]);
   });

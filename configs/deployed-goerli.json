@@ -249,7 +249,7 @@
       "pauseIntentValidityPeriodBlocks": 10
     },
     "contract": "DepositSecurityModule",
-    "address": "0xC8a75E7196b11aE2DEbC39a2F8583f852E5BB7c3",
+    "address": "0xe57025E250275cA56f92d76660DEcfc490C7E79A",
     "constructorArgs": [
       "0x1643E812aE58766192Cf7D2Cf9567dF2C37e9B7F",
       "0xff50ed3d0ec03aC01D4C79aAd74928BFF48a7b2b",
