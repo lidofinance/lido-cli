@@ -158,7 +158,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
         timeZoneName: 'short',
         hour12: false,
       };
-      const intl = new Intl.DateTimeFormat('en-US', formatOptions);
+      const intl = new Intl.DateTimeFormat('en-GB', formatOptions);
 
       const slotToTime = (slot: number) => {
         const time = (genesisTime + slot * secondsPerSlot) * 1000;

@@ -19,16 +19,16 @@ export type ExitRequestWithValidator = ExitRequest & {
 };
 
 export type GroupedRequestsByOperator = {
-  name: string,
-  numvals: number,
-  wc0x00: number,
-  wc0x01: number,
-  exitSignaledNYP: number,
-  delayed: number,
-  exited: number,
-  exitedSlashed: number,
-  withdrawable: number,
-  withdrawn: number
+  name: string;
+  numvals: number;
+  wc0x00: number;
+  wc0x01: number;
+  exitSignaledNYP: number;
+  delayed: number;
+  exited: number;
+  exitedSlashed: number;
+  withdrawable: number;
+  withdrawn: number;
 }[];
 
 export const fetchLastExitRequests = async (forBlocks = 7200, toBlock?: number) => {
@@ -118,7 +118,7 @@ export const formatExitRequest = (request: ExitRequest) => {
     hour12: false,
     timeZone: 'UTC',
   };
-  const intl = new Intl.DateTimeFormat('en-US', formatOptions);
+  const intl = new Intl.DateTimeFormat('en-GB', formatOptions);
   const requestTime = intl.format(dateObject);
 
   return { noId: nodeOperatorId, operatorName, validator: validatorIndex, requestTime };
@@ -138,8 +138,17 @@ export const formatConsoleExitRequestDetailed = (request: ExitRequestWithValidat
   return { ...basicFields, wcType, status, delayed: isDelayed };
 };
 
-
-export const groupRequestsByOperator = (items: { noId: number, operatorName:string, validator: number, requestTime: string, wcType: string, status: string, delayed: boolean }[]) => {
+export const groupRequestsByOperator = (
+  items: {
+    noId: number;
+    operatorName: string;
+    validator: number;
+    requestTime: string;
+    wcType: string;
+    status: string;
+    delayed: boolean;
+  }[],
+) => {
   return items.reduce<GroupedRequestsByOperator>((acc, item) => {
     const defaultOperatorRequestsStat = {
       name: '', // need to initialize otherwise it will end up at the end of the object
@@ -151,8 +160,8 @@ export const groupRequestsByOperator = (items: { noId: number, operatorName:stri
       exited: 0,
       exitedSlashed: 0,
       withdrawable: 0,
-      withdrawn: 0
-    }
+      withdrawn: 0,
+    };
 
     const operatorRequestsStat = acc[item.noId] ?? { ...defaultOperatorRequestsStat };
 
@@ -161,14 +170,15 @@ export const groupRequestsByOperator = (items: { noId: number, operatorName:stri
     if (item.wcType == '0x00') operatorRequestsStat.wc0x00 += 1;
     if (item.wcType == '0x01') operatorRequestsStat.wc0x01 += 1;
     if (item.status == 'active_ongoing') operatorRequestsStat.exitSignaledNYP += 1;
-    if (item.delayed == true ) operatorRequestsStat.delayed += 1;
-    if (item.status == 'exited_unslashed' || item.status == 'withdrawal_done' || item.status == 'withdrawal_possible') operatorRequestsStat.exited += 1;
+    if (item.delayed == true) operatorRequestsStat.delayed += 1;
+    if (item.status == 'exited_unslashed' || item.status == 'withdrawal_done' || item.status == 'withdrawal_possible')
+      operatorRequestsStat.exited += 1;
     if (item.status == 'exited_slashed') operatorRequestsStat.exitedSlashed += 1;
     if (item.status == 'withdrawal_possible') operatorRequestsStat.withdrawable += 1;
     if (item.status == 'withdrawal_done') operatorRequestsStat.withdrawn += 1;
 
     acc[item.noId] = operatorRequestsStat;
-    
+
     return acc;
   }, {} as GroupedRequestsByOperator);
-}
+};
