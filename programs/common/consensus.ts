@@ -140,7 +140,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
       const getFrame = (frameIndex: number) => {
         const frameStartEpoch = Math.floor(initialEpoch + frameIndex * epochsPerFrame);
         const frameStartSlot = frameStartEpoch * slotsPerEpoch;
-        const nextFrameStartSlot = frameStartSlot + epochsPerFrame * secondsPerSlot;
+        const nextFrameStartSlot = frameStartSlot + epochsPerFrame * slotsPerEpoch;
 
         return {
           index: frameIndex,
