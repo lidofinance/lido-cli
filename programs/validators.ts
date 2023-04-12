@@ -1,5 +1,4 @@
 import { program } from '@command';
-import { SecretKey } from '@chainsafe/blst';
 import {
   fetchAllLidoKeys,
   fetchAllValidators,
@@ -65,6 +64,9 @@ validators
   .action(async (mnemonic, index, slot) => {
     const masterSK = deriveKeyFromMnemonic(mnemonic);
     const { signing } = deriveEth2ValidatorKeys(masterSK, index);
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { SecretKey } = require('@chainsafe/blst');
     const sk = SecretKey.fromBytes(signing);
     const pkHex = hexlify(sk.toPublicKey().toBytes());
 
