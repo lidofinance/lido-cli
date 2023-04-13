@@ -1,16 +1,29 @@
 import { authorizedCall } from '@utils';
 import { Command } from 'commander';
-import { Contract } from 'ethers';
+import { Contract, formatEther } from 'ethers';
 
 export const addConsensusCommands = (command: Command, contract: Contract) => {
   command
     .command('members')
     .description('returns a list of oracle members')
     .action(async () => {
-      const [addresses, lastReportedSlots] = await contract.getMembers();
+      const [addresses, lastReportedSlots]: [string[], bigint[]] = await contract.getMembers();
 
-      console.log('addresses', [...addresses]);
-      console.log('last reported slots', [...lastReportedSlots]);
+      const table = await Promise.all(
+        addresses.map(async (address, index) => {
+          const lastReportedSlot = Number(lastReportedSlots[index]);
+          const balanceBigint = (await contract.runner?.provider?.getBalance(address)) || 0;
+          const balance = formatEther(balanceBigint);
+
+          return {
+            address,
+            lastReportedSlot,
+            balance,
+          };
+        }),
+      );
+
+      console.table(table.sort((a, b) => b.lastReportedSlot - a.lastReportedSlot));
     });
 
   command
