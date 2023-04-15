@@ -1,6 +1,6 @@
-import { authorizedCall } from '@utils';
+import { authorizedCall, getLatestBlock } from '@utils';
 import { Command } from 'commander';
-import { Contract, formatEther } from 'ethers';
+import { Contract, EventLog, formatEther } from 'ethers';
 
 export const addConsensusCommands = (command: Command, contract: Contract) => {
   command
@@ -210,5 +210,47 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
       console.log();
       console.log('next report frame');
       console.table(getFrameSlots(nextFrame));
+    });
+
+  command
+    .command('reports')
+    .description('returns the last report')
+    .option('-b, --blocks <number>', 'duration in blocks', '7200')
+    .action(async (options) => {
+      const { blocks } = options;
+
+      const latestBlock = await getLatestBlock();
+      const toBlock = latestBlock.number;
+      const fromBlock = toBlock - Number(blocks);
+
+      const compactHash = (hash: string) => {
+        return hash.substring(0, 5) + '...' + hash.substring(hash.length - 3);
+      };
+
+      const [members]: [string[]] = await contract.getMembers();
+      const membersMap = members.reduce((acc, member) => {
+        acc[compactHash(member)] = '-';
+        return acc;
+      }, {} as Record<string, string>);
+
+      const events = await contract.queryFilter('ReportReceived', fromBlock, toBlock);
+      const groupedByRefSlot = events.reduce((acc, event) => {
+        if (!(event instanceof EventLog)) {
+          console.warn('log is not parsed');
+          return acc;
+        }
+
+        const refSlot = Number(event.args[0]);
+        const member = compactHash(event.args[1]);
+
+        if (!acc[refSlot]) {
+          acc[refSlot] = { ...membersMap };
+        }
+
+        acc[refSlot][member] = 'H';
+        return acc;
+      }, {} as Record<number, Record<string, string>>);
+
+      console.table(groupedByRefSlot);
     });
 };
