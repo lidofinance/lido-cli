@@ -20,6 +20,15 @@ router
   });
 
 router
+  .command('modules-at-block')
+  .description('returns staking modules')
+  .argument('<block-tag>', 'blockTag')
+  .action(async (blockTag) => {
+    const modules = await getStakingModules(parseInt(blockTag, 10));
+    console.log('modules', modules);
+  });
+
+router
   .command('module')
   .description('returns staking module')
   .argument('<module-id>', 'staking module id')
