@@ -1,6 +1,5 @@
 import { program } from '@command';
-import { Wallet } from 'ethers';
-import {getLatestBlock} from "@utils";
+import { getLatestBlock } from '@utils';
 
 const accounts = program.command('chain').description('chain utils');
 
