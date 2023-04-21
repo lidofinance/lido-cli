@@ -1,5 +1,5 @@
 import { stakingRouterContract } from '@contracts';
-import { Result } from 'ethers';
+import { BlockTag, Result } from 'ethers';
 
 export type StakingModule = {
   id: number;
@@ -14,8 +14,8 @@ export type StakingModule = {
   exitedValidatorsCount: number;
 };
 
-export const getStakingModules = async (): Promise<StakingModule[]> => {
-  const modules: Result[] = await stakingRouterContract.getStakingModules();
+export const getStakingModules = async (blockTag?: BlockTag): Promise<StakingModule[]> => {
+  const modules: Result[] = await stakingRouterContract.getStakingModules({ blockTag });
   return modules.map((module) => {
     const {
       id,

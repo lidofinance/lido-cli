@@ -51,6 +51,14 @@ lido
   });
 
 lido
+  .command('can-deposit')
+  .description('returns is protocol can deposit')
+  .action(async () => {
+    const canDeposit = await lidoContract.canDeposit();
+    console.log('can deposit', canDeposit);
+  });
+
+lido
   .command('is-staking-paused')
   .description('returns is staking paused')
   .action(async () => {
