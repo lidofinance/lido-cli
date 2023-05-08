@@ -14,3 +14,15 @@ export const getBlock = async (blockTag: BlockTag) => {
 
   return block;
 };
+
+export const parseBlock = (block: string) => {
+  const isNumeric = (value: string) => {
+    return /^-?\d+$/.test(value);
+  }
+
+  if (isNumeric(block)) {
+    return parseInt(block, 10);
+  }
+
+  return block;
+};

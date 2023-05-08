@@ -1,6 +1,6 @@
 import { program } from '@command';
 import { stakingRouterContract } from '@contracts';
-import { authorizedCall } from '@utils';
+import { authorizedCall, parseBlock } from '@utils';
 import { Result } from 'ethers';
 import { addAccessControlSubCommands, addLogsCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
 import { getNodeOperators, getStakingModules } from './staking-module';
@@ -14,17 +14,10 @@ addLogsCommands(router, stakingRouterContract);
 router
   .command('modules')
   .description('returns staking modules')
-  .action(async () => {
-    const modules = await getStakingModules();
-    console.log('modules', modules);
-  });
-
-router
-  .command('modules-at-block')
-  .description('returns staking modules')
-  .argument('<block-tag>', 'blockTag')
-  .action(async (blockTag) => {
-    const modules = await getStakingModules(parseInt(blockTag, 10));
+  .option('-b, --block <number>', 'block (number or string)', 'latest')
+  .action(async (options: { block: string }) => {
+    const blockTag = parseBlock(options.block);
+    const modules = await getStakingModules(blockTag);
     console.log('modules', modules);
   });
 

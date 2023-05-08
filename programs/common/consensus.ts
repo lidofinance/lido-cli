@@ -1,4 +1,4 @@
-import { authorizedCall, getBlock, getLatestBlock } from '@utils';
+import {authorizedCall, getBlock, getLatestBlock, parseBlock } from '@utils';
 import { Command } from 'commander';
 import { BlockTag, Contract, EventLog, formatEther } from 'ethers';
 
@@ -133,29 +133,13 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
 
   command
     .command('closest-report')
-    .description('returns the closest report')
-    .action(async () => {
-      const report = await getClosestReport(contract, 'latest');
+    .description('returns the closest report for the latest or specific block')
+    .option('-b, --block <number>', 'block (number or string)', 'latest')
+    .action(async (options: { block: string }) => {
+      const blockTag = parseBlock(options.block);
+      const report = await getClosestReport(contract, blockTag);
 
-      console.log('current slot');
-      console.table(report.targetSlot);
-
-      console.log();
-      console.log('current report frame');
-      console.table(report.targetReportFrame);
-
-      console.log();
-      console.log('next report frame');
-      console.table(report.nextReportFrame);
-    });
-
-  command
-    .command('closest-report-at-block')
-    .description('returns the closest report for specific block')
-    .argument('<block-tag>', 'blockTag')
-    .action(async (blockTag) => {
-      const report = await getClosestReport(contract, parseInt(blockTag, 10));
-
+      console.log(`closest-report for block ${blockTag}`);
       console.log('target slot');
       console.table(report.targetSlot);
 
