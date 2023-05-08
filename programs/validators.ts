@@ -129,3 +129,14 @@ validators
     const result = await postToAttestationPool(attesterSlashing);
     console.log(result);
   });
+
+
+validators
+  .command('info')
+  .description('fetches validator info by pubkey or validator index')
+  .argument('<indexOrPubkey>', 'validator index of pubkey')
+  .action(async (indexOrPubkey: string) => {
+    const validator = await fetchValidator(indexOrPubkey);
+
+    console.log('validator', validator);
+  });
