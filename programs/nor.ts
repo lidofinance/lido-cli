@@ -1,7 +1,8 @@
 import { program } from '@command';
 import { norContract } from '@contracts';
-import { authorizedCall } from '@utils';
+import { authorizedCall, contractCallTxWithConfirm, formatDate } from '@utils';
 import { addAragonAppSubCommands, addLogsCommands, addParsingCommands } from './common';
+import { getPenalizedOperators } from './staking-module';
 
 const nor = program.command('nor').description('interact with node operator registry contract');
 addAragonAppSubCommands(nor, norContract);
@@ -88,9 +89,64 @@ nor
   });
 
 nor
-  .command('clear-penalties')
+  .command('penalized-operators')
+  .description('returns penalties for all operators')
+  .action(async () => {
+    const penalizedOperators = await getPenalizedOperators();
+
+    if (!penalizedOperators.length) {
+      console.log('no penalized operators');
+      return;
+    }
+
+    const formattedOperators = penalizedOperators.map((operator) => {
+      const { operatorId, name, isPenaltyClearable } = operator;
+      const refunded = operator.refundedValidatorsCount;
+      const stuck = operator.stuckValidatorsCount;
+      const penaltyEndDate = formatDate(new Date(Number(operator.stuckPenaltyEndTimestamp) * 1000));
+
+      return {
+        operatorId,
+        name,
+        refunded,
+        stuck,
+        penaltyEndDate,
+        isPenaltyClearable,
+      };
+    });
+
+    console.table(formattedOperators);
+  });
+
+nor
+  .command('clear-penalty')
   .description('clears node operator penalty')
   .argument('<operator-id>', 'operator id')
   .action(async (operatorId) => {
-    await norContract.clearNodeOperatorPenalty(operatorId);
+    await contractCallTxWithConfirm(norContract, 'clearNodeOperatorPenalty', [operatorId]);
+  });
+
+nor
+  .command('clear-penalties')
+  .description('clears node operator penalty')
+  .action(async () => {
+    const penalizedOperators = await getPenalizedOperators();
+
+    if (!penalizedOperators.length) {
+      console.log('no penalized operators');
+      return;
+    }
+
+    for (const operator of penalizedOperators) {
+      if (operator.isPenaltyClearable) {
+        console.log('penalty can be cleared for NO', operator.operatorId);
+        await contractCallTxWithConfirm(norContract, 'clearNodeOperatorPenalty', [operator.operatorId]);
+      } else {
+        console.log('penalty is not clearable for operator', operator.operatorId);
+        console.log('current time', formatDate(new Date()));
+        console.log('penalty end time', formatDate(new Date(Number(operator.stuckPenaltyEndTimestamp) * 1000)));
+      }
+    }
+
+    console.log('all operators are checked');
   });

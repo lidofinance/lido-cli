@@ -6,10 +6,12 @@ export type NodeOperator = {
   name: string;
 };
 
-export const getNodeOperatorIds = (moduleAddress: string) => {
+export const getNodeOperatorIds = async (moduleAddress: string) => {
   const stakingModuleContract = getStakingModuleContract(moduleAddress);
-  const nodeOperatorsCount = stakingModuleContract.getNodeOperatorsCount();
-  return stakingModuleContract.getNodeOperatorIds(0, nodeOperatorsCount);
+  const nodeOperatorsCount = await stakingModuleContract.getNodeOperatorsCount();
+  const operatorIds: Promise<bigint[]> = stakingModuleContract.getNodeOperatorIds(0, nodeOperatorsCount);
+
+  return operatorIds;
 };
 
 export const getNodeOperators = async (moduleAddress: string): Promise<NodeOperator[]> => {

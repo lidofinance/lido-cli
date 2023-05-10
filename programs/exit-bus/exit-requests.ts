@@ -1,6 +1,6 @@
 import { exitBusOracleContract, oracleConfigContract } from '@contracts';
 import { FAR_FUTURE_EPOCH, fetchAllValidators, fetchBlock, ValidatorContainer } from '@providers';
-import { getLatestBlock, getValidatorsMap } from '@utils';
+import { formatDate, getLatestBlock, getValidatorsMap } from '@utils';
 import { getNodeOperatorsMapByModule } from '../staking-module';
 
 export type ExitRequest = {
@@ -107,19 +107,7 @@ export const formatExitRequests = (requests: ExitRequest[]) => {
 
 export const formatExitRequest = (request: ExitRequest) => {
   const { nodeOperatorId, operatorName, validatorIndex, timestamp } = request;
-
-  const dateObject = new Date(timestamp * 1000);
-  const formatOptions: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: false,
-    timeZone: 'UTC',
-  };
-  const intl = new Intl.DateTimeFormat('en-GB', formatOptions);
-  const requestTime = intl.format(dateObject);
+  const requestTime = formatDate(new Date(timestamp * 1000));
 
   return { noId: nodeOperatorId, operatorName, validator: validatorIndex, requestTime };
 };

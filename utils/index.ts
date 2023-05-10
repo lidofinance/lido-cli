@@ -4,6 +4,7 @@ export * from './block';
 export * from './call-tx';
 export * from './compare-calls';
 export * from './csv';
+export * from './format-date';
 export * from './modules';
 export * from './role-hash';
 export * from './scripts';
