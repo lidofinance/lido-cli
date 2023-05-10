@@ -156,12 +156,12 @@ dsm
     const lastDepositBlock = await stakingRouterContract.getStakingModuleLastDepositBlock(moduleId);
     const minDepositBlockDistance = await dsmContract.getMinDepositBlockDistance();
 
-    const result = BigInt(block.number) - BigInt(lastDepositBlock) >= BigInt(minDepositBlockDistance);
+    const result = block.number - lastDepositBlock >= minDepositBlockDistance;
 
     console.table({
-      blockNumber: BigInt(block.number),
-      lastDepositBlock: BigInt(lastDepositBlock),
-      minDepositBlockDistance: BigInt(minDepositBlockDistance),
+      blockNumber: block.number,
+      lastDepositBlock: lastDepositBlock,
+      minDepositBlockDistance: minDepositBlockDistance,
       condition: 'blockNumber - lastDepositBlock >= minDepositBlockDistance',
       result: result,
     });
