@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { AbstractSigner, Contract, ContractTransactionResponse } from 'ethers';
+import { AbstractSigner, Contract, ContractTransaction, ContractTransactionResponse } from 'ethers';
 import { confirmTx } from './confirm-tx';
 import { stringify } from './stringify';
 
@@ -32,8 +32,32 @@ export const contractCallConfirm = async (contract: Contract, method: string, ar
   return confirmTx(network.name, from, to, `${method}(${parsedArgs})`);
 };
 
+export const populateGasLimit = async (contract: Contract, method: string, argsWithOverrides: unknown[]) => {
+  const fragment = contract.interface.getFunction(method, argsWithOverrides);
+
+  if (!fragment) {
+    throw new Error(`Method ${method} not found`);
+  }
+
+  const args = [...argsWithOverrides];
+
+  // If an overrides was passed in, copy it
+  let overrides: Omit<ContractTransaction, 'data' | 'to'> = {};
+  if (fragment.inputs.length + 1 === args.length) {
+    overrides = { ...(args.pop() as typeof overrides) };
+  }
+
+  if (!overrides.gasLimit) {
+    const gasLimit = await contract[method].estimateGas(...args, overrides);
+    overrides.gasLimit = (gasLimit * 120n) / 100n;
+  }
+
+  return [...args, overrides];
+};
+
 export const contractCallTx = async (contract: Contract, method: string, args: unknown[]) => {
-  const tx: ContractTransactionResponse = await contract[method](...args);
+  const argsWithGasLimit = await populateGasLimit(contract, method, args);
+  const tx: ContractTransactionResponse = await contract[method](...argsWithGasLimit);
   console.log('tx sent', chalk.green(tx.hash));
 
   console.log('waiting for tx to be mined...');
