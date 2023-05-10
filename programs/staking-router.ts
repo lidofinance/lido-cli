@@ -224,3 +224,11 @@ router
   .action(async (moduleId, nodeOperatorId) => {
     await authorizedCall(stakingRouterContract, 'updateTargetValidatorsLimits', [moduleId, nodeOperatorId, false, 0]);
   });
+
+router
+  .command('rewards-distribution')
+  .description('returns rewards distribution')
+  .action(async () => {
+    const distribution = await stakingRouterContract.getStakingRewardsDistribution();
+    console.log('distribution', distribution);
+  });

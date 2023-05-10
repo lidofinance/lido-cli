@@ -67,6 +67,17 @@ nor
   });
 
 nor
+  .command('remove-keys')
+  .description('removes signing keys')
+  .option('-o, --operator-id <number>', 'node operator id')
+  .option('-i, --from-index <number>', 'from index')
+  .option('-c, --count <number>', 'keys count')
+  .action(async (options) => {
+    const { operatorId, fromIndex, count } = options;
+    await authorizedCall(norContract, 'removeSigningKeys', [Number(operatorId), Number(fromIndex), Number(count)]);
+  });
+
+nor
   .command('set-limit')
   .description('sets staking limit')
   .option('-o, --operator-id <number>', 'node operator id')
@@ -74,4 +85,12 @@ nor
   .action(async (options) => {
     const { operatorId, limit } = options;
     await authorizedCall(norContract, 'setNodeOperatorStakingLimit', [operatorId, limit]);
+  });
+
+nor
+  .command('clear-penalties')
+  .description('clears node operator penalty')
+  .argument('<operator-id>', 'operator id')
+  .action(async (operatorId) => {
+    await norContract.clearNodeOperatorPenalty(operatorId);
   });
