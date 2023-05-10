@@ -138,13 +138,15 @@ nor
     }
 
     for (const operator of penalizedOperators) {
+      console.log('operator is penalized', operator.operatorId, operator.name);
+      console.log('current time', formatDate(new Date()));
+      console.log('penalty end time', formatDate(new Date(Number(operator.stuckPenaltyEndTimestamp) * 1000)));
+
       if (operator.isPenaltyClearable) {
-        console.log('penalty can be cleared for NO', operator.operatorId);
+        console.log('penalty can be cleared');
         await contractCallTxWithConfirm(norContract, 'clearNodeOperatorPenalty', [operator.operatorId]);
       } else {
-        console.log('penalty is not clearable for operator', operator.operatorId);
-        console.log('current time', formatDate(new Date()));
-        console.log('penalty end time', formatDate(new Date(Number(operator.stuckPenaltyEndTimestamp) * 1000)));
+        console.log('penalty is not clearable');
       }
     }
 
