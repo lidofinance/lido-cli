@@ -5,6 +5,7 @@ export * from './burner';
 export * from './chain';
 export * from './deposit-contract';
 export * from './dsm';
+export * from './el-node';
 export * from './exit-bus-consensus';
 export * from './exit-bus-oracle';
 export * from './lido';
