@@ -1,4 +1,4 @@
-# Testnet CLI for Lido protocol
+# CLI tool for Lido protocol
 
 ## Requirements
 
@@ -22,4 +22,4 @@ cp sample.env .env
 
 ## Run
 
-Run `./testnet.sh` to see the list of available commands
+Run `./run.sh` to see the list of available commands

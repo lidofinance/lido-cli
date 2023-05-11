@@ -2,6 +2,7 @@
   "license": "MIT",
   "scripts": {
     "testnet": "./testnet.sh",
+    "run": "./run.sh",
     "lint": "eslint **/*.ts",
     "format": "eslint **/*.ts --fix",
     "check-types": "tsc --noEmit"
