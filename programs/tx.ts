@@ -34,6 +34,21 @@ tx.command('parse-calldata')
     });
   });
 
+tx.command('parse-method')
+  .description('decodes transaction method with ABI')
+  .argument('<selector>', '4byte transaction method selector')
+  .action(async (selector) => {
+    const abi = getAllAbi();
+
+    abi.forEach(({ name, iface }) => {
+      iface.forEachFunction((func) => {
+        if (func.selector === selector) {
+          console.log(name, func);
+        }
+      });
+    });
+  });
+
 tx.command('parse-error')
   .description('decodes transaction revert reason with ABI')
   .argument('<reason>', 'transaction revert reason')
