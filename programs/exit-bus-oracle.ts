@@ -1,6 +1,14 @@
 import { program } from '@command';
 import { exitBusOracleContract } from '@contracts';
-import { exportToCSV, groupByModuleId } from '@utils';
+import {
+  FAR_FUTURE_EPOCH,
+  fetchAllLidoKeys,
+  fetchAllValidators,
+  fetchBlock,
+  KAPIKey,
+  ValidatorContainer,
+} from '@providers';
+import { exportToCSV, getValidatorsMap, groupByModuleId } from '@utils';
 
 import {
   addAccessControlSubCommands,
@@ -18,6 +26,11 @@ import {
   groupRequestsByOperator,
 } from './exit-bus';
 import { getNodeOperators, getStakingModules } from './staking-module';
+
+export type LidoValidator = {
+  validator: ValidatorContainer;
+  signingKey: KAPIKey;
+};
 
 const oracle = program.command('exit-bus-oracle').description('interact with validator exit bus oracle contract');
 addAccessControlSubCommands(oracle, exitBusOracleContract);
@@ -113,5 +126,86 @@ oracle
 
       console.log('module', module.id, module.stakingModuleAddress);
       console.table(operatorsWithLastRequestedValidators);
+    });
+  });
+
+oracle
+  .command('unsettled-requests')
+  .description('returns unsettled exit requests')
+  .action(async () => {
+    // fetch latest block on CL
+    const block = await fetchBlock('head');
+    const slot = block.message.slot;
+
+    // fetch all Lido keys
+    const lidoLeys = await fetchAllLidoKeys();
+
+    // fetch validator from CL
+    const validators = await fetchAllValidators(Number(slot));
+    const validatorsMap = getValidatorsMap(validators);
+
+    const operatorValidatorsMap = lidoLeys.reduce((acc, signingKey) => {
+      const { moduleAddress, operatorIndex } = signingKey;
+      const pubkey = signingKey.key;
+      const validator = validatorsMap[pubkey];
+
+      if (!validator) return acc;
+      if (!acc[moduleAddress]) acc[moduleAddress] = {} as Record<number, LidoValidator[]>;
+      if (!acc[moduleAddress][operatorIndex]) acc[moduleAddress][operatorIndex] = [] as LidoValidator[];
+
+      acc[moduleAddress][operatorIndex].push({ validator, signingKey });
+
+      return acc;
+    }, {} as Record<string, Record<number, LidoValidator[]>>);
+
+    // fetch modules
+    const modules = await getStakingModules();
+
+    modules.forEach(async (module) => {
+      console.log('module', module.id, module.stakingModuleAddress);
+
+      const operators = await getNodeOperators(module.stakingModuleAddress);
+      const operatorIds = operators.map(({ operatorId }) => operatorId);
+
+      const lastRequestedIndexes = await exitBusOracleContract.getLastRequestedValidatorIndices(module.id, operatorIds);
+      const detailedOperators = operators.map((operator, index) => {
+        const { operatorId, name } = operator;
+        const lastRequestedIndex = Number(lastRequestedIndexes[index]);
+
+        if (lastRequestedIndex === -1) return { operatorId, name, lastRequestedIndex, exited: 0, unsettled: 0 };
+
+        const operatorValidators = operatorValidatorsMap[module.stakingModuleAddress][operatorId];
+        const requestedValidators = operatorValidators.filter(
+          ({ validator }) => Number(validator.index) <= lastRequestedIndex,
+        );
+        const unsettledRequests = requestedValidators.filter(
+          ({ validator }) => validator.validator.exit_epoch === FAR_FUTURE_EPOCH.toString(),
+        );
+
+        const exited = requestedValidators.length - unsettledRequests.length;
+        const unsettled = unsettledRequests.length;
+
+        if (unsettled > 0) {
+          console.log(`operator #${operatorId} ${name} has unsettled requests`);
+          console.table(
+            unsettledRequests.map(({ validator }) => {
+              const {
+                validator: { pubkey },
+                index,
+              } = validator;
+
+              return { index, pubkey };
+            }),
+          );
+          console.log('');
+        }
+
+        return { operatorId, name, lastRequestedIndex, exited, unsettled };
+      });
+
+      const operatorsWithUnsettledRequests = detailedOperators.filter(({ unsettled }) => unsettled > 0);
+
+      console.log('summary');
+      console.table(operatorsWithUnsettledRequests);
     });
   });
