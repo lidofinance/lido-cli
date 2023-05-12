@@ -45,13 +45,15 @@ role
 
     contracts.forEach((contract) => {
       contract.interface.fragments.forEach(async (fragment) => {
-        const isRole = fragment instanceof FunctionFragment && fragment.name.endsWith('_ROLE');
-        if (isRole) {
-          const roleHash = await contract[fragment.name]();
-          if (roleHash !== hash) return;
+        try {
+          const isRole = fragment instanceof FunctionFragment && fragment.name.endsWith('_ROLE');
+          if (isRole) {
+            const roleHash = await contract[fragment.name]();
+            if (roleHash !== hash) return;
 
-          console.log(fragment.name, roleHash);
-        }
+            console.log(fragment.name, roleHash);
+          }
+        } catch (error) {}
       });
     });
   });
