@@ -1,6 +1,7 @@
 import { lstatSync } from 'fs';
 import { resolve } from 'path';
 import { envs } from './envs';
+import { getValueByPath } from '@utils';
 
 export const getContracts = () => {
   const fullPath = resolve('configs', envs?.DEPLOYED ?? '');
@@ -13,22 +14,31 @@ export const getContracts = () => {
   return require(fullPath) as Record<string, Record<string, string>>;
 };
 
-export const getContractDeploy = (contractKey: string) => {
-  return getContracts()[contractKey];
+export const getContractDeploy = (path: string) => {
+  return getValueByPath(getContracts(), path);
 };
 
-export const getDeployedAddress = (contractKey: string) => {
-  const contract = getContractDeploy(contractKey);
-
-  if (!contract) {
-    throw new Error(`Contract ${contractKey} not found`);
-  }
+export const getDeployedAddress = (...contractKeys: string[]) => {
+  const contracts = contractKeys.map((contractKey) => getContractDeploy(contractKey));
+  const contract = contracts.find((contract) => contract);
 
   if (typeof contract === 'string') {
     return contract;
   }
 
-  return contract.proxyAddress || contract.address;
+  if (!contract || typeof contract !== 'object') {
+    throw new Error(`Contracts by ${contractKeys} not found`);
+  }
+
+  if ('proxyAddress' in contract) {
+    return contract.proxyAddress as string;
+  }
+
+  if ('address' in contract) {
+    return contract.address as string;
+  }
+
+  throw new Error(`Contracts by ${contractKeys} not found`);
 };
 
 export const getAddressMap = () => {

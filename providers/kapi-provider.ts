@@ -14,7 +14,10 @@ export const fetchAllLidoKeys = async () => {
     throw new Error('KEYS_API_PROVIDER is not defined');
   }
 
-  const response = await fetch(`${envs.KEYS_API_PROVIDER}/v1/keys`);
+  const response = await fetch(`${envs.KEYS_API_PROVIDER}/v1/keys`, {
+    headers: { 'Content-Type': 'application/json' },
+  });
+
   const result = await response.json();
 
   return result.data as KAPIKey[];
