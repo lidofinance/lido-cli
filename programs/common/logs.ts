@@ -1,7 +1,6 @@
 import { getLatestBlock } from '@utils';
 import { Command } from 'commander';
-import { Contract, EventLog } from 'ethers';
-import { Filter } from 'ethers/types/providers';
+import { Contract, EventLog, Filter } from 'ethers';
 
 export const addLogsCommands = (command: Command, contract: Contract) => {
   command
