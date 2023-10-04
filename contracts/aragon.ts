@@ -12,5 +12,5 @@ export const kernelContract = new BaseContract({ getAddress: getKernelAddress },
 export const getAclAddress = (): Promise<string> => kernelContract.acl();
 export const aclContract = new BaseContract({ getAddress: getAclAddress }, aclAbi, wallet) as Contract;
 
-export const aragonAgentAddress = getDeployedAddress('app:aragon-agent');
+export const aragonAgentAddress = getDeployedAddress('app:aragon-agent.proxyAddress', 'app:aragon-agent.proxy');
 export const aragonAgentContract = new Contract(aragonAgentAddress, agentAbi, wallet);
