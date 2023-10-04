@@ -1,37 +1,12 @@
 import chalk from 'chalk';
-import { AbstractSigner, Contract, ContractTransaction, ContractTransactionResponse } from 'ethers';
+import { Contract, ContractTransaction, ContractTransactionResponse } from 'ethers';
 import { confirmTx } from './confirm-tx';
-import { stringify } from './stringify';
 
 export const contractCallTxWithConfirm = async (contract: Contract, method: string, args: unknown[]) => {
-  const confirmed = await contractCallConfirm(contract, method, args);
+  const confirmed = await confirmTx();
   if (!confirmed) return null;
 
   return await contractCallTx(contract, method, args);
-};
-
-export const contractCallConfirm = async (contract: Contract, method: string, args: unknown[]) => {
-  const provider = contract.runner?.provider;
-
-  if (!provider) {
-    throw new Error('Provider is not set');
-  }
-
-  if (!(contract.runner instanceof AbstractSigner)) {
-    throw new Error('Runner is not a signer');
-  }
-
-  const signer = contract.runner;
-  const from = await signer.getAddress();
-
-  const network = await provider.getNetwork();
-  const to = await contract.getAddress();
-
-  const parsedArgs = args.map((arg) => stringify(arg));
-  const call = `${method}(${parsedArgs})`;
-  const data = contract.interface.encodeFunctionData(method, args);
-
-  return confirmTx(network.name, from, to, call, data);
 };
 
 export const populateGasLimit = async (contract: Contract, method: string, argsWithOverrides: unknown[]) => {
