@@ -16,3 +16,4 @@ export * from './trace';
 export * from './tree';
 export * from './validators';
 export * from './voting';
+export * from './write-to-file';
