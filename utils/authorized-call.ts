@@ -5,13 +5,18 @@ import { encodeCallScript } from './scripts';
 import { forwardVoteFromTm } from './voting';
 import { contractCallTxWithConfirm } from './call-tx';
 import { agentForward } from 'scripts/agent';
+import { printTx } from './print-tx';
 
 export const authorizedCall = async (contract: Contract, method: string, args: unknown[] = []) => {
+  printTx(contract, method, args);
+  const errors = [];
+
   try {
     const passed = await authorizedCallEOA(contract, method, args);
     if (passed) return;
   } catch (error) {
     console.warn('direct call failed, trying to forward to the voting');
+    errors.push(error);
   }
 
   try {
@@ -19,6 +24,7 @@ export const authorizedCall = async (contract: Contract, method: string, args: u
     if (passed) return;
   } catch (error) {
     console.warn('call from voting failed');
+    errors.push(error);
   }
 
   try {
@@ -26,7 +32,10 @@ export const authorizedCall = async (contract: Contract, method: string, args: u
     if (passed) return;
   } catch (error) {
     console.warn('call from agent failed');
+    errors.push(error);
   }
+
+  console.log(errors);
 };
 
 export const authorizedCallEOA = async (contract: Contract, method: string, args: unknown[] = []) => {
