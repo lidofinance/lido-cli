@@ -28,8 +28,10 @@ export const contractCallConfirm = async (contract: Contract, method: string, ar
   const to = await contract.getAddress();
 
   const parsedArgs = args.map((arg) => stringify(arg));
+  const call = `${method}(${parsedArgs})`;
+  const data = contract.interface.encodeFunctionData(method, args);
 
-  return confirmTx(network.name, from, to, `${method}(${parsedArgs})`);
+  return confirmTx(network.name, from, to, call, data);
 };
 
 export const populateGasLimit = async (contract: Contract, method: string, argsWithOverrides: unknown[]) => {
