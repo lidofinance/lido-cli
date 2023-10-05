@@ -1,7 +1,10 @@
 import chalk from 'chalk';
 
 export class TreeNode<T = unknown> {
-  constructor(public data: T = {} as T, public children: TreeNode<T>[] = []) {}
+  constructor(
+    public data: T = {} as T,
+    public children: TreeNode<T>[] = [],
+  ) {}
 
   setData(data: T) {
     this.data = data;

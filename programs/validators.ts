@@ -25,10 +25,13 @@ validators
     console.log('fetching validators from CL, it may take a few minutes...');
     const validators = await fetchAllValidators();
 
-    const keysMap = keys.reduce((acc, signingKey) => {
-      acc[signingKey.key] = signingKey;
-      return acc;
-    }, {} as Record<string, KAPIKey>);
+    const keysMap = keys.reduce(
+      (acc, signingKey) => {
+        acc[signingKey.key] = signingKey;
+        return acc;
+      },
+      {} as Record<string, KAPIKey>,
+    );
 
     const lidoValidators = validators.filter(({ validator }) => {
       return keysMap[validator.pubkey];
@@ -42,15 +45,18 @@ validators
 
     console.log('validators with 0x00 wc', validatorsWith0x00WC.length);
 
-    const nodeOperatorIds = validatorsWith0x00WC.reduce((acc, { validator }) => {
-      const key = keysMap[validator.pubkey];
-      if (!acc[key.operatorIndex]) {
-        acc[key.operatorIndex] = 0;
-      }
+    const nodeOperatorIds = validatorsWith0x00WC.reduce(
+      (acc, { validator }) => {
+        const key = keysMap[validator.pubkey];
+        if (!acc[key.operatorIndex]) {
+          acc[key.operatorIndex] = 0;
+        }
 
-      acc[key.operatorIndex] += 1;
-      return acc;
-    }, {} as Record<number, number>);
+        acc[key.operatorIndex] += 1;
+        return acc;
+      },
+      {} as Record<number, number>,
+    );
 
     console.log('operators with 0x00 wc', nodeOperatorIds);
   });

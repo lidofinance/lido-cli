@@ -144,19 +144,22 @@ oracle
     const validators = await fetchAllValidators(Number(slot));
     const validatorsMap = getValidatorsMap(validators);
 
-    const operatorValidatorsMap = lidoLeys.reduce((acc, signingKey) => {
-      const { moduleAddress, operatorIndex } = signingKey;
-      const pubkey = signingKey.key;
-      const validator = validatorsMap[pubkey];
+    const operatorValidatorsMap = lidoLeys.reduce(
+      (acc, signingKey) => {
+        const { moduleAddress, operatorIndex } = signingKey;
+        const pubkey = signingKey.key;
+        const validator = validatorsMap[pubkey];
 
-      if (!validator) return acc;
-      if (!acc[moduleAddress]) acc[moduleAddress] = {} as Record<number, LidoValidator[]>;
-      if (!acc[moduleAddress][operatorIndex]) acc[moduleAddress][operatorIndex] = [] as LidoValidator[];
+        if (!validator) return acc;
+        if (!acc[moduleAddress]) acc[moduleAddress] = {} as Record<number, LidoValidator[]>;
+        if (!acc[moduleAddress][operatorIndex]) acc[moduleAddress][operatorIndex] = [] as LidoValidator[];
 
-      acc[moduleAddress][operatorIndex].push({ validator, signingKey });
+        acc[moduleAddress][operatorIndex].push({ validator, signingKey });
 
-      return acc;
-    }, {} as Record<string, Record<number, LidoValidator[]>>);
+        return acc;
+      },
+      {} as Record<string, Record<number, LidoValidator[]>>,
+    );
 
     // fetch modules
     const modules = await getStakingModules();
