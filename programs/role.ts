@@ -53,7 +53,9 @@ role
 
             console.log(fragment.name, roleHash);
           }
-        } catch (error) {}
+        } catch {
+          //
+        }
       });
     });
   });

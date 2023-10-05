@@ -44,26 +44,29 @@ export const getDeployedAddress = (...contractKeys: string[]) => {
 export const getAddressMap = () => {
   const contracts = getContracts();
 
-  return Object.entries(contracts).reduce((acc, [key, value]) => {
-    const name = value.contract || key;
-    const proxyAddress = value.proxyAddress || (value.implementation && value.address);
-    const implementation = value.implementation;
-    const isNotProxy = !implementation && !proxyAddress;
+  return Object.entries(contracts).reduce(
+    (acc, [key, value]) => {
+      const name = value.contract || key;
+      const proxyAddress = value.proxyAddress || (value.implementation && value.address);
+      const implementation = value.implementation;
+      const isNotProxy = !implementation && !proxyAddress;
 
-    if (proxyAddress) {
-      acc[proxyAddress.toLowerCase()] = `Proxy (${name})`;
-    }
+      if (proxyAddress) {
+        acc[proxyAddress.toLowerCase()] = `Proxy (${name})`;
+      }
 
-    if (implementation) {
-      acc[implementation.toLowerCase()] = `Implementation (${name})`;
-    }
+      if (implementation) {
+        acc[implementation.toLowerCase()] = `Implementation (${name})`;
+      }
 
-    if (isNotProxy && value.address) {
-      acc[value.address.toLowerCase()] = name;
-    }
+      if (isNotProxy && value.address) {
+        acc[value.address.toLowerCase()] = name;
+      }
 
-    return acc;
-  }, {} as Record<string, string>);
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
 };
 
 let addressMapCache: Record<string, string> | undefined;
