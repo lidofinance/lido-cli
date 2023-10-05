@@ -1,6 +1,6 @@
-import { authorizedCall, getLatestBlock } from '@utils';
+import {authorizedCall, getBlock, getLatestBlock, parseBlock } from '@utils';
 import { Command } from 'commander';
-import { Contract, EventLog, formatEther } from 'ethers';
+import { BlockTag, Contract, EventLog, formatEther } from 'ethers';
 
 export const addConsensusCommands = (command: Command, contract: Contract) => {
   command
@@ -133,83 +133,23 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
 
   command
     .command('closest-report')
-    .description('returns the closest report')
-    .action(async () => {
-      const chainConfig = await contract.getChainConfig();
-      const frameConfig = await contract.getFrameConfig();
+    .description('returns the closest report for the latest or specific block')
+    .option('-b, --block <number>', 'block (number or string)', 'latest')
+    .action(async (options: { block: string }) => {
+      const blockTag = parseBlock(options.block);
+      const report = await getClosestReport(contract, blockTag);
 
-      const secondsPerSlot = Number(chainConfig.secondsPerSlot);
-      const genesisTime = Number(chainConfig.genesisTime);
-      const slotsPerEpoch = Number(chainConfig.slotsPerEpoch);
-
-      const initialEpoch = Number(frameConfig.initialEpoch);
-      const epochsPerFrame = Number(frameConfig.epochsPerFrame);
-
-      const computeFrameIndex = (timestamp: number) => {
-        const epoch = Math.floor((timestamp - genesisTime) / secondsPerSlot / slotsPerEpoch);
-        return Math.floor((epoch - initialEpoch) / epochsPerFrame);
-      };
-
-      const getFrame = (frameIndex: number) => {
-        const frameStartEpoch = Math.floor(initialEpoch + frameIndex * epochsPerFrame);
-        const frameStartSlot = frameStartEpoch * slotsPerEpoch;
-        const nextFrameStartSlot = frameStartSlot + epochsPerFrame * slotsPerEpoch;
-
-        return {
-          index: frameIndex,
-          refSlot: frameStartSlot - 1,
-          reportProcessingDeadlineSlot: nextFrameStartSlot - 1,
-        };
-      };
-
-      const formatOptions: Intl.DateTimeFormatOptions = {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        timeZoneName: 'short',
-        hour12: false,
-      };
-      const intl = new Intl.DateTimeFormat('en-GB', formatOptions);
-
-      const slotToTime = (slot: number) => {
-        const time = (genesisTime + slot * secondsPerSlot) * 1000;
-        return intl.format(time);
-      };
-
-      const nowUnix = Math.floor(Date.now() / 1000);
-      const currentSlot = Math.floor((nowUnix - genesisTime) / secondsPerSlot);
-
-      const currentFrame = getFrame(computeFrameIndex(nowUnix));
-      const nextFrame = getFrame(currentFrame.index + 1);
-
-      const getFrameSlots = (frame: { refSlot: number; reportProcessingDeadlineSlot: number }) => {
-        const refSlot = frame.refSlot;
-        const deadlineSlot = frame.reportProcessingDeadlineSlot;
-
-        return [
-          { value: 'ref slot', slot: refSlot, time: slotToTime(refSlot) },
-          { value: 'deadline slot', slot: deadlineSlot, time: slotToTime(deadlineSlot) },
-        ];
-      };
-
-      console.log('current slot');
-      console.table([
-        {
-          value: 'current slot',
-          slot: currentSlot,
-          time: slotToTime(currentSlot),
-        },
-      ]);
+      console.log(`closest-report for block ${blockTag}`);
+      console.log('target slot');
+      console.table(report.targetSlot);
 
       console.log();
-      console.log('current report frame');
-      console.table(getFrameSlots(currentFrame));
+      console.log('target report frame');
+      console.table(report.targetReportFrame);
 
       console.log();
       console.log('next report frame');
-      console.table(getFrameSlots(nextFrame));
+      console.table(report.nextReportFrame);
     });
 
   command
@@ -254,3 +194,83 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
       console.table(groupedByRefSlot);
     });
 };
+
+/**
+ * Get closest report for specific slot
+ */
+export const getClosestReport = async (contract: Contract, blockTag: BlockTag) => {
+  const isNow = blockTag === 'latest';
+
+  const latestBlock = await getBlock(blockTag);
+  const nowUnix = latestBlock.timestamp;
+  const chainConfig = await contract.getChainConfig({ blockTag });
+  const frameConfig = await contract.getFrameConfig({ blockTag });
+
+  const secondsPerSlot = Number(chainConfig.secondsPerSlot);
+  const genesisTime = Number(chainConfig.genesisTime);
+  const slotsPerEpoch = Number(chainConfig.slotsPerEpoch);
+
+  const initialEpoch = Number(frameConfig.initialEpoch);
+  const epochsPerFrame = Number(frameConfig.epochsPerFrame);
+
+  const computeFrameIndex = (timestamp: number) => {
+    const epoch = Math.floor((timestamp - genesisTime) / secondsPerSlot / slotsPerEpoch);
+    return Math.floor((epoch - initialEpoch) / epochsPerFrame);
+  };
+
+  const getFrame = (frameIndex: number) => {
+    const frameStartEpoch = Math.floor(initialEpoch + frameIndex * epochsPerFrame);
+    const frameStartSlot = frameStartEpoch * slotsPerEpoch;
+    const nextFrameStartSlot = frameStartSlot + epochsPerFrame * slotsPerEpoch;
+
+    return {
+      index: frameIndex,
+      refSlot: frameStartSlot - 1,
+      reportProcessingDeadlineSlot: nextFrameStartSlot - 1,
+    };
+  };
+
+  const formatOptions: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    timeZoneName: 'short',
+    hour12: false,
+  };
+  const intl = new Intl.DateTimeFormat('en-GB', formatOptions);
+
+  const slotToTime = (slot: number) => {
+    const time = (genesisTime + slot * secondsPerSlot) * 1000;
+    return intl.format(time);
+  };
+
+  const currentSlot = Math.floor((nowUnix - genesisTime) / secondsPerSlot);
+
+  const currentFrame = getFrame(computeFrameIndex(nowUnix));
+  const nextFrame = getFrame(currentFrame.index + 1);
+
+  const getFrameSlots = (frame: { refSlot: number; reportProcessingDeadlineSlot: number }) => {
+    const refSlot = frame.refSlot;
+    const deadlineSlot = frame.reportProcessingDeadlineSlot;
+
+    return [
+      { value: 'ref slot', slot: refSlot, time: slotToTime(refSlot) },
+      { value: 'deadline slot', slot: deadlineSlot, time: slotToTime(deadlineSlot) },
+    ];
+  };
+
+  const report = {
+    targetSlot: [{
+      value: isNow ? 'current slot' : `slot at ${blockTag}`,
+      slot: currentSlot,
+      block: latestBlock.number,
+      time: slotToTime(currentSlot),
+    }],
+    targetReportFrame: getFrameSlots(currentFrame),
+    nextReportFrame: getFrameSlots(nextFrame)
+  };
+
+  return report;
+}

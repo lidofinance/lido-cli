@@ -1,6 +1,6 @@
 import { program } from '@command';
-import { dsmContract } from '@contracts';
-import { authorizedCall } from '@utils';
+import { dsmContract, stakingRouterContract } from '@contracts';
+import { authorizedCall, getLatestBlock } from '@utils';
 import { addLogsCommands, addParsingCommands } from './common';
 
 const dsm = program.command('dsm').description('interact with deposit security module contract');
@@ -145,4 +145,24 @@ dsm
   .argument('<moduleId>', 'staking module id')
   .action(async (moduleId) => {
     await authorizedCall(dsmContract, 'unpauseDeposits', [moduleId]);
+  });
+
+dsm
+  .command('can-deposit-block-distance')
+  .description('check deposits according to block distance condition')
+  .argument('<moduleId>', 'staking module id')
+  .action(async (moduleId) => {
+    const block = await getLatestBlock();
+    const lastDepositBlock = await stakingRouterContract.getStakingModuleLastDepositBlock(moduleId);
+    const minDepositBlockDistance = await dsmContract.getMinDepositBlockDistance();
+
+    const result = block.number - lastDepositBlock >= minDepositBlockDistance;
+
+    console.table({
+      blockNumber: block.number,
+      lastDepositBlock: lastDepositBlock,
+      minDepositBlockDistance: minDepositBlockDistance,
+      condition: 'blockNumber - lastDepositBlock >= minDepositBlockDistance',
+      result: result,
+    });
   });
