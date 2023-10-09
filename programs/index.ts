@@ -9,6 +9,7 @@ export * from './exit-bus-oracle';
 export * from './lido';
 export * from './locator';
 export * from './nor';
+export * from './omnibus';
 export * from './oracle-config';
 export * from './role';
 export * from './sanity-checker';

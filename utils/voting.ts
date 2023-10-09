@@ -1,6 +1,7 @@
 import { tmContract, votingContract } from '@contracts';
 import { sleep } from './sleep';
 import { contractCallTx, contractCallTxWithConfirm } from './call-tx';
+import { getSignerAddress } from './contract';
 
 export const forwardVoteFromTm = async (votingCalldata: string) => {
   const tx = await contractCallTxWithConfirm(tmContract, 'forward', [votingCalldata]);
@@ -57,7 +58,19 @@ export const waitForEnd = async (voteId: number) => {
   const vote = await votingContract.getVote(voteId);
 
   if (vote.open == true) {
-    console.log('vote checked, still active');
+    console.log('waiting for the vote to finish, still active');
     await waitForEnd(voteId);
   }
+};
+
+export const checkTmCanForward = async () => {
+  const signerAddress = await getSignerAddress(tmContract);
+  const canForward = await tmContract.canForward(signerAddress, '0x');
+
+  if (!canForward) {
+    console.warn('tm can not forward, check your LDO balance');
+    return false;
+  }
+
+  return true;
 };

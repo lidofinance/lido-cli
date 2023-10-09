@@ -1,4 +1,4 @@
-import { getLatestBlock } from '@utils';
+import { getLatestBlock, getProvider } from '@utils';
 import { Command } from 'commander';
 import { Contract, EventLog, Filter } from 'ethers';
 
@@ -9,9 +9,7 @@ export const addLogsCommands = (command: Command, contract: Contract) => {
     .option('-b, --blocks <number>', 'blocks', '7200')
     .option('-e, --event-name <string>', 'event name')
     .action(async (options) => {
-      const provider = contract.runner?.provider;
-      if (!provider) throw new Error('Provider is not set');
-
+      const provider = getProvider(contract);
       const { blocks, eventName } = options;
 
       const latestBlock = await getLatestBlock();

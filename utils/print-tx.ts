@@ -1,23 +1,14 @@
 import chalk from 'chalk';
-import { AbstractSigner, Contract } from 'ethers';
+import { Contract } from 'ethers';
 import { stringify } from './stringify';
+import { getProvider, getSignerAddress } from './contract';
 
 const title = chalk.gray;
 const value = chalk.blue.bold;
 
 export const printTx = async (contract: Contract, method: string, args: unknown[] = []) => {
-  const provider = contract.runner?.provider;
-
-  if (!provider) {
-    throw new Error('Provider is not set');
-  }
-
-  if (!(contract.runner instanceof AbstractSigner)) {
-    throw new Error('Runner is not a signer');
-  }
-
-  const signer = contract.runner;
-  const from = await signer.getAddress();
+  const provider = getProvider(contract);
+  const from = await getSignerAddress(contract);
 
   const network = await provider.getNetwork();
   const to = await contract.getAddress();

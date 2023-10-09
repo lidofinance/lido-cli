@@ -1,4 +1,4 @@
-import { authorizedCall, getLatestBlock } from '@utils';
+import { authorizedCall, getLatestBlock, getProvider } from '@utils';
 import { Command } from 'commander';
 import { Contract, EventLog, formatEther } from 'ethers';
 
@@ -12,7 +12,8 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
       const table = await Promise.all(
         addresses.map(async (address, index) => {
           const lastReportedSlot = Number(lastReportedSlots[index]);
-          const balanceBigint = (await contract.runner?.provider?.getBalance(address)) || 0;
+          const provider = getProvider(contract);
+          const balanceBigint = (await provider.getBalance(address)) || 0n;
           const balance = formatEther(balanceBigint);
 
           return {
@@ -228,28 +229,34 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
       };
 
       const [members]: [string[]] = await contract.getMembers();
-      const membersMap = members.reduce((acc, member) => {
-        acc[compactHash(member)] = '-';
-        return acc;
-      }, {} as Record<string, string>);
+      const membersMap = members.reduce(
+        (acc, member) => {
+          acc[compactHash(member)] = '-';
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
 
       const events = await contract.queryFilter('ReportReceived', fromBlock, toBlock);
-      const groupedByRefSlot = events.reduce((acc, event) => {
-        if (!(event instanceof EventLog)) {
-          console.warn('log is not parsed');
+      const groupedByRefSlot = events.reduce(
+        (acc, event) => {
+          if (!(event instanceof EventLog)) {
+            console.warn('log is not parsed');
+            return acc;
+          }
+
+          const refSlot = Number(event.args[0]);
+          const member = compactHash(event.args[1]);
+
+          if (!acc[refSlot]) {
+            acc[refSlot] = { ...membersMap };
+          }
+
+          acc[refSlot][member] = 'H';
           return acc;
-        }
-
-        const refSlot = Number(event.args[0]);
-        const member = compactHash(event.args[1]);
-
-        if (!acc[refSlot]) {
-          acc[refSlot] = { ...membersMap };
-        }
-
-        acc[refSlot][member] = 'H';
-        return acc;
-      }, {} as Record<number, Record<string, string>>);
+        },
+        {} as Record<number, Record<string, string>>,
+      );
 
       console.table(groupedByRefSlot);
     });

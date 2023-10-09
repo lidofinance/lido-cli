@@ -1,5 +1,6 @@
 import { norContract } from '@contracts';
 import { getNodeOperators } from './operators';
+import { getProvider } from '@utils';
 
 export type PenalizedNodeOperator = {
   operatorId: number;
@@ -15,7 +16,8 @@ export const getPenalizedOperators = async () => {
   const address = await norContract.getAddress();
   const operators = await getNodeOperators(address);
 
-  const latestBlock = await norContract.runner?.provider?.getBlock('latest');
+  const provider = getProvider(norContract);
+  const latestBlock = await provider.getBlock('latest');
   const lastBlockTimestamp = latestBlock?.timestamp;
 
   if (lastBlockTimestamp == null) {
