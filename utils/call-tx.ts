@@ -52,7 +52,7 @@ export const contractCallTx = async (contract: Contract, method: string, args: u
         data: log.data,
         topics: log.topics as string[],
       });
-      console.log(parsedLog);
+      console.dir(parsedLog, { depth: null });
     });
   } catch (error) {
     console.log('failed to parse logs');

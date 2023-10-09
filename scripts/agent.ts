@@ -1,8 +1,8 @@
 import { aragonAgentAddress, aragonAgentContract } from '@contracts';
-import { encodeCallScript } from '@utils';
+import { CallScriptAction, encodeCallScript } from '@utils';
 
 export const agentForward = (votingData: string) => {
-  const call = {
+  const call: CallScriptAction = {
     to: aragonAgentAddress,
     data: aragonAgentContract.interface.encodeFunctionData('forward', [votingData]),
   };
