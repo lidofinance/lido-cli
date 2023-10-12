@@ -1,15 +1,16 @@
-import { formatEther, MaxUint256, parseEther, ZeroAddress } from 'ethers';
+import { formatEther, parseEther, ZeroAddress } from 'ethers';
 import { program } from '@command';
-import { wallet } from '@providers';
 import { lidoContract } from '@contracts';
 import { authorizedCall, contractCallTxWithConfirm, forwardVoteFromTm } from '@utils';
 import { resumeLidoAndSetStakingLimit, votingForward } from '@scripts';
 import { addAragonAppSubCommands, addLogsCommands, addParsingCommands } from './common';
+import { addERC20Commands } from './common/erc20';
 
 const lido = program.command('lido').description('interact with lido contract');
 addAragonAppSubCommands(lido, lidoContract);
 addParsingCommands(lido, lidoContract);
 addLogsCommands(lido, lidoContract);
+addERC20Commands(lido, lidoContract);
 
 lido
   .command('start-protocol')
@@ -24,14 +25,6 @@ lido
     const [votingCalldata] = votingForward(lidoCalldata);
 
     await forwardVoteFromTm(votingCalldata);
-  });
-
-lido
-  .command('total-supply')
-  .description('returns total stETH supply')
-  .action(async () => {
-    const totalSupply = await lidoContract.totalSupply();
-    console.log('total supply', formatEther(totalSupply));
   });
 
 lido
@@ -81,42 +74,6 @@ lido
   .action(async () => {
     const amount = await lidoContract.getDepositableEther();
     console.log('depositable ether', formatEther(amount));
-  });
-
-lido
-  .command('approve')
-  .argument('<spender>', 'spender address')
-  .option('-a, --amount <number>', 'amount', '')
-  .action(async (spender, options) => {
-    const amount = options.amount ? parseEther(options.amount) : MaxUint256;
-    await contractCallTxWithConfirm(lidoContract, 'approve', [spender, amount]);
-  });
-
-lido
-  .command('allowance')
-  .argument('<spender>', 'spender address')
-  .option('-o, --owner <string>', 'owner address', wallet.address)
-  .action(async (spender, options) => {
-    const { owner } = options;
-    const allowance = await lidoContract.allowance(owner, spender);
-    console.log('allowance', allowance);
-  });
-
-lido
-  .command('balance')
-  .option('-a, --address <string>', 'user address', wallet.address)
-  .action(async (options) => {
-    const { address } = options;
-    const balance = await lidoContract.balanceOf(address);
-    console.log('balance', formatEther(balance));
-  });
-
-lido
-  .command('transfer')
-  .argument('<recipient>', 'recipient address')
-  .argument('<amount>', 'amount of steth')
-  .action(async (recipient, amount) => {
-    await contractCallTxWithConfirm(lidoContract, 'transfer', [recipient, parseEther(amount)]);
   });
 
 lido

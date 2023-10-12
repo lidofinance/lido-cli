@@ -4,6 +4,7 @@ export * from './burner';
 export * from './deposit-contract';
 export * from './dsm';
 export * from './ens';
+export * from './ldo';
 export * from './lido';
 export * from './locator';
 export * from './nor';
