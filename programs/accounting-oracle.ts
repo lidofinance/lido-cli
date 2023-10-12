@@ -7,6 +7,7 @@ import {
   addOssifiableProxyCommands,
   addParsingCommands,
 } from './common';
+import { logger } from '@utils';
 
 const oracle = program.command('accounting-oracle').description('interact with accounting oracle contract');
 addAccessControlSubCommands(oracle, accountingOracleContract);
@@ -20,7 +21,7 @@ oracle
   .description('returns extra data format')
   .action(async () => {
     const format = await accountingOracleContract.EXTRA_DATA_FORMAT_LIST();
-    console.log('extra data format', format);
+    logger.log('Extra data format', format);
   });
 
 oracle
@@ -28,7 +29,7 @@ oracle
   .description('returns extra type for stuck validators')
   .action(async () => {
     const format = await accountingOracleContract.EXTRA_DATA_TYPE_STUCK_VALIDATORS();
-    console.log('type stuck', format);
+    logger.log('Type stuck', format);
   });
 
 oracle
@@ -36,5 +37,5 @@ oracle
   .description('returns extra type for exited validators')
   .action(async () => {
     const format = await accountingOracleContract.EXTRA_DATA_TYPE_EXITED_VALIDATORS();
-    console.log('type exited', format);
+    logger.log('Type exited', format);
   });

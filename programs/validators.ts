@@ -12,6 +12,7 @@ import {
 import { deriveEth2ValidatorKeys, deriveKeyFromMnemonic } from '@chainsafe/bls-keygen';
 import { AttestationDataBigint, computeDomain, signAttestationData } from '@consensus';
 import { getBytes, hexlify } from 'ethers';
+import { logger } from '@utils';
 
 const validators = program.command('validators').description('validators utils');
 
@@ -19,10 +20,10 @@ validators
   .command('0x00')
   .description('fetches lido validators with 0x00 withdraw credentials')
   .action(async () => {
-    console.log('fetching keys from KAPI, it may take a while...');
+    logger.log('Fetching keys from KAPI, it may take a while...');
     const keys = await fetchAllLidoKeys();
 
-    console.log('fetching validators from CL, it may take a few minutes...');
+    logger.log('Fetching validators from CL, it may take a few minutes...');
     const validators = await fetchAllValidators();
 
     const keysMap = keys.reduce(
@@ -37,13 +38,13 @@ validators
       return keysMap[validator.pubkey];
     });
 
-    console.log('validators on CL', lidoValidators.length);
+    logger.log('Validators on CL', lidoValidators.length);
 
     const validatorsWith0x00WC = lidoValidators.filter(({ validator }) => {
       return validator.withdrawal_credentials.startsWith('0x00');
     });
 
-    console.log('validators with 0x00 wc', validatorsWith0x00WC.length);
+    logger.log('Validators with 0x00 wc', validatorsWith0x00WC.length);
 
     const nodeOperatorIds = validatorsWith0x00WC.reduce(
       (acc, { validator }) => {
@@ -58,7 +59,7 @@ validators
       {} as Record<number, number>,
     );
 
-    console.log('operators with 0x00 wc', nodeOperatorIds);
+    logger.log('Operators with 0x00 wc', nodeOperatorIds);
   });
 
 validators
@@ -88,7 +89,7 @@ validators
     const epoch = String(Math.floor(slot / Number(spec.SLOTS_PER_EPOCH)));
 
     if (validator.slashed) {
-      console.warn(`validator is already slashed`);
+      logger.warn('Validator is already slashed');
       return;
     }
 
@@ -127,5 +128,5 @@ validators
     };
 
     const result = await postToAttestationPool(attesterSlashing);
-    console.log(result);
+    logger.log(result);
   });

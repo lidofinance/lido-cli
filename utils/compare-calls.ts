@@ -1,4 +1,5 @@
 import { Contract } from 'ethers';
+import { logger } from './logger';
 
 export type ContractCalls = { method: string; args?: unknown[] };
 
@@ -27,5 +28,5 @@ export const compareContractCalls = async (contracts: Contract[], calls: Contrac
     result.push({ ...row, matched });
   }
 
-  console.table(result);
+  logger.table(result);
 };

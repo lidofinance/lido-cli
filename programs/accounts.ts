@@ -2,7 +2,7 @@ import { program } from '@command';
 import { wallet } from '@providers';
 import { join } from 'path';
 import { Wallet } from 'ethers';
-import { writeToFile } from '@utils';
+import { logger, writeToFile } from '@utils';
 
 const accounts = program.command('accounts').description('accounts utils');
 
@@ -12,9 +12,9 @@ accounts
   .action(async () => {
     const wallet = Wallet.createRandom();
 
-    console.table({
-      address: wallet.address,
-      'private key': wallet.privateKey,
+    logger.table({
+      Address: wallet.address,
+      'Private key': wallet.privateKey,
     });
   });
 
@@ -22,7 +22,7 @@ accounts
   .command('address')
   .description('returns address from private key')
   .action(async () => {
-    console.log(wallet.address);
+    logger.log('Address', wallet.address);
   });
 
 accounts

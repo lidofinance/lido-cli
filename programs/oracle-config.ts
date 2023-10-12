@@ -2,6 +2,7 @@ import { Result, toBeHex, zeroPadValue } from 'ethers';
 import { program } from '@command';
 import { oracleConfigContract } from '@contracts';
 import { addAccessControlSubCommands, addLogsCommands, addParsingCommands } from './common';
+import { logger } from '@utils';
 
 const config = program.command('oracle-config').description('interact with oracle config contract');
 addAccessControlSubCommands(config, oracleConfigContract);
@@ -14,7 +15,7 @@ config
   .argument('<key>', 'key')
   .action(async (key) => {
     const value = await oracleConfigContract.get(key);
-    console.log('value', value);
+    logger.log('Value', value);
   });
 
 config
@@ -25,7 +26,7 @@ config
   .action(async (key, value) => {
     const hexValue = zeroPadValue(toBeHex(Number(value)), 32);
     await oracleConfigContract.set(key, hexValue);
-    console.log('value set');
+    logger.log('Value set');
   });
 
 config
@@ -36,7 +37,7 @@ config
   .action(async (key, value) => {
     const hexValue = zeroPadValue(toBeHex(Number(value)), 32);
     await oracleConfigContract.update(key, hexValue);
-    console.log('value updated');
+    logger.log('Value updated');
   });
 
 config
@@ -45,7 +46,7 @@ config
   .argument('<key>', 'key')
   .action(async (key) => {
     await oracleConfigContract.unset(key);
-    console.log('value unset');
+    logger.log('Value unset');
   });
 
 config
@@ -66,6 +67,6 @@ config
     const list: Result[] = await oracleConfigContract.getList(knownKeys);
 
     list.forEach((item, index) => {
-      console.log(knownKeys[index], Number(item));
+      logger.log(knownKeys[index], Number(item));
     });
   });

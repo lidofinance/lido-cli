@@ -1,6 +1,7 @@
 import { program } from '@command';
-import { checkTmCanForward, forwardVoteFromTm } from '@utils';
+import { checkTmCanForward, forwardVoteFromTm, printTx } from '@utils';
 import { printVoteTxData, promptVoting } from './omnibus/';
+import { tmContract } from '@contracts';
 
 const omnibus = program.command('omnibus').description('preparing and launching batches of calls through voting');
 
@@ -12,6 +13,7 @@ omnibus
     if (!voteTxData) return;
 
     await printVoteTxData(voteTxData);
+    await printTx(tmContract, 'forward', [voteTxData.newVoteCalldata]);
   });
 
 omnibus

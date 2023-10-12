@@ -1,4 +1,4 @@
-import { encodeCallScript, parseMethodCallToContract } from '@utils';
+import { encodeCallScript, logger, parseMethodCallToContract } from '@utils';
 import { promptAmountOfCalls } from './prompt-amount';
 import { printCallExample, printCallsSuccess, promptMethodCall } from './prompt-call';
 import { OmnibusScript, promptOmnibusDescription } from './prompt-description';
@@ -27,11 +27,11 @@ export const promptVoting = async (): Promise<VoteTxData | void> => {
         const [encoded, call] = await agentOrDirect(contract, method, args);
         omnibusScripts.push({ encoded, call, ...parsedCall });
       } catch (error) {
-        console.warn((error as Error).message);
+        logger.error(error);
         return;
       }
     } else {
-      console.warn('empty call, aborting');
+      logger.warn('Empty call, aborting');
       return;
     }
   }

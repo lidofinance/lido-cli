@@ -1,6 +1,6 @@
 import { program } from '@command';
 import { votingContract } from '@contracts';
-import { executeVote, voteAgainst, voteFor } from '@utils';
+import { executeVote, logger, voteAgainst, voteFor } from '@utils';
 import { addLogsCommands, addParsingCommands } from './common';
 
 const voting = program.command('voting').description('interact with voting contract');
@@ -13,7 +13,7 @@ voting
   .argument('<vote-id>', 'vote id')
   .action(async (voteId) => {
     const vote = await votingContract.getVote(voteId);
-    console.log('vote', vote.toObject());
+    logger.log('Vote', vote.toObject());
   });
 
 voting
@@ -21,7 +21,7 @@ voting
   .description('returns votes length')
   .action(async () => {
     const votes = await votingContract.votesLength();
-    console.log('votes', Number(votes));
+    logger.log('Votes', Number(votes));
   });
 
 voting
@@ -32,7 +32,7 @@ voting
   .action(async (options) => {
     const { script, meta } = options;
     const voteId = await votingContract.newVote(script, meta);
-    console.log('vote id', Number(voteId));
+    logger.log('Vote id', Number(voteId));
   });
 
 voting
@@ -48,7 +48,7 @@ voting
     } else {
       await voteAgainst(voteId);
     }
-    console.log('voted');
+    logger.log('Voted');
   });
 
 voting
@@ -57,5 +57,5 @@ voting
   .argument('<vote-id>', 'vote id')
   .action(async (voteId) => {
     await executeVote(voteId);
-    console.log('executed');
+    logger.log('Executed');
   });

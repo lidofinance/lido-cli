@@ -1,4 +1,4 @@
-import { CallScriptAction, authorizedCallTest, encodeCallScript } from '@utils';
+import { CallScriptAction, authorizedCallTest, encodeCallScript, logger } from '@utils';
 import { aragonAgentAddress, votingAddress } from '@contracts';
 import { Contract } from 'ethers';
 import { agentForward } from './agent';
@@ -6,8 +6,7 @@ import chalk from 'chalk';
 import prompts from 'prompts';
 
 const printCallSuccess = (from: string) => {
-  console.log(chalk`{green successfully called from {bold ${from}}, added to the list}`);
-  console.log('');
+  logger.success(`Successfully called from: ${chalk.bold(from)}, call added to the script\n`);
 };
 
 export const agentOrDirect = async (contract: Contract, method: string, args: unknown[] = []) => {
@@ -36,8 +35,7 @@ export const agentOrDirect = async (contract: Contract, method: string, args: un
     errors.push(error);
   }
 
-  console.log('');
-  console.warn(chalk`{red calls from voting and agent failed}`);
+  logger.error('\nCalls from voting and agent failed');
 
   const from = await promptFrom();
 
@@ -49,23 +47,23 @@ export const agentOrDirect = async (contract: Contract, method: string, args: un
     return encodeFromVoting(call);
   }
 
-  console.dir(errors, { depth: null });
-  throw new Error('aborted');
+  logger.error(errors);
+  throw new Error('Aborted');
 };
 
 export const promptFrom = async () => {
   const { from } = await prompts({
     type: 'select',
     name: 'from',
-    message: 'what to do?',
+    message: 'What to do?',
     choices: [
-      { title: chalk`abort and show errors`, value: null },
+      { title: chalk`Abort and show errors`, value: null },
       {
-        title: chalk`add as a direct call {red (only choose if you know what you are doing)}`,
+        title: chalk`Add as a direct call {red (only choose if you know what you are doing)}`,
         value: 'voting',
       },
       {
-        title: chalk`add as a forwarded call from agent {red (only choose if you know what you are doing)}`,
+        title: chalk`Add as a forwarded call from agent {red (only choose if you know what you are doing)}`,
         value: 'agent',
       },
     ],

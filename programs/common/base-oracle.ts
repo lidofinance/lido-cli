@@ -1,4 +1,4 @@
-import { authorizedCall } from '@utils';
+import { authorizedCall, logger } from '@utils';
 import { Command } from 'commander';
 import { Contract } from 'ethers';
 
@@ -8,7 +8,7 @@ export const addBaseOracleCommands = (command: Command, contract: Contract) => {
     .description('returns genesis time')
     .action(async () => {
       const genesisTime = await contract.GENESIS_TIME();
-      console.log('genesis time', genesisTime);
+      logger.log('Genesis time', genesisTime);
     });
 
   command
@@ -21,7 +21,7 @@ export const addBaseOracleCommands = (command: Command, contract: Contract) => {
 
   command.command('processing-state').action(async () => {
     const result = await contract.getProcessingState();
-    console.log('result', result.toObject());
+    logger.log('Result', result.toObject());
   });
 
   command
@@ -29,7 +29,7 @@ export const addBaseOracleCommands = (command: Command, contract: Contract) => {
     .description('returns seconds per slot')
     .action(async () => {
       const secondsPerSlot = await contract.SECONDS_PER_SLOT();
-      console.log('seconds per slots', secondsPerSlot);
+      logger.log('Seconds per slots', secondsPerSlot);
     });
 
   command
@@ -37,7 +37,7 @@ export const addBaseOracleCommands = (command: Command, contract: Contract) => {
     .description('returns consensus version')
     .action(async () => {
       const version = await contract.getConsensusVersion();
-      console.log('version', version);
+      logger.log('Version', version);
     });
 
   command
@@ -53,7 +53,7 @@ export const addBaseOracleCommands = (command: Command, contract: Contract) => {
     .description('returns consensus contract')
     .action(async () => {
       const consensusContract = await contract.getConsensusContract();
-      console.log('consensus contract', consensusContract);
+      logger.log('Consensus contract', consensusContract);
     });
 
   command
@@ -61,7 +61,7 @@ export const addBaseOracleCommands = (command: Command, contract: Contract) => {
     .description('returns consensus report')
     .action(async () => {
       const consensusReport = await contract.getConsensusReport();
-      console.log('consensus report', consensusReport);
+      logger.log('Consensus report', consensusReport);
     });
 
   command
@@ -69,6 +69,6 @@ export const addBaseOracleCommands = (command: Command, contract: Contract) => {
     .description('returns last processing ref slot')
     .action(async () => {
       const refSlot = await contract.getLastProcessingRefSlot();
-      console.log('last processing ref slot', refSlot);
+      logger.log('Last processing ref slot', refSlot);
     });
 };

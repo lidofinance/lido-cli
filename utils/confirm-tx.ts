@@ -4,7 +4,7 @@ export const confirmTx = async () => {
   const { confirm } = await prompts({
     type: 'confirm',
     name: 'confirm',
-    message: 'confirm sending transaction?',
+    message: 'Confirm sending transaction?',
     initial: true,
   });
 

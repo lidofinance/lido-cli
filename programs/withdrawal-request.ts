@@ -9,7 +9,7 @@ import {
   addParsingCommands,
   addPauseUntilSubCommands,
 } from './common';
-import { contractCallTxWithConfirm } from '@utils';
+import { contractCallTxWithConfirm, logger } from '@utils';
 
 const withdrawal = program.command('withdrawal-request').description('interact with withdrawal request contract');
 addAccessControlSubCommands(withdrawal, withdrawalRequestContract);
@@ -45,7 +45,7 @@ withdrawal
   .description('returns last finalized request id')
   .action(async () => {
     const lastFinalizedRequestId = await withdrawalRequestContract.getLastFinalizedRequestId();
-    console.log('last finalized request id', lastFinalizedRequestId);
+    logger.log('Last finalized request id', lastFinalizedRequestId);
   });
 
 withdrawal
@@ -53,7 +53,7 @@ withdrawal
   .description('returns last request id')
   .action(async () => {
     const lastRequestId = await withdrawalRequestContract.getLastRequestId();
-    console.log('last request id', lastRequestId);
+    logger.log('Last request id', lastRequestId);
   });
 
 withdrawal
@@ -63,7 +63,7 @@ withdrawal
   .action(async (options) => {
     const { address } = options;
     const requestIds = await withdrawalRequestContract.getWithdrawalRequests(address);
-    console.log('request ids', requestIds);
+    logger.log('Request ids', requestIds);
   });
 
 withdrawal
@@ -78,7 +78,7 @@ withdrawal
     const requests = await withdrawalRequestContract.getWithdrawalStatus(limitedRequestIds.toArray());
 
     requests.forEach((request: Result) => {
-      console.log(request.toObject());
+      logger.log(request.toObject());
     });
   });
 
@@ -106,9 +106,9 @@ withdrawal
     const filteredRequestsIds = filteredRequests.map((request) => request.id);
 
     if (filteredRequestsIds.length) {
-      console.log(filteredRequestsIds.join(','));
+      logger.log(filteredRequestsIds.join(','));
     } else {
-      console.log('no claimable requests');
+      logger.log('No claimable requests');
     }
   });
 
@@ -144,7 +144,7 @@ withdrawal
   .description('returns if bunker mode is active')
   .action(async () => {
     const isBunker = await withdrawalRequestContract.isBunkerModeActive();
-    console.log('bunker', isBunker);
+    logger.log('Bunker', isBunker);
   });
 
 withdrawal
@@ -153,9 +153,9 @@ withdrawal
   .action(async () => {
     const timestamp = await withdrawalRequestContract.bunkerModeSinceTimestamp();
     if (timestamp == MaxUint256) {
-      console.log('bunker is not started');
+      logger.log('Bunker is not started');
     } else {
-      console.log('bunker start', new Date(Number(timestamp) * 1000));
+      logger.log('Bunker start', new Date(Number(timestamp) * 1000));
     }
   });
 
@@ -164,7 +164,7 @@ withdrawal
   .description('returns unfinalized stETH')
   .action(async () => {
     const unfinalizedStETH = await withdrawalRequestContract.unfinalizedStETH();
-    console.log('unfinalized stETH', formatEther(unfinalizedStETH));
+    logger.log('Unfinalized stETH', formatEther(unfinalizedStETH));
   });
 
 withdrawal
@@ -188,7 +188,7 @@ withdrawal
     const formattedResult = result.toObject();
     formattedResult.batches = formattedResult.batches.filter((v: unknown) => !!v);
 
-    console.log('result', formattedResult);
+    logger.log('Result', formattedResult);
   });
 
 withdrawal
@@ -198,7 +198,7 @@ withdrawal
   .action(async (options) => {
     const { address } = options;
     const requests = await withdrawalRequestContract.getWithdrawalRequests(address);
-    console.log('requests', requests);
+    logger.log('Requests', requests);
   });
 
 withdrawal
@@ -206,5 +206,5 @@ withdrawal
   .description('returns max batches length')
   .action(async () => {
     const mxaBatches = await withdrawalRequestContract.MAX_BATCHES_LENGTH();
-    console.log('max batches', mxaBatches);
+    logger.log('Max batches', mxaBatches);
   });

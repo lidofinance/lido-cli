@@ -16,6 +16,7 @@ import {
   stakingRouterContract,
   withdrawalRequestContract,
 } from '@contracts';
+import { logger } from '@utils';
 import { FunctionFragment } from 'ethers';
 
 const role = program.command('role').description('roles utils');
@@ -51,7 +52,7 @@ role
             const roleHash = await contract[fragment.name]();
             if (roleHash !== hash) return;
 
-            console.log(fragment.name, roleHash);
+            logger.log(fragment.name, roleHash);
           }
         } catch {
           //

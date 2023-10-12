@@ -1,6 +1,6 @@
 import { program } from '@command';
 import { getLocatorContract, locatorContract } from '@contracts';
-import { compareContractCalls } from '@utils';
+import { compareContractCalls, logger } from '@utils';
 import { addOssifiableProxyCommands, addParsingCommands } from './common';
 
 const locator = program.command('locator').description('interact with locator contract');
@@ -15,7 +15,7 @@ locator
     const [elRewardsVault, oracleReportSanityChecker, stakingRouter, treasury, withdrawalQueue, withdrawalVault] =
       components;
 
-    console.log('components', {
+    logger.log('Components', {
       elRewardsVault,
       oracleReportSanityChecker,
       stakingRouter,
@@ -40,7 +40,7 @@ locator
       postTokenRebaseReceiver,
     ] = components;
 
-    console.log('components', {
+    logger.log('Components', {
       accountingOracle,
       elRewardsVault,
       oracleReportSanityChecker,
@@ -83,7 +83,7 @@ locator
       locatorContract.oracleDaemonConfig(),
     ]);
 
-    console.log('components', {
+    logger.log('Components', {
       accountingOracle,
       elRewardsVault,
       oracleReportSanityChecker,
@@ -106,7 +106,7 @@ locator
   .description('returns legacy oracle')
   .action(async () => {
     const address = await locatorContract.legacyOracle();
-    console.log('address', address);
+    logger.log('Address', address);
   });
 
 locator
@@ -114,7 +114,7 @@ locator
   .description('returns report sanity checker')
   .action(async () => {
     const address = await locatorContract.oracleReportSanityChecker();
-    console.log('address', address);
+    logger.log('Address', address);
   });
 
 locator
@@ -122,7 +122,7 @@ locator
   .description('returns accounting oracle')
   .action(async () => {
     const address = await locatorContract.accountingOracle();
-    console.log('address', address);
+    logger.log('Address', address);
   });
 
 locator
@@ -130,7 +130,7 @@ locator
   .description('returns exit bus oracle')
   .action(async () => {
     const address = await locatorContract.validatorsExitBusOracle();
-    console.log('address', address);
+    logger.log('Address', address);
   });
 
 locator
@@ -138,7 +138,7 @@ locator
   .description('returns deposit security module')
   .action(async () => {
     const address = await locatorContract.depositSecurityModule();
-    console.log('address', address);
+    logger.log('Address', address);
   });
 
 locator
@@ -146,7 +146,7 @@ locator
   .description('returns el rewards vault')
   .action(async () => {
     const address = await locatorContract.elRewardsVault();
-    console.log('address', address);
+    logger.log('Address', address);
   });
 
 locator
@@ -154,7 +154,7 @@ locator
   .description('returns lido')
   .action(async () => {
     const address = await locatorContract.lido();
-    console.log('address', address);
+    logger.log('Address', address);
   });
 
 locator
@@ -162,7 +162,7 @@ locator
   .description('returns post token rebase receiver')
   .action(async () => {
     const address = await locatorContract.postTokenRebaseReceiver();
-    console.log('address', address);
+    logger.log('Address', address);
   });
 
 locator
@@ -170,7 +170,7 @@ locator
   .description('returns burner')
   .action(async () => {
     const address = await locatorContract.burner();
-    console.log('address', address);
+    logger.log('Address', address);
   });
 
 locator
@@ -178,7 +178,7 @@ locator
   .description('returns staking router')
   .action(async () => {
     const address = await locatorContract.stakingRouter();
-    console.log('address', address);
+    logger.log('Address', address);
   });
 
 locator
@@ -186,7 +186,7 @@ locator
   .description('returns treasury')
   .action(async () => {
     const address = await locatorContract.treasury();
-    console.log('address', address);
+    logger.log('Address', address);
   });
 
 locator
@@ -194,7 +194,7 @@ locator
   .description('returns withdrawal queue')
   .action(async () => {
     const address = await locatorContract.withdrawalQueue();
-    console.log('address', address);
+    logger.log('Address', address);
   });
 
 locator
@@ -202,7 +202,7 @@ locator
   .description('returns withdrawal vault')
   .action(async () => {
     const address = await locatorContract.withdrawalVault();
-    console.log('address', address);
+    logger.log('Address', address);
   });
 
 locator
@@ -210,7 +210,7 @@ locator
   .description('returns oracle config')
   .action(async () => {
     const address = await locatorContract.oracleDaemonConfig();
-    console.log('address', address);
+    logger.log('Address', address);
   });
 
 locator

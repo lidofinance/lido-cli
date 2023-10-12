@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import { Contract } from 'ethers';
-import { authorizedCall, getRoleHash } from '@utils';
+import { authorizedCall, getRoleHash, logger } from '@utils';
 import { wallet } from '@providers';
 
 export const addAccessControlSubCommands = (command: Command, contract: Contract) => {
@@ -10,7 +10,7 @@ export const addAccessControlSubCommands = (command: Command, contract: Contract
     .argument('<role>', 'role name')
     .action(async (role) => {
       const roleHash = await getRoleHash(contract, role);
-      console.log('role hash', roleHash);
+      logger.log('Role hash', roleHash);
     });
 
   command
@@ -20,7 +20,7 @@ export const addAccessControlSubCommands = (command: Command, contract: Contract
     .action(async (role) => {
       const roleHash = await getRoleHash(contract, role);
       const roleAdmin = await contract.getRoleAdmin(roleHash);
-      console.log('role admin', roleAdmin);
+      logger.log('Role admin', roleAdmin);
     });
 
   command
@@ -33,7 +33,7 @@ export const addAccessControlSubCommands = (command: Command, contract: Contract
 
       for (let i = 0; i < count; i++) {
         const count = await contract.getRoleMember(roleHash, i);
-        console.log(`role member at ${i}`, count);
+        logger.log(`Role member at ${i}`, count);
       }
     });
 
@@ -46,7 +46,7 @@ export const addAccessControlSubCommands = (command: Command, contract: Contract
       const { address } = options;
       const roleHash = await getRoleHash(contract, role);
       const result = await contract.hasRole(roleHash, address);
-      console.log('can perform', result);
+      logger.log('Can perform', result);
     });
 
   command

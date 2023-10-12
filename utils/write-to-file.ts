@@ -1,8 +1,8 @@
-import chalk from 'chalk';
 import { writeFile, access, mkdir } from 'fs/promises';
 import { constants } from 'fs';
 import prompts from 'prompts';
 import { dirname } from 'path';
+import { logger } from './logger';
 
 const isFileExists = async (filePath: string) => {
   try {
@@ -13,23 +13,21 @@ const isFileExists = async (filePath: string) => {
   }
 };
 
-const warn = chalk.yellow;
-
 export const writeToFile = async (filePath: string, fileContent: string) => {
   const isExist = await isFileExists(filePath);
 
   if (isExist) {
-    console.log(warn(`file ${filePath} already exists`));
+    logger.warn(`File ${filePath} already exists`);
 
     const { confirm } = await prompts({
       type: 'confirm',
       name: 'confirm',
-      message: 'do you want to rewrite it?',
+      message: 'Do you want to rewrite it?',
       initial: true,
     });
 
     if (!confirm) {
-      console.log('file not saved');
+      logger.warn('File not saved');
       return;
     }
   }
@@ -37,8 +35,8 @@ export const writeToFile = async (filePath: string, fileContent: string) => {
   try {
     await mkdir(dirname(filePath), { recursive: true });
     await writeFile(filePath, fileContent);
-    console.log('file saved to', filePath);
+    logger.success(`File saved to ${filePath}`);
   } catch (error) {
-    console.error(error);
+    logger.error('Failed to save file', error);
   }
 };

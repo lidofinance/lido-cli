@@ -4,7 +4,7 @@ export const promptAmountOfCalls = async () => {
   const { amount } = await prompts({
     type: 'number',
     name: 'amount',
-    message: 'enter amount of calls',
+    message: 'Enter amount of calls',
   });
 
   return amount;

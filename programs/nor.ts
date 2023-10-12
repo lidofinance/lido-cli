@@ -1,6 +1,6 @@
 import { program } from '@command';
 import { norContract } from '@contracts';
-import { authorizedCall, contractCallTxWithConfirm, formatDate } from '@utils';
+import { authorizedCall, contractCallTxWithConfirm, formatDate, logger } from '@utils';
 import { addAragonAppSubCommands, addLogsCommands, addParsingCommands } from './common';
 import { getPenalizedOperators } from './staking-module';
 
@@ -14,7 +14,7 @@ nor
   .description('returns operators count')
   .action(async () => {
     const total = await norContract.getNodeOperatorsCount();
-    console.log('total', total);
+    logger.log('Total', total);
   });
 
 nor
@@ -23,7 +23,7 @@ nor
   .argument('<operator-id>', 'operator id')
   .action(async (operatorId) => {
     const operator = await norContract.getNodeOperator(operatorId, true);
-    console.log('operator', operator.toObject());
+    logger.log('Operator', operator.toObject());
   });
 
 nor
@@ -32,7 +32,7 @@ nor
   .argument('<operator-id>', 'operator id')
   .action(async (operatorId) => {
     const summary = await norContract.getNodeOperatorSummary(operatorId);
-    console.log('operator summary', summary.toObject());
+    logger.log('Operator summary', summary.toObject());
   });
 
 nor
@@ -52,7 +52,7 @@ nor
   .argument('<key-id>', 'key id')
   .action(async (operatorId, keyId) => {
     const keyData = await norContract.getSigningKey(Number(operatorId), Number(keyId));
-    console.log('key', keyData);
+    logger.log('Key', keyData);
   });
 
 nor
@@ -95,7 +95,7 @@ nor
     const penalizedOperators = await getPenalizedOperators();
 
     if (!penalizedOperators.length) {
-      console.log('no penalized operators');
+      logger.log('No penalized operators');
       return;
     }
 
@@ -115,7 +115,7 @@ nor
       };
     });
 
-    console.table(formattedOperators);
+    logger.table(formattedOperators);
   });
 
 nor
@@ -133,22 +133,22 @@ nor
     const penalizedOperators = await getPenalizedOperators();
 
     if (!penalizedOperators.length) {
-      console.log('no penalized operators');
+      logger.log('No penalized operators');
       return;
     }
 
     for (const operator of penalizedOperators) {
-      console.log('operator is penalized', operator.operatorId, operator.name);
-      console.log('current time', formatDate(new Date()));
-      console.log('penalty end time', formatDate(new Date(Number(operator.stuckPenaltyEndTimestamp) * 1000)));
+      logger.log('Operator is penalized', operator.operatorId, operator.name);
+      logger.log('Current time', formatDate(new Date()));
+      logger.log('Penalty end time', formatDate(new Date(Number(operator.stuckPenaltyEndTimestamp) * 1000)));
 
       if (operator.isPenaltyClearable) {
-        console.log('penalty can be cleared');
+        logger.log('Penalty can be cleared');
         await contractCallTxWithConfirm(norContract, 'clearNodeOperatorPenalty', [operator.operatorId]);
       } else {
-        console.log('penalty is not clearable');
+        logger.log('Penalty is not clearable');
       }
     }
 
-    console.log('all operators are checked');
+    logger.log('All operators are checked');
   });

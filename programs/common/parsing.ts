@@ -1,3 +1,4 @@
+import { logger } from '@utils';
 import { Command } from 'commander';
 import { Contract, parseEther } from 'ethers';
 
@@ -11,11 +12,11 @@ export const addParsingCommands = (command: Command, contract: Contract) => {
       const { value } = options;
 
       const ethValue = parseEther(value);
-      console.log('tx value', ethValue);
+      logger.log('Tx value', ethValue);
 
       const tx = { data: calldata, value: ethValue };
       const result = contract.interface.parseTransaction(tx);
-      console.log(result);
+      logger.log(result);
     });
 
   command
@@ -24,7 +25,7 @@ export const addParsingCommands = (command: Command, contract: Contract) => {
     .argument('<reason>', 'transaction revert reason')
     .action(async (errorData) => {
       const result = contract.interface.parseError(errorData);
-      console.log(result);
+      logger.log(result);
     });
 
   command
@@ -33,6 +34,6 @@ export const addParsingCommands = (command: Command, contract: Contract) => {
     .argument('<method-hash>', 'method hash')
     .action(async (method) => {
       const result = contract.interface.getFunction(method);
-      console.log(result);
+      logger.log(result);
     });
 };

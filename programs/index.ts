@@ -6,6 +6,7 @@ export * from './deposit-contract';
 export * from './dsm';
 export * from './exit-bus-consensus';
 export * from './exit-bus-oracle';
+export * from './ldo';
 export * from './lido';
 export * from './locator';
 export * from './nor';

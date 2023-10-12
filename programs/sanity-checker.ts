@@ -1,6 +1,6 @@
 import { program } from '@command';
 import { sanityCheckerContract } from '@contracts';
-import { authorizedCall } from '@utils';
+import { authorizedCall, logger } from '@utils';
 import { addAccessControlSubCommands, addLogsCommands, addParsingCommands } from './common';
 
 const sanityChecker = program.command('sanity-checker').description('interact with sanity checker contract');
@@ -13,7 +13,7 @@ sanityChecker
   .description('returns oracle report limits')
   .action(async () => {
     const limits = await sanityCheckerContract.getOracleReportLimits();
-    console.log('limits', limits.toObject());
+    logger.log('Limits', limits.toObject());
   });
 
 sanityChecker

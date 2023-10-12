@@ -1,6 +1,6 @@
 import { program } from '@command';
 import { stakingRouterContract } from '@contracts';
-import { authorizedCall } from '@utils';
+import { authorizedCall, logger } from '@utils';
 import { Result } from 'ethers';
 import { addAccessControlSubCommands, addLogsCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
 import { getNodeOperators, getStakingModules } from './staking-module';
@@ -16,7 +16,7 @@ router
   .description('returns staking modules')
   .action(async () => {
     const modules = await getStakingModules();
-    console.log('modules', modules);
+    logger.log('Modules', modules);
   });
 
 router
@@ -25,7 +25,7 @@ router
   .argument('<module-id>', 'staking module id')
   .action(async (moduleId) => {
     const module = await stakingRouterContract.getStakingModule(moduleId);
-    console.log('module', module);
+    logger.log('Module', module);
   });
 
 router
@@ -79,7 +79,7 @@ router
   .description('returns withdrawal credentials')
   .action(async () => {
     const withdrawalCredentials = await stakingRouterContract.getWithdrawalCredentials();
-    console.log('withdrawal credentials', withdrawalCredentials);
+    logger.log('Withdrawal credentials', withdrawalCredentials);
   });
 
 router
@@ -88,7 +88,7 @@ router
   .argument('<module-id>', 'module id')
   .action(async (moduleId) => {
     const isPaused = await stakingRouterContract.getStakingModuleIsDepositsPaused(moduleId);
-    console.log('module paused', isPaused);
+    logger.log('Module paused', isPaused);
   });
 
 router
@@ -97,7 +97,7 @@ router
   .argument('<module-id>', 'module id')
   .action(async (moduleId) => {
     const block = await stakingRouterContract.getStakingModuleLastDepositBlock(moduleId);
-    console.log('last deposit block', block);
+    logger.log('Last deposit block', block);
   });
 
 router
@@ -106,7 +106,7 @@ router
   .argument('<module-id>', 'module id')
   .action(async (moduleId) => {
     const block = await stakingRouterContract.getStakingModuleIsActive(moduleId);
-    console.log('is module active', block);
+    logger.log('Is module active', block);
   });
 
 router
@@ -115,7 +115,7 @@ router
   .argument('<module-id>', 'module id')
   .action(async (moduleId) => {
     const nonce = await stakingRouterContract.getStakingModuleNonce(moduleId);
-    console.log('module nonce', nonce);
+    logger.log('Module nonce', nonce);
   });
 
 router
@@ -124,7 +124,7 @@ router
   .argument('<module-id>', 'module id')
   .action(async (moduleId) => {
     const deposits = await stakingRouterContract.getStakingModuleMaxDepositsCount(moduleId);
-    console.log('max deposits', deposits);
+    logger.log('Max deposits', deposits);
   });
 
 router
@@ -133,7 +133,7 @@ router
   .argument('<deposits>', 'deposits count')
   .action(async (depositsCount) => {
     const allocation = await stakingRouterContract.getDepositsAllocation(depositsCount);
-    console.log('allocation', allocation);
+    logger.log('Allocation', allocation);
   });
 
 router
@@ -176,8 +176,8 @@ router
         };
       });
 
-      console.log('module', module.id, module.stakingModuleAddress);
-      console.table(operatorsDigests);
+      logger.log('Module', module.id, module.stakingModuleAddress);
+      logger.table(operatorsDigests);
     }
   });
 
@@ -198,7 +198,7 @@ router
     });
 
     const sortedKeys = activeKeys.sort((a, b) => a.activeKeys - b.activeKeys);
-    console.table(sortedKeys);
+    logger.table(sortedKeys);
   });
 
 router
@@ -230,5 +230,5 @@ router
   .description('returns rewards distribution')
   .action(async () => {
     const distribution = await stakingRouterContract.getStakingRewardsDistribution();
-    console.log('distribution', distribution);
+    logger.log('Distribution', distribution);
   });

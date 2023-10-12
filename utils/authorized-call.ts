@@ -1,23 +1,21 @@
 import { Contract } from 'ethers';
 import { votingForward } from '@scripts';
-import { green } from 'chalk';
 import { aragonAgentAddress, votingAddress } from '@contracts';
 import { encodeCallScript } from './scripts';
 import { forwardVoteFromTm } from './voting';
 import { contractCallTxWithConfirm } from './call-tx';
 import { agentForward } from 'scripts/agent';
-import { printTx } from './print-tx';
 import { getProvider, getSignerAddress } from './contract';
+import { logger } from './logger';
 
 export const authorizedCall = async (contract: Contract, method: string, args: unknown[] = []) => {
-  printTx(contract, method, args);
   const errors = [];
 
   try {
     const passed = await authorizedCallEOA(contract, method, args);
     if (passed) return;
   } catch (error) {
-    console.warn('direct call failed, trying to forward to the voting');
+    logger.warn('Direct call failed, trying to forward to the voting');
     errors.push(error);
   }
 
@@ -25,7 +23,7 @@ export const authorizedCall = async (contract: Contract, method: string, args: u
     const passed = await authorizedCallVoting(contract, method, args);
     if (passed) return;
   } catch (error) {
-    console.warn('call from voting failed');
+    logger.warn('Call from voting failed');
     errors.push(error);
   }
 
@@ -33,11 +31,11 @@ export const authorizedCall = async (contract: Contract, method: string, args: u
     const passed = await authorizedCallAgent(contract, method, args);
     if (passed) return;
   } catch (error) {
-    console.warn('call from agent failed');
+    logger.warn('Call from agent failed');
     errors.push(error);
   }
 
-  console.log(errors);
+  logger.error(errors);
 };
 
 export const authorizedCallEOA = async (contract: Contract, method: string, args: unknown[] = []) => {
@@ -81,7 +79,7 @@ export const authorizedCallTest = async (contract: Contract, method: string, arg
 };
 
 const printSuccess = (from: string) => {
-  console.log(green(`\ncall from ${from} passed successfully`));
+  logger.success(`\nCall from ${from} passed successfully`);
 };
 
 const encode = async (contract: Contract, method: string, args: unknown[] = []) => {
