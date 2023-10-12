@@ -1,8 +1,10 @@
 import chalk from 'chalk';
 import { Contract, ContractTransaction, ContractTransactionResponse } from 'ethers';
 import { confirmTx } from './confirm-tx';
+import { printTx } from './print-tx';
 
 export const contractCallTxWithConfirm = async (contract: Contract, method: string, args: unknown[]) => {
+  await printTx(contract, method, args);
   const confirmed = await confirmTx();
   if (!confirmed) return null;
 

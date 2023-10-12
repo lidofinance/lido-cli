@@ -1,6 +1,4 @@
-import { tmContract } from '@contracts';
 import { green } from 'chalk';
-import { printTx } from 'utils';
 import { VoteTxData } from './prompt-voting';
 
 export const printVoteTxData = async (voteTxData: VoteTxData) => {
@@ -18,6 +16,4 @@ export const printVoteTxData = async (voteTxData: VoteTxData) => {
   console.log(newVoteCalldata);
 
   console.log('');
-
-  await printTx(tmContract, 'forward', [newVoteCalldata]);
 };

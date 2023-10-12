@@ -6,11 +6,9 @@ import { encodeCallScript } from './scripts';
 import { forwardVoteFromTm } from './voting';
 import { contractCallTxWithConfirm } from './call-tx';
 import { agentForward } from 'scripts/agent';
-import { printTx } from './print-tx';
 import { getProvider, getSignerAddress } from './contract';
 
 export const authorizedCall = async (contract: Contract, method: string, args: unknown[] = []) => {
-  printTx(contract, method, args);
   const errors = [];
 
   try {
