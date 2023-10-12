@@ -1,7 +1,8 @@
 import { program } from '@command';
-import { votingContract } from '@contracts';
-import { executeVote, logger, voteAgainst, voteFor } from '@utils';
+import { tmContract, votingContract } from '@contracts';
+import { contractCallTxWithConfirm, executeVote, logger, voteAgainst, voteFor } from '@utils';
 import { addLogsCommands, addParsingCommands } from './common';
+import { votingNewVote } from '@scripts';
 
 const voting = program.command('voting').description('interact with voting contract');
 addParsingCommands(voting, votingContract);
@@ -31,8 +32,11 @@ voting
   .option('-m, --meta <string>', 'meta data', '')
   .action(async (options) => {
     const { script, meta } = options;
-    const voteId = await votingContract.newVote(script, meta);
-    logger.log('Vote id', Number(voteId));
+
+    const [newVoteCalldata] = votingNewVote(script, meta);
+    const tx = await contractCallTxWithConfirm(tmContract, 'forward', [newVoteCalldata]);
+
+    logger.log('New vote created', tx);
   });
 
 voting
