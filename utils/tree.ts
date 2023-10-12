@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { logger } from './logger';
 
 export class TreeNode<T = unknown> {
   constructor(
@@ -47,7 +48,7 @@ export const printTree = <T>(
 
   lines.forEach((line, index) => {
     const separator = chalk.gray(getLineIndent(index));
-    console.log(`${indent}${separator}${line}`);
+    logger.log(`${indent}${separator}${line}`);
   });
 
   indent += chalk.gray(isLastChild ? '  ' : '│ ');

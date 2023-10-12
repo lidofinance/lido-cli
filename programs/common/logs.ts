@@ -1,4 +1,4 @@
-import { getLatestBlock, getProvider } from '@utils';
+import { getLatestBlock, getProvider, logger } from '@utils';
 import { Command } from 'commander';
 import { Contract, EventLog, Filter } from 'ethers';
 
@@ -44,6 +44,6 @@ export const addLogsCommands = (command: Command, contract: Contract) => {
         }
       });
 
-      console.log(parsedLogs);
+      logger.dir(parsedLogs, { depth: null });
     });
 };

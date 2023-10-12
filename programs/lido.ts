@@ -1,7 +1,7 @@
 import { formatEther, parseEther, ZeroAddress } from 'ethers';
 import { program } from '@command';
 import { lidoContract } from '@contracts';
-import { authorizedCall, contractCallTxWithConfirm, forwardVoteFromTm } from '@utils';
+import { authorizedCall, contractCallTxWithConfirm, forwardVoteFromTm, logger } from '@utils';
 import { resumeLidoAndSetStakingLimit, votingForward } from '@scripts';
 import { addAragonAppSubCommands, addLogsCommands, addParsingCommands } from './common';
 import { addERC20Commands } from './common/erc20';
@@ -19,7 +19,7 @@ lido
   .action(async (options) => {
     const { stakingLimit } = options;
     const limit = parseEther(stakingLimit);
-    console.log('staking limit', limit);
+    logger.log('Staking limit', limit);
 
     const [lidoCalldata] = resumeLidoAndSetStakingLimit(limit);
     const [votingCalldata] = votingForward(lidoCalldata);
@@ -32,7 +32,7 @@ lido
   .description('returns total shares')
   .action(async () => {
     const totalShares = await lidoContract.getTotalShares();
-    console.log('total shares', formatEther(totalShares));
+    logger.log('Total shares', formatEther(totalShares));
   });
 
 lido
@@ -40,7 +40,7 @@ lido
   .description('returns is protocol stopped')
   .action(async () => {
     const isStopped = await lidoContract.isStopped();
-    console.log('is stopped', isStopped);
+    logger.log('Is stopped', isStopped);
   });
 
 lido
@@ -48,7 +48,7 @@ lido
   .description('returns is staking paused')
   .action(async () => {
     const isStakingPaused = await lidoContract.isStakingPaused();
-    console.log('is staking paused', isStakingPaused);
+    logger.log('Is staking paused', isStakingPaused);
   });
 
 lido
@@ -56,7 +56,7 @@ lido
   .description('returns buffered ethers')
   .action(async () => {
     const bufferedEther = await lidoContract.getBufferedEther();
-    console.log('buffered ether', formatEther(bufferedEther));
+    logger.log('Buffered ether', formatEther(bufferedEther));
   });
 
 lido
@@ -73,7 +73,7 @@ lido
   .description('returns depositable ether amount')
   .action(async () => {
     const amount = await lidoContract.getDepositableEther();
-    console.log('depositable ether', formatEther(amount));
+    logger.log('Depositable ether', formatEther(amount));
   });
 
 lido
@@ -90,7 +90,7 @@ lido
   .description('returns staking limit')
   .action(async () => {
     const limit = await lidoContract.getStakeLimitFullInfo();
-    console.log('staking limit', limit.toObject());
+    logger.log('Staking limit', limit.toObject());
   });
 
 lido

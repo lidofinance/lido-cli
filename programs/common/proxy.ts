@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import { Contract } from 'ethers';
 import { getProxyContract } from '@contracts';
-import { authorizedCall } from '@utils';
+import { authorizedCall, logger } from '@utils';
 
 export const addOssifiableProxyCommands = (command: Command, contract: Contract) => {
   const getProxyAddress = async () => await contract.getAddress();
@@ -12,7 +12,7 @@ export const addOssifiableProxyCommands = (command: Command, contract: Contract)
     .description('returns proxy implementation address')
     .action(async () => {
       const implementation = await proxyContract.proxy__getImplementation();
-      console.log('implementation', implementation);
+      logger.log('Implementation', implementation);
     });
 
   command
@@ -20,7 +20,7 @@ export const addOssifiableProxyCommands = (command: Command, contract: Contract)
     .description('returns proxy admin address')
     .action(async () => {
       const admin = await proxyContract.proxy__getAdmin();
-      console.log('admin', admin);
+      logger.log('Admin', admin);
     });
 
   command

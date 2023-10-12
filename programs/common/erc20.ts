@@ -1,5 +1,5 @@
 import { wallet } from '@providers';
-import { contractCallTxWithConfirm } from '@utils';
+import { contractCallTxWithConfirm, logger } from '@utils';
 import { Command } from 'commander';
 import { Contract, MaxUint256, formatEther, parseEther } from 'ethers';
 
@@ -9,7 +9,7 @@ export const addERC20Commands = (command: Command, contract: Contract) => {
     .description('returns token name')
     .action(async () => {
       const name = await contract.name();
-      console.log('token name', name);
+      logger.log('Token name', name);
     });
 
   command
@@ -17,7 +17,7 @@ export const addERC20Commands = (command: Command, contract: Contract) => {
     .description('returns token symbol')
     .action(async () => {
       const symbol = await contract.symbol();
-      console.log('token symbol', symbol);
+      logger.log('Token symbol', symbol);
     });
 
   command
@@ -25,7 +25,7 @@ export const addERC20Commands = (command: Command, contract: Contract) => {
     .description('returns token decimals')
     .action(async () => {
       const decimals = await contract.decimals();
-      console.log('token decimals', decimals);
+      logger.log('Token decimals', decimals);
     });
 
   command
@@ -33,7 +33,7 @@ export const addERC20Commands = (command: Command, contract: Contract) => {
     .description('returns total supply')
     .action(async () => {
       const totalSupply = await contract.totalSupply();
-      console.log('total supply', formatEther(totalSupply));
+      logger.log('Total supply', formatEther(totalSupply));
     });
 
   command
@@ -41,7 +41,7 @@ export const addERC20Commands = (command: Command, contract: Contract) => {
     .argument('[address]', 'user address', wallet.address)
     .action(async (address) => {
       const balance = await contract.balanceOf(address);
-      console.log('balance', formatEther(balance));
+      logger.log('Balance', formatEther(balance));
     });
 
   command
@@ -76,6 +76,6 @@ export const addERC20Commands = (command: Command, contract: Contract) => {
     .argument('<spender>', 'spender address')
     .action(async (owner, spender) => {
       const allowance = await contract.allowance(owner, spender);
-      console.log('allowance', formatEther(allowance));
+      logger.log('Allowance', formatEther(allowance));
     });
 };

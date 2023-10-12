@@ -1,4 +1,4 @@
-import { authorizedCall, getLatestBlock, getProvider } from '@utils';
+import { authorizedCall, getLatestBlock, getProvider, logger } from '@utils';
 import { Command } from 'commander';
 import { Contract, EventLog, formatEther } from 'ethers';
 
@@ -24,7 +24,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
         }),
       );
 
-      console.table(table.sort((a, b) => b.lastReportedSlot - a.lastReportedSlot));
+      logger.table(table.sort((a, b) => b.lastReportedSlot - a.lastReportedSlot));
     });
 
   command
@@ -32,7 +32,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .description('returns the quorum number')
     .action(async () => {
       const quorum = await contract.getQuorum();
-      console.log('quorum', Number(quorum));
+      logger.log('Quorum', Number(quorum));
     });
 
   command
@@ -50,7 +50,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .action(async (options) => {
       const { address } = options;
       const state = await contract.getConsensusStateForMember(address);
-      console.log('state', state.toObject());
+      logger.log('State', state.toObject());
     });
 
   command
@@ -78,7 +78,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .description('returns the current frame')
     .action(async () => {
       const frame = await contract.getCurrentFrame();
-      console.log('frame', frame.toObject());
+      logger.log('Frame', frame.toObject());
     });
 
   command
@@ -86,7 +86,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .description('returns the chain config')
     .action(async () => {
       const config = await contract.getChainConfig();
-      console.log('config', config.toObject());
+      logger.log('Config', config.toObject());
     });
 
   command
@@ -94,7 +94,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .description('returns the frame config')
     .action(async () => {
       const config = await contract.getFrameConfig();
-      console.log('config', config.toObject());
+      logger.log('Config', config.toObject());
     });
 
   command
@@ -121,7 +121,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .argument('<address>', 'member address')
     .action(async (address) => {
       const state = await contract.getConsensusStateForMember(address);
-      console.log('member state', state);
+      logger.log('Member state', state);
     });
 
   command
@@ -195,8 +195,8 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
         ];
       };
 
-      console.log('current slot');
-      console.table([
+      logger.log('Current slot');
+      logger.table([
         {
           value: 'current slot',
           slot: currentSlot,
@@ -204,13 +204,13 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
         },
       ]);
 
-      console.log();
-      console.log('current report frame');
-      console.table(getFrameSlots(currentFrame));
+      logger.log();
+      logger.log('Current report frame');
+      logger.table(getFrameSlots(currentFrame));
 
-      console.log();
-      console.log('next report frame');
-      console.table(getFrameSlots(nextFrame));
+      logger.log();
+      logger.log('Next report frame');
+      logger.table(getFrameSlots(nextFrame));
     });
 
   command
@@ -241,7 +241,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
       const groupedByRefSlot = events.reduce(
         (acc, event) => {
           if (!(event instanceof EventLog)) {
-            console.warn('log is not parsed');
+            logger.warn('Log is not parsed');
             return acc;
           }
 
@@ -258,6 +258,6 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
         {} as Record<number, Record<string, string>>,
       );
 
-      console.table(groupedByRefSlot);
+      logger.table(groupedByRefSlot);
     });
 };

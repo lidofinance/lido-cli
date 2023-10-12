@@ -1,14 +1,27 @@
-import chalk from 'chalk';
 import { Contract, ContractTransaction, ContractTransactionResponse } from 'ethers';
 import { confirmTx } from './confirm-tx';
 import { printTx } from './print-tx';
+import { logger } from './logger';
 
 export const contractCallTxWithConfirm = async (contract: Contract, method: string, args: unknown[]) => {
   await printTx(contract, method, args);
+  await contractStaticCallTx(contract, method, args);
+
   const confirmed = await confirmTx();
   if (!confirmed) return null;
 
   return await contractCallTx(contract, method, args);
+};
+
+export const contractStaticCallTx = async (contract: Contract, method: string, args: unknown[]) => {
+  const contractAddress = await contract.getAddress();
+
+  try {
+    const result = await contract[method].staticCall(...args);
+    logger.success(`Successfully called ${method} on ${contractAddress}. Result:`, result);
+  } catch (error) {
+    logger.error(`Failed to call ${method} on ${contractAddress}. Error:`, error);
+  }
 };
 
 export const populateGasLimit = async (contract: Contract, method: string, argsWithOverrides: unknown[]) => {
@@ -37,9 +50,9 @@ export const populateGasLimit = async (contract: Contract, method: string, argsW
 export const contractCallTx = async (contract: Contract, method: string, args: unknown[]) => {
   const argsWithGasLimit = await populateGasLimit(contract, method, args);
   const tx: ContractTransactionResponse = await contract[method](...argsWithGasLimit);
-  console.log('tx sent', chalk.green(tx.hash));
+  logger.success('Tx sent', tx.hash);
 
-  console.log('waiting for tx to be mined...');
+  logger.log('Waiting for tx to be mined...');
   const receipt = await tx.wait();
 
   if (!receipt) {
@@ -47,17 +60,18 @@ export const contractCallTx = async (contract: Contract, method: string, args: u
   }
 
   try {
-    console.log('tx logs:');
+    logger.log('Tx logs:');
 
     receipt.logs.forEach((log) => {
       const parsedLog = contract.interface.parseLog({
         data: log.data,
         topics: log.topics as string[],
       });
-      console.dir(parsedLog, { depth: null });
+
+      logger.dir(parsedLog, { depth: null });
     });
   } catch (error) {
-    console.log('failed to parse logs');
+    logger.error('Failed to parse logs', error);
   }
 
   return [tx, receipt] as const;

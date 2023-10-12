@@ -1,6 +1,6 @@
 import { program } from '@command';
 import { provider } from '@providers';
-import { buildTraceTree, formatTraceNode, getAllAbi, printTree } from '@utils';
+import { buildTraceTree, formatTraceNode, getAllAbi, logger, printTree } from '@utils';
 import { parseEther } from 'ethers';
 
 const tx = program.command('tx').description('transaction utils');
@@ -10,7 +10,7 @@ tx.command('get-tx')
   .argument('<hash>', 'transaction hash')
   .action(async (hash) => {
     const transaction = await provider.getTransaction(hash);
-    console.log(transaction);
+    logger.log(transaction);
   });
 
 tx.command('parse-calldata')
@@ -29,7 +29,7 @@ tx.command('parse-calldata')
       const result = iface.parseTransaction(tx);
 
       if (result) {
-        console.log(name, result);
+        logger.log(name, result);
       }
     });
   });
@@ -43,7 +43,7 @@ tx.command('parse-method')
     abi.forEach(({ name, iface }) => {
       iface.forEachFunction((func) => {
         if (func.selector === selector) {
-          console.log(name, func);
+          logger.log(name, func);
         }
       });
     });
@@ -59,7 +59,7 @@ tx.command('parse-error')
       const result = iface.parseError(reason);
 
       if (result) {
-        console.log(name, result);
+        logger.log(name, result);
       }
     });
   });

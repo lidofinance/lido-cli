@@ -1,19 +1,16 @@
-import { green } from 'chalk';
 import { VoteTxData } from './prompt-voting';
+import { logger } from '@utils';
 
 export const printVoteTxData = async (voteTxData: VoteTxData) => {
   const { voteEvmScript, newVoteCalldata, description } = voteTxData;
-  console.log('');
-  console.log(green('vote calls evmScript:'));
-  console.log(voteEvmScript);
+  logger.success('\nVote calls evmScript:');
+  logger.log(voteEvmScript);
 
-  console.log('');
-  console.log(green('vote description (meta):'));
-  console.log(description);
+  logger.success('\nVote description (meta):');
+  logger.log(description);
 
-  console.log('');
-  console.log(green('newVote() calldata:'));
-  console.log(newVoteCalldata);
+  logger.success('\nnewVote() calldata:');
+  logger.log(newVoteCalldata);
 
-  console.log('');
+  logger.log('');
 };

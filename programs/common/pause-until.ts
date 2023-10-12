@@ -1,4 +1,4 @@
-import { authorizedCall } from '@utils';
+import { authorizedCall, logger } from '@utils';
 import { Command } from 'commander';
 import { Contract, MaxUint256, toBeHex } from 'ethers';
 
@@ -8,7 +8,7 @@ export const addPauseUntilSubCommands = (command: Command, contract: Contract) =
     .description('returns is contract paused')
     .action(async () => {
       const paused = await contract.isPaused();
-      console.log('paused', paused);
+      logger.log('Paused', paused);
     });
 
   command

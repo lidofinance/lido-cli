@@ -1,6 +1,7 @@
 import { parseEther } from 'ethers';
 import { program } from '@command';
 import { resumeLidoAndSetStakingLimit, resumeProtocol, resumeStaking, setStakingLimit } from '@scripts';
+import { logger } from '@utils';
 
 const scripts = program.command('scripts').description('aragon scripts builder');
 
@@ -9,7 +10,7 @@ scripts
   .description('returns encoded resume protocol script')
   .action(async () => {
     const [encoded] = resumeProtocol();
-    console.log('encoded', encoded);
+    logger.log('Encoded', encoded);
   });
 
 scripts
@@ -17,7 +18,7 @@ scripts
   .description('returns encoded resume staking script')
   .action(async () => {
     const [encoded] = resumeStaking();
-    console.log('encoded', encoded);
+    logger.log('Encoded', encoded);
   });
 
 scripts
@@ -29,7 +30,7 @@ scripts
     const limit = parseEther(stakingLimit);
 
     const [encoded] = setStakingLimit(limit);
-    console.log('encoded', encoded);
+    logger.log('Encoded', encoded);
   });
 
 scripts
@@ -41,5 +42,5 @@ scripts
     const limit = parseEther(stakingLimit);
 
     const [encoded] = resumeLidoAndSetStakingLimit(limit);
-    console.log('encoded', encoded);
+    logger.log('Encoded', encoded);
   });

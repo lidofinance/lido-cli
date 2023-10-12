@@ -1,6 +1,6 @@
 import { program } from '@command';
 import { dsmContract } from '@contracts';
-import { authorizedCall } from '@utils';
+import { authorizedCall, logger } from '@utils';
 import { addLogsCommands, addParsingCommands } from './common';
 
 const dsm = program.command('dsm').description('interact with deposit security module contract');
@@ -12,7 +12,7 @@ dsm
   .description('returns the owner of the contract')
   .action(async () => {
     const owner = await dsmContract.getOwner();
-    console.log('owner', owner);
+    logger.log('Owner', owner);
   });
 
 dsm
@@ -28,7 +28,7 @@ dsm
   .description('returns the attest prefix for a message')
   .action(async () => {
     const prefix = await dsmContract.ATTEST_MESSAGE_PREFIX();
-    console.log('prefix', prefix);
+    logger.log('Prefix', prefix);
   });
 
 dsm
@@ -36,7 +36,7 @@ dsm
   .description('returns the pause prefix for a message')
   .action(async () => {
     const prefix = await dsmContract.PAUSE_MESSAGE_PREFIX();
-    console.log('prefix', prefix);
+    logger.log('Prefix', prefix);
   });
 
 dsm
@@ -44,7 +44,7 @@ dsm
   .description('returns the max amount of deposits per transaction')
   .action(async () => {
     const maxDeposits = await dsmContract.getMaxDeposits();
-    console.log('max deposits', Number(maxDeposits));
+    logger.log('Max deposits', Number(maxDeposits));
   });
 
 dsm
@@ -60,7 +60,7 @@ dsm
   .description('returns the min deposits distance in blocks')
   .action(async () => {
     const minDistance = await dsmContract.getMinDepositBlockDistance();
-    console.log('min distance', Number(minDistance));
+    logger.log('Min distance', Number(minDistance));
   });
 
 dsm
@@ -76,7 +76,7 @@ dsm
   .description('returns pause message validity period in blocks')
   .action(async () => {
     const period = await dsmContract.getPauseIntentValidityPeriodBlocks();
-    console.log('period', Number(period));
+    logger.log('Period', Number(period));
   });
 
 dsm
@@ -92,7 +92,7 @@ dsm
   .description('returns the guardians quorum')
   .action(async () => {
     const quorum = await dsmContract.getGuardianQuorum();
-    console.log('quorum', Number(quorum));
+    logger.log('Quorum', Number(quorum));
   });
 
 dsm
@@ -108,7 +108,7 @@ dsm
   .description('returns the list of guardians')
   .action(async () => {
     const guardians = await dsmContract.getGuardians();
-    console.log('guardians', guardians);
+    logger.log('Guardians', guardians);
   });
 
 dsm
@@ -117,7 +117,7 @@ dsm
   .description('returns is deposits available')
   .action(async (moduleId) => {
     const canDeposit = await dsmContract.canDeposit(moduleId);
-    console.log('can deposit', canDeposit);
+    logger.log('Can deposit', canDeposit);
   });
 
 dsm

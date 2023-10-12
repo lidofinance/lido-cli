@@ -11,7 +11,7 @@ export const getDefaultOmnibusDescription = (omnibusScripts: OmnibusScript[]) =>
     .map(({ address, args, methodName }, index) => `${index + 1}) call ${methodName}(${args}) at ${address}`)
     .join('\n');
 
-  return `omnibus: \n${callList}`;
+  return `Omnibus: \n${callList}`;
 };
 
 export const promptOmnibusDescription = async (omnibusScripts: OmnibusScript[]) => {
@@ -21,7 +21,7 @@ export const promptOmnibusDescription = async (omnibusScripts: OmnibusScript[]) 
     type: 'text',
     name: 'description',
     initial: defaultDescription,
-    message: 'enter voting description (use \\n for new line): \n',
+    message: 'Enter voting description (use \\n for new line): \n',
   });
 
   return (description ?? '').split('\\n').join('\n');

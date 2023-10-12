@@ -7,6 +7,7 @@ export * from './contract';
 export * from './csv';
 export * from './format-date';
 export * from './get-value';
+export * from './logger';
 export * from './modules';
 export * from './parse-method-call';
 export * from './print-tx';

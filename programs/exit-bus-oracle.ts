@@ -8,7 +8,7 @@ import {
   KAPIKey,
   ValidatorContainer,
 } from '@providers';
-import { exportToCSV, getValidatorsMap, groupByModuleId } from '@utils';
+import { exportToCSV, getValidatorsMap, groupByModuleId, logger } from '@utils';
 
 import {
   addAccessControlSubCommands,
@@ -51,8 +51,8 @@ oracle
 
     Object.entries(groupedRequests).forEach(([moduleId, requests]) => {
       const formattedRequests = formatExitRequests(requests);
-      console.log('module', moduleId);
-      console.table(formattedRequests);
+      logger.log('Module', moduleId);
+      logger.table(formattedRequests);
     });
   });
 
@@ -69,13 +69,13 @@ oracle
     Object.entries(groupedRequests).forEach(([moduleId, requests]) => {
       const formattedRequests = formatExitRequestsDetailed(requests);
 
-      console.log('module', moduleId);
+      logger.log('Module', moduleId);
 
       if (agg) {
         const aggregatedRequestsByOperator = groupRequestsByOperator(formattedRequests);
-        console.table(aggregatedRequestsByOperator);
+        logger.table(aggregatedRequestsByOperator);
       } else {
-        console.table(formattedRequests);
+        logger.table(formattedRequests);
       }
     });
   });
@@ -103,7 +103,7 @@ oracle
   .description('returns exit requests')
   .action(async () => {
     const value = await exitBusOracleContract.DATA_FORMAT_LIST();
-    console.log('value', value);
+    logger.log('Value', value);
   });
 
 oracle
@@ -124,8 +124,8 @@ oracle
         return { operatorId, name, lastRequestedIndex };
       });
 
-      console.log('module', module.id, module.stakingModuleAddress);
-      console.table(operatorsWithLastRequestedValidators);
+      logger.log('Module', module.id, module.stakingModuleAddress);
+      logger.table(operatorsWithLastRequestedValidators);
     });
   });
 
@@ -165,7 +165,7 @@ oracle
     const modules = await getStakingModules();
 
     modules.forEach(async (module) => {
-      console.log('module', module.id, module.stakingModuleAddress);
+      logger.log('Module', module.id, module.stakingModuleAddress);
 
       const operators = await getNodeOperators(module.stakingModuleAddress);
       const operatorIds = operators.map(({ operatorId }) => operatorId);
@@ -189,8 +189,8 @@ oracle
         const unsettled = unsettledRequests.length;
 
         if (unsettled > 0) {
-          console.log(`operator #${operatorId} ${name} has unsettled requests`);
-          console.table(
+          logger.log(`Operator #${operatorId} ${name} has unsettled requests`);
+          logger.table(
             unsettledRequests.map(({ validator }) => {
               const {
                 validator: { pubkey },
@@ -200,7 +200,7 @@ oracle
               return { index, pubkey };
             }),
           );
-          console.log('');
+          logger.log('');
         }
 
         return { operatorId, name, lastRequestedIndex, exited, unsettled };
@@ -208,7 +208,7 @@ oracle
 
       const operatorsWithUnsettledRequests = detailedOperators.filter(({ unsettled }) => unsettled > 0);
 
-      console.log('summary');
-      console.table(operatorsWithUnsettledRequests);
+      logger.log('Summary');
+      logger.table(operatorsWithUnsettledRequests);
     });
   });

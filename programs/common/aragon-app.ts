@@ -9,7 +9,7 @@ import {
   getPublicResolverContract,
   getRepoContract,
 } from '@contracts';
-import { authorizedCall, forwardVoteFromTm, getRoleHash } from '@utils';
+import { authorizedCall, forwardVoteFromTm, getRoleHash, logger } from '@utils';
 import { wallet } from '@providers';
 import { updateAragonApp, votingForward } from '@scripts';
 
@@ -23,7 +23,7 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
     .argument('<role>', 'role name')
     .action(async (role) => {
       const roleHash = await getRoleHash(contract, role);
-      console.log('role hash', roleHash);
+      logger.log('Role hash', roleHash);
     });
 
   command
@@ -35,7 +35,7 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
       const { address } = options;
       const roleHash = await getRoleHash(contract, role);
       const result = await contract.canPerform(address, roleHash, []);
-      console.log('can perform', result);
+      logger.log('Can perform', result);
     });
 
   command
@@ -49,7 +49,7 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
       const appAddress = await contract.getAddress();
 
       const result = await kernelContract.hasPermission(address, appAddress, roleHash, '0x');
-      console.log('has permission', result);
+      logger.log('Has permission', result);
     });
 
   command
@@ -63,7 +63,7 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
       const appAddress = await contract.getAddress();
 
       const result = await aclContract.hasPermission(address, appAddress, roleHash);
-      console.log('has permission', result);
+      logger.log('Has permission', result);
     });
 
   command
@@ -75,7 +75,7 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
       const appAddress = await contract.getAddress();
 
       const manager = await aclContract.getPermissionManager(appAddress, roleHash);
-      console.log('manager', manager);
+      logger.log('Manager', manager);
     });
 
   command
@@ -123,7 +123,7 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
     .description('returns proxy implementation address')
     .action(async () => {
       const implementation = await proxyContract.implementation();
-      console.log('implementation', implementation);
+      logger.log('Implementation', implementation);
     });
 
   command
@@ -139,7 +139,7 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
       const repoContract = getRepoContract(getRepoAddress);
 
       const version = await repoContract.getLatest();
-      console.log('version', version.toObject());
+      logger.log('Version', version.toObject());
     });
 
   command
