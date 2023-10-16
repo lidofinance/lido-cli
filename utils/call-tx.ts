@@ -1,7 +1,8 @@
-import { Contract, ContractTransaction, ContractTransactionResponse } from 'ethers';
+import { Contract, ContractTransactionResponse } from 'ethers';
 import { confirmTx } from './confirm-tx';
 import { printTx } from './print-tx';
 import { logger } from './logger';
+import { splitArgsAndOverrides } from './split-args-and-overrides';
 
 export const contractCallTxWithConfirm = async (contract: Contract, method: string, args: unknown[]) => {
   await printTx(contract, method, args);
@@ -25,19 +26,7 @@ export const contractStaticCallTx = async (contract: Contract, method: string, a
 };
 
 export const populateGasLimit = async (contract: Contract, method: string, argsWithOverrides: unknown[]) => {
-  const fragment = contract.interface.getFunction(method, argsWithOverrides);
-
-  if (!fragment) {
-    throw new Error(`Method ${method} not found`);
-  }
-
-  const args = [...argsWithOverrides];
-
-  // If an overrides was passed in, copy it
-  let overrides: Omit<ContractTransaction, 'data' | 'to'> = {};
-  if (fragment.inputs.length + 1 === args.length) {
-    overrides = { ...(args.pop() as typeof overrides) };
-  }
+  const { args, overrides } = splitArgsAndOverrides(contract, method, argsWithOverrides);
 
   if (!overrides.gasLimit) {
     const gasLimit = await contract[method].estimateGas(...args, overrides);
