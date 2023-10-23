@@ -18,6 +18,14 @@ voting
   });
 
 voting
+  .command('vote-time')
+  .description('returns vote time')
+  .action(async () => {
+    const time = await votingContract.voteTime();
+    logger.log('Vote time in seconds', Number(time));
+  });
+
+voting
   .command('votes')
   .description('returns votes length')
   .action(async () => {
