@@ -89,6 +89,25 @@ nor
   });
 
 nor
+  .command('set-target-limit')
+  .description('sets target validators limit')
+  .option('-o, --operator-id <number>', 'node operator id')
+  .option('-l, --limit <number>', 'target limit')
+  .action(async (options) => {
+    const { operatorId, limit } = options;
+    await authorizedCall(norContract, 'updateTargetValidatorsLimits', [operatorId, true, limit]);
+  });
+
+nor
+  .command('unset-target-limit')
+  .description('unsets target validators limit')
+  .option('-o, --operator-id <number>', 'node operator id')
+  .action(async (options) => {
+    const { operatorId } = options;
+    await authorizedCall(norContract, 'updateTargetValidatorsLimits', [operatorId, false, 0]);
+  });
+
+nor
   .command('penalized-operators')
   .description('returns penalties for all operators')
   .action(async () => {

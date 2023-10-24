@@ -1,7 +1,7 @@
 import { program } from '@command';
 import { stakingRouterContract } from '@contracts';
 import { authorizedCall, logger } from '@utils';
-import { Result } from 'ethers';
+import { Result, parseEther } from 'ethers';
 import { addAccessControlSubCommands, addLogsCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
 import { getNodeOperators, getStakingModules } from './staking-module';
 
@@ -122,8 +122,12 @@ router
   .command('max-deposits')
   .description('returns max deposits count for staking module')
   .argument('<module-id>', 'module id')
-  .action(async (moduleId) => {
-    const deposits = await stakingRouterContract.getStakingModuleMaxDepositsCount(moduleId);
+  .argument('<max-deposit-value>', 'max deposits value')
+  .action(async (moduleId, maxDepositsValue) => {
+    const deposits = await stakingRouterContract.getStakingModuleMaxDepositsCount(
+      moduleId,
+      parseEther(maxDepositsValue),
+    );
     logger.log('Max deposits', deposits);
   });
 
