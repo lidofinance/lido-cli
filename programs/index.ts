@@ -17,6 +17,7 @@ export * from './role';
 export * from './sandbox';
 export * from './sanity-checker';
 export * from './scripts';
+export * from './simple-dvt';
 export * from './staking-router';
 export * from './tx';
 export * from './validators';
