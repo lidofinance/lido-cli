@@ -2,6 +2,7 @@ import { lstatSync } from 'fs';
 import { resolve } from 'path';
 import { envs } from './envs';
 import { getValueByPath } from '@utils';
+import { ZeroAddress } from 'ethers';
 
 export const getContracts = () => {
   const fullPath = resolve('configs', envs?.DEPLOYED ?? '');
@@ -39,6 +40,14 @@ export const getDeployedAddress = (...contractKeys: string[]) => {
   }
 
   throw new Error(`Contracts by ${contractKeys} not found`);
+};
+
+export const getOptionalDeployedAddress = (...contractKeys: string[]) => {
+  try {
+    return getDeployedAddress(...contractKeys);
+  } catch {
+    return ZeroAddress;
+  }
 };
 
 export const getAddressMap = () => {

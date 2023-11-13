@@ -35,10 +35,13 @@ export const getNodeOperators = async (moduleAddress: string): Promise<NodeOpera
 export const getNodeOperatorsMap = async (moduleAddress: string) => {
   const nodeOperators = await getNodeOperators(moduleAddress);
 
-  return nodeOperators.reduce((acc, nodeOperator) => {
-    acc[nodeOperator.operatorId] = nodeOperator;
-    return acc;
-  }, {} as Record<number, NodeOperator>);
+  return nodeOperators.reduce(
+    (acc, nodeOperator) => {
+      acc[nodeOperator.operatorId] = nodeOperator;
+      return acc;
+    },
+    {} as Record<number, NodeOperator>,
+  );
 };
 
 export const getNodeOperatorsMapByModule = async () => {
@@ -51,8 +54,11 @@ export const getNodeOperatorsMapByModule = async () => {
     }),
   );
 
-  return modulesWithOperatorsMap.reduce((acc, { moduleId, operatorsMap }) => {
-    acc[moduleId] = operatorsMap;
-    return acc;
-  }, {} as Record<number, Record<number, NodeOperator>>);
+  return modulesWithOperatorsMap.reduce(
+    (acc, { moduleId, operatorsMap }) => {
+      acc[moduleId] = operatorsMap;
+      return acc;
+    },
+    {} as Record<number, Record<number, NodeOperator>>,
+  );
 };
