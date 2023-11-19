@@ -1,7 +1,8 @@
 import { Command } from 'commander';
-import { Contract } from 'ethers';
-import { authorizedCall, contractCallTxWithConfirm, formatDate, logger } from '@utils';
+import { Contract, EventLog } from 'ethers';
+import { authorizedCall, contractCallTxWithConfirm, formatDate, getLatestBlock, logger } from '@utils';
 import { getPenalizedOperators } from '../staking-module';
+import { aclContract } from '@contracts';
 
 export const addCuratedModuleSubCommands = (command: Command, contract: Contract) => {
   command
@@ -166,4 +167,68 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
 
       logger.log('All operators are checked');
     });
+
+  command
+    .command('set-reward-address')
+    .description('sets node operator reward address')
+    .argument('<operator-id>', 'operator id')
+    .argument('<address>', 'reward address')
+    .action(async (operatorId, address) => {
+      await authorizedCall(contract, 'setNodeOperatorRewardAddress', [operatorId, address]);
+    });
+
+  command
+    .command('manager-addresses')
+    .description('returns manager addresses list')
+    .option('-b, --blocks <number>', 'blocks', '1000000000')
+    .action(async (options) => {
+      const { blocks } = options;
+      const simpleDVTAddress = await contract.getAddress();
+      const role = await contract.MANAGE_SIGNING_KEYS();
+
+      const latestBlock = await getLatestBlock();
+      const toBlock = latestBlock.number;
+      const fromBlock = Math.max(toBlock - Number(blocks), 0);
+
+      const filter = aclContract.filters.SetPermission(null, simpleDVTAddress, role);
+      const logs = await aclContract.queryFilter(filter, fromBlock, toBlock);
+
+      const result = await Promise.all(
+        logs.map(async (log) => {
+          if (!(log instanceof EventLog)) throw new Error('Failed to parse log');
+
+          try {
+            const managerAddress = log.args[0];
+            const roleParams = await aclContract.getPermissionParam(managerAddress, simpleDVTAddress, role, 0);
+
+            const [, , operatorId] = roleParams;
+
+            return { operatorId, managerAddress };
+          } catch {
+            // ignore if role has no params
+          }
+        }),
+      );
+
+      const filteredResult = result.filter((v) => v);
+
+      if (filteredResult.length) {
+        logger.table(filteredResult);
+      } else {
+        logger.log('No manager addresses');
+      }
+    });
+
+  // command
+  //   .command('grant-manager-role')
+  //   .description('grants manager role')
+  //   .argument('<operator-id>', 'operator id')
+  //   .argument('<address>', 'address')
+  //   .action(async (operatorId, address) => {
+  //     const role = await contract.MANAGE_SIGNING_KEYS();
+  //     const simpleDVTAddress = await contract.getAddress();
+  //     const params = []
+
+  //     await authorizedCall(aclContract, 'grantPermissionP', [address, simpleDVTAddress, role, params]);
+  //   });
 };
