@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { Contract, EventLog } from 'ethers';
+import { Contract, EventLog, concat, toBeHex } from 'ethers';
 import { authorizedCall, contractCallTxWithConfirm, formatDate, getLatestBlock, logger } from '@utils';
 import { getPenalizedOperators } from '../staking-module';
 import { aclContract } from '@contracts';
@@ -219,16 +219,21 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
       }
     });
 
-  // command
-  //   .command('grant-manager-role')
-  //   .description('grants manager role')
-  //   .argument('<operator-id>', 'operator id')
-  //   .argument('<address>', 'address')
-  //   .action(async (operatorId, address) => {
-  //     const role = await contract.MANAGE_SIGNING_KEYS();
-  //     const simpleDVTAddress = await contract.getAddress();
-  //     const params = []
+  command
+    .command('grant-manager-role')
+    .description('grants manager role')
+    .argument('<operator-id>', 'operator id')
+    .argument('<address>', 'address')
+    .action(async (operatorId, address) => {
+      const role = await contract.MANAGE_SIGNING_KEYS();
+      const simpleDVTAddress = await contract.getAddress();
 
-  //     await authorizedCall(aclContract, 'grantPermissionP', [address, simpleDVTAddress, role, params]);
-  //   });
+      // https://legacy-docs.aragon.org/developers/tools/aragonos/reference-aragonos-3#parameter-interpretation
+      const op = toBeHex(1, 1); // Op.EQ = 1
+      const id = toBeHex(0, 1); // Param id = 0
+      const value = toBeHex(operatorId, 30);
+      const params = [concat([id, op, value])];
+
+      await authorizedCall(aclContract, 'grantPermissionP', [address, simpleDVTAddress, role, params]);
+    });
 };
