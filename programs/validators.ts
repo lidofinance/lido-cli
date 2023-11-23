@@ -63,6 +63,59 @@ validators
   });
 
 validators
+  .command('statuses')
+  .description('fetches validators statuses by operator')
+  .action(async () => {
+    logger.log('Fetching keys from KAPI, it may take a while...');
+    const keys = await fetchAllLidoKeys();
+
+    logger.log('Fetching validators from CL, it may take a few minutes...');
+    const validators = await fetchAllValidators();
+
+    const keysMap = keys.reduce(
+      (acc, signingKey) => {
+        acc[signingKey.key] = signingKey;
+        return acc;
+      },
+      {} as Record<string, KAPIKey>,
+    );
+
+    const lidoValidators = validators.filter(({ validator }) => {
+      return keysMap[validator.pubkey];
+    });
+
+    logger.log('Validators on CL', lidoValidators.length);
+
+    const statsByModuleAndOperator = lidoValidators.reduce(
+      (acc, { validator, status }) => {
+        const key = keysMap[validator.pubkey];
+        const { moduleAddress, operatorIndex } = key;
+
+        if (!acc[moduleAddress]) {
+          acc[moduleAddress] = {};
+        }
+
+        if (!acc[moduleAddress][operatorIndex]) {
+          acc[moduleAddress][operatorIndex] = { operatorIndex };
+        }
+
+        const operatorStats = acc[moduleAddress][operatorIndex];
+
+        if (!operatorStats[status]) operatorStats[status] = 0;
+        operatorStats[status] += 1;
+
+        return acc;
+      },
+      {} as Record<string, Record<number, Record<string, number>>>,
+    );
+
+    Object.entries(statsByModuleAndOperator).forEach(([moduleAddress, statsByOperator]) => {
+      logger.log('Module', moduleAddress);
+      logger.table(Object.values(statsByOperator));
+    });
+  });
+
+validators
   .command('slash-by-attestations')
   .description('slash a validator by attestations ')
   .argument('<mnemonic>', 'mnemonic')
