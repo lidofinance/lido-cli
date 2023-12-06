@@ -180,8 +180,26 @@ router
         };
       });
 
+      const extra = operatorsDigests.map((data) => {
+        const { operatorId, name, active, depositable } = data;
+
+        return {
+          operatorId,
+          name,
+          active,
+          depositable,
+          toDepositBeforeInfstones: Math.min(10001 - data.active, data.depositable),
+        };
+      });
       logger.log('Module', module.id, module.stakingModuleAddress);
-      logger.table(operatorsDigests);
+      logger.table(extra);
+
+      const keysBeforeInfstones = extra.reduce((acc, val) => {
+        acc += val.toDepositBeforeInfstones;
+        return acc;
+      }, 0);
+
+      console.log('Total keys before infstones:', keysBeforeInfstones, `(${keysBeforeInfstones * 32} eth)`);
     }
   });
 
