@@ -1,4 +1,4 @@
-import { getStakingModuleContract, norAddress, norContract } from '@contracts';
+import { getStakingModuleContract, norContract } from '@contracts';
 import { getStakingModules } from './modules';
 
 export type NodeOperator = {
