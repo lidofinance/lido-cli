@@ -1,5 +1,5 @@
 import { exitBusOracleContract, oracleConfigContract } from '@contracts';
-import { FAR_FUTURE_EPOCH, fetchAllValidators, fetchBlock, ValidatorContainer } from '@providers';
+import { FAR_FUTURE_EPOCH, fetchValidator, fetchBlock, ValidatorContainer } from '@providers';
 import { formatDate, getLatestBlock, getValidatorsMap } from '@utils';
 import { getNodeOperatorsMapByModule } from '../staking-module';
 
@@ -79,7 +79,9 @@ export const fetchLastExitRequestsDetailed = async (forBlocks = 7200) => {
   const requests = await fetchLastExitRequests(forBlocks, Number(blockNumber));
 
   // fetch validator from CL
-  const validators = await fetchAllValidators(Number(slot));
+  const validators = await Promise.all(
+    requests.map(async (request) => await fetchValidator(request.validatorPubkey, Number(slot))),
+  );
   const validatorsMap = getValidatorsMap(validators);
 
   // merge data
