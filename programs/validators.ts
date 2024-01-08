@@ -26,6 +26,8 @@ validators
     logger.log('Fetching validators from CL, it may take a few minutes...');
     const validators = await fetchAllValidators();
 
+    logger.log('All validators on CL', validators.length);
+
     const keysMap = keys.reduce(
       (acc, signingKey) => {
         acc[signingKey.key] = signingKey;
@@ -38,13 +40,13 @@ validators
       return keysMap[validator.pubkey];
     });
 
-    logger.log('Validators on CL', lidoValidators.length);
+    logger.log('Lido validators on CL', lidoValidators.length);
 
     const validatorsWith0x00WC = lidoValidators.filter(({ validator }) => {
       return validator.withdrawal_credentials.startsWith('0x00');
     });
 
-    logger.log('Validators with 0x00 wc', validatorsWith0x00WC.length);
+    logger.log('Lido validators with 0x00 wc', validatorsWith0x00WC.length);
 
     const nodeOperatorIds = validatorsWith0x00WC.reduce(
       (acc, { validator }) => {
@@ -72,6 +74,8 @@ validators
     logger.log('Fetching validators from CL, it may take a few minutes...');
     const validators = await fetchAllValidators();
 
+    logger.log('All validators on CL', validators.length);
+
     const keysMap = keys.reduce(
       (acc, signingKey) => {
         acc[signingKey.key] = signingKey;
@@ -84,7 +88,7 @@ validators
       return keysMap[validator.pubkey];
     });
 
-    logger.log('Validators on CL', lidoValidators.length);
+    logger.log('Lido validators on CL', lidoValidators.length);
 
     const statsByModuleAndOperator = lidoValidators.reduce(
       (acc, { validator, status }) => {
