@@ -28,6 +28,7 @@ export const fetchAllValidators = async (stateId: string | number = 'head') => {
         const validators: ValidatorContainer[] = [];
         stream.on('data', (validator: ValidatorContainer) => validators.push(validator));
         stream.on('end', () => resolve(validators));
+        stream.on('error', reject);
       })();
     } catch (error) {
       reject(error);
