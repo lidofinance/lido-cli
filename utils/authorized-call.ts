@@ -49,7 +49,7 @@ export const authorizedCallEOA = async (contract: Contract, method: string, args
 };
 
 export const authorizedCallVoting = async (contract: Contract, method: string, args: unknown[] = []) => {
-  authorizedCallTest(contract, method, args, votingAddress);
+  await authorizedCallTest(contract, method, args, votingAddress);
   printSuccess('voting');
 
   const encoded = await encode(contract, method, args);
@@ -60,7 +60,7 @@ export const authorizedCallVoting = async (contract: Contract, method: string, a
 };
 
 export const authorizedCallAgent = async (contract: Contract, method: string, args: unknown[] = []) => {
-  authorizedCallTest(contract, method, args, aragonAgentAddress);
+  await authorizedCallTest(contract, method, args, aragonAgentAddress);
   printSuccess('agent');
 
   const encoded = await encode(contract, method, args);

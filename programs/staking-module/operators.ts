@@ -1,4 +1,4 @@
-import { getStakingModuleContract, norAddress, norContract } from '@contracts';
+import { getStakingModuleContract, norContract } from '@contracts';
 import { getStakingModules } from './modules';
 
 export type NodeOperator = {
@@ -18,27 +18,33 @@ export const getNodeOperators = async (moduleAddress: string): Promise<NodeOpera
   const operatorIdsBigInt: bigint[] = await getNodeOperatorIds(moduleAddress);
   const operatorIds = operatorIdsBigInt.map((operatorId) => Number(operatorId));
 
-  if (moduleAddress === norAddress) {
+  // try to detect name if it's a curated module implementation
+  try {
+    const moduleContract = norContract.attach(moduleAddress) as typeof norContract;
+
     return await Promise.all(
       operatorIds.map(async (operatorId) => {
-        const result: { name: string } = await norContract.getNodeOperator(operatorId, true);
+        const result: { name: string } = await moduleContract.getNodeOperator(operatorId, true);
         return { operatorId, name: result.name };
       }),
     );
+  } catch {
+    return operatorIds.map((operatorId) => {
+      return { operatorId, name: 'unknown' };
+    });
   }
-
-  return operatorIds.map((operatorId) => {
-    return { operatorId, name: 'unknown' };
-  });
 };
 
 export const getNodeOperatorsMap = async (moduleAddress: string) => {
   const nodeOperators = await getNodeOperators(moduleAddress);
 
-  return nodeOperators.reduce((acc, nodeOperator) => {
-    acc[nodeOperator.operatorId] = nodeOperator;
-    return acc;
-  }, {} as Record<number, NodeOperator>);
+  return nodeOperators.reduce(
+    (acc, nodeOperator) => {
+      acc[nodeOperator.operatorId] = nodeOperator;
+      return acc;
+    },
+    {} as Record<number, NodeOperator>,
+  );
 };
 
 export const getNodeOperatorsMapByModule = async () => {
@@ -51,8 +57,11 @@ export const getNodeOperatorsMapByModule = async () => {
     }),
   );
 
-  return modulesWithOperatorsMap.reduce((acc, { moduleId, operatorsMap }) => {
-    acc[moduleId] = operatorsMap;
-    return acc;
-  }, {} as Record<number, Record<number, NodeOperator>>);
+  return modulesWithOperatorsMap.reduce(
+    (acc, { moduleId, operatorsMap }) => {
+      acc[moduleId] = operatorsMap;
+      return acc;
+    },
+    {} as Record<number, Record<number, NodeOperator>>,
+  );
 };

@@ -55,6 +55,7 @@ voting
   .action(async (voteId, options) => {
     const { support } = options;
 
+    // TODO: add check and print
     if (Number(support) == 1) {
       await voteFor(voteId);
     } else {
@@ -68,6 +69,7 @@ voting
   .description('executes vote')
   .argument('<vote-id>', 'vote id')
   .action(async (voteId) => {
+    // TODO: add check and print
     await executeVote(voteId);
     logger.log('Executed');
   });

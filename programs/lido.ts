@@ -1,6 +1,6 @@
 import { formatEther, parseEther, ZeroAddress } from 'ethers';
 import { program } from '@command';
-import { lidoContract } from '@contracts';
+import { lidoContract, unlimitedStakeContract } from '@contracts';
 import { authorizedCall, contractCallTxWithConfirm, forwardVoteFromTm, logger } from '@utils';
 import { resumeLidoAndSetStakingLimit, votingForward } from '@scripts';
 import { addAragonAppSubCommands, addLogsCommands, addParsingCommands } from './common';
@@ -78,6 +78,7 @@ lido
 
 lido
   .command('submit')
+  .description('submits ether amount')
   .argument('<amount>', 'ether amount')
   .option('-r, --referral <string>', 'referral address', ZeroAddress)
   .action(async (amount, options) => {
@@ -102,5 +103,18 @@ lido
     await authorizedCall(lidoContract, 'setStakingLimit', [
       parseEther(maxStakeLimit),
       parseEther(stakeLimitIncreasePerBlock),
+    ]);
+  });
+
+lido
+  .command('unlimited-submit')
+  .description('submits unlimited ether amount')
+  .argument('<amount>', 'ether amount')
+  .option('-r, --referral <string>', 'referral address', ZeroAddress)
+  .action(async (amount, options) => {
+    const { referral } = options;
+    await contractCallTxWithConfirm(unlimitedStakeContract, 'unlimitedSubmit', [
+      referral,
+      { value: parseEther(amount) },
     ]);
   });

@@ -17,7 +17,17 @@ export const parseMethodCall = (methodCall: string) => {
 };
 
 export const parseMethodCallToContract = (methodCall: string): ParsedMethodCall => {
-  const [address, method, ...args] = stringArgv(methodCall.trim());
+  const [address, method, ...rawArgs] = stringArgv(methodCall.trim());
+
+  const args = rawArgs.map((arg) => {
+    if (arg.startsWith('[') && arg.endsWith(']')) {
+      return JSON.parse(arg);
+    }
+
+    return arg;
+  });
+
+  console.log(args);
 
   if (!method) {
     throw new Error(`Method name is empty`);
