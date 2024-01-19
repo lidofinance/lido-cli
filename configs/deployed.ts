@@ -4,15 +4,29 @@ import { envs } from './envs';
 import { getValueByPath } from '@utils';
 import { ZeroAddress } from 'ethers';
 
-export const getContracts = () => {
-  const fullPath = resolve('configs', envs?.DEPLOYED ?? '');
+export const importConfigFile = (path?: string) => {
+  const fullPath = resolve('configs', path ?? '');
+  const json: Record<string, Record<string, string>> = {};
 
-  if (!lstatSync(fullPath).isFile()) {
-    throw new Error('Deployed contracts file not found, check .env file');
+  if (lstatSync(fullPath).isFile()) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    Object.assign(json, require(fullPath));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  return require(fullPath) as Record<string, Record<string, string>>;
+  return json;
+};
+
+export const getContracts = () => {
+  const deployedFile = envs?.DEPLOYED;
+
+  if (!deployedFile) {
+    throw new Error('Deployed contracts file is not set, check .env file');
+  }
+
+  const mainDeployedJSON = importConfigFile(envs?.DEPLOYED);
+  const extraDeployedJSON = importConfigFile(`extra-${envs?.DEPLOYED}`);
+
+  return { ...mainDeployedJSON, ...extraDeployedJSON };
 };
 
 export const getContractDeploy = (path: string) => {
