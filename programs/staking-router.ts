@@ -5,7 +5,10 @@ import { Result, parseEther } from 'ethers';
 import { addAccessControlSubCommands, addLogsCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
 import { getNodeOperators, getStakingModules } from './staking-module';
 
-const router = program.command('staking-router').description('interact with staking router contract');
+const router = program
+  .command('staking-router')
+  .aliases(['sr', 'router'])
+  .description('interact with staking router contract');
 addAccessControlSubCommands(router, stakingRouterContract);
 addOssifiableProxyCommands(router, stakingRouterContract);
 addParsingCommands(router, stakingRouterContract);

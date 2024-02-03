@@ -11,7 +11,10 @@ import {
 } from './common';
 import { contractCallTxWithConfirm, logger } from '@utils';
 
-const withdrawal = program.command('withdrawal-request').description('interact with withdrawal request contract');
+const withdrawal = program
+  .command('withdrawal-request')
+  .aliases(['wq', 'withdrawal-queue'])
+  .description('interact with withdrawal request contract');
 addAccessControlSubCommands(withdrawal, withdrawalRequestContract);
 addOssifiableProxyCommands(withdrawal, withdrawalRequestContract);
 addParsingCommands(withdrawal, withdrawalRequestContract);

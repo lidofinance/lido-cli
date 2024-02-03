@@ -4,6 +4,7 @@ import { addAccessControlSubCommands, addConsensusCommands, addLogsCommands, add
 
 const oracle = program
   .command('accounting-consensus')
+  .aliases(['ao-consensus'])
   .description('interact with hash consensus contract for accounting oracle');
 addAccessControlSubCommands(oracle, consensusForAccountingContract);
 addParsingCommands(oracle, consensusForAccountingContract);

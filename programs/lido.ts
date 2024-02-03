@@ -6,7 +6,7 @@ import { resumeLidoAndSetStakingLimit, votingForward } from '@scripts';
 import { addAragonAppSubCommands, addLogsCommands, addParsingCommands } from './common';
 import { addERC20Commands } from './common/erc20';
 
-const lido = program.command('lido').description('interact with lido contract');
+const lido = program.command('lido').aliases(['steth']).description('interact with lido contract');
 addAragonAppSubCommands(lido, lidoContract);
 addParsingCommands(lido, lidoContract);
 addLogsCommands(lido, lidoContract);

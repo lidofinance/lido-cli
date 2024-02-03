@@ -9,7 +9,10 @@ import {
 } from './common';
 import { logger } from '@utils';
 
-const oracle = program.command('accounting-oracle').description('interact with accounting oracle contract');
+const oracle = program
+  .command('accounting-oracle')
+  .aliases(['ao'])
+  .description('interact with accounting oracle contract');
 addAccessControlSubCommands(oracle, accountingOracleContract);
 addBaseOracleCommands(oracle, accountingOracleContract);
 addOssifiableProxyCommands(oracle, accountingOracleContract);
