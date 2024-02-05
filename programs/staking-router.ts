@@ -95,6 +95,22 @@ router
   });
 
 router
+  .command('pause-module')
+  .description('pause deposits for staking module')
+  .argument('<module-id>', 'module id')
+  .action(async (moduleId) => {
+    await authorizedCall(stakingRouterContract, 'pauseStakingModule', [moduleId]);
+  });
+
+router
+  .command('resume-module')
+  .description('resume deposits for staking module')
+  .argument('<module-id>', 'module id')
+  .action(async (moduleId) => {
+    await authorizedCall(stakingRouterContract, 'resumeStakingModule', [moduleId]);
+  });
+
+router
   .command('last-deposit-block')
   .description('returns last deposit block for module')
   .argument('<module-id>', 'module id')
