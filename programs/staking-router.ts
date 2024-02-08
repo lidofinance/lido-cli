@@ -5,7 +5,10 @@ import { Result, parseEther } from 'ethers';
 import { addAccessControlSubCommands, addLogsCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
 import { getNodeOperators, getStakingModules } from './staking-module';
 
-const router = program.command('staking-router').description('interact with staking router contract');
+const router = program
+  .command('staking-router')
+  .aliases(['sr', 'router'])
+  .description('interact with staking router contract');
 addAccessControlSubCommands(router, stakingRouterContract);
 addOssifiableProxyCommands(router, stakingRouterContract);
 addParsingCommands(router, stakingRouterContract);
@@ -89,6 +92,22 @@ router
   .action(async (moduleId) => {
     const isPaused = await stakingRouterContract.getStakingModuleIsDepositsPaused(moduleId);
     logger.log('Module paused', isPaused);
+  });
+
+router
+  .command('pause-module')
+  .description('pause deposits for staking module')
+  .argument('<module-id>', 'module id')
+  .action(async (moduleId) => {
+    await authorizedCall(stakingRouterContract, 'pauseStakingModule', [moduleId]);
+  });
+
+router
+  .command('resume-module')
+  .description('resume deposits for staking module')
+  .argument('<module-id>', 'module id')
+  .action(async (moduleId) => {
+    await authorizedCall(stakingRouterContract, 'resumeStakingModule', [moduleId]);
   });
 
 router

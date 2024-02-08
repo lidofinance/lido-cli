@@ -32,7 +32,10 @@ export type LidoValidator = {
   signingKey: KAPIKey;
 };
 
-const oracle = program.command('exit-bus-oracle').description('interact with validator exit bus oracle contract');
+const oracle = program
+  .command('exit-bus-oracle')
+  .aliases(['vebo'])
+  .description('interact with validator exit bus oracle contract');
 addAccessControlSubCommands(oracle, exitBusOracleContract);
 addBaseOracleCommands(oracle, exitBusOracleContract);
 addOssifiableProxyCommands(oracle, exitBusOracleContract);

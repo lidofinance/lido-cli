@@ -5,7 +5,10 @@ import { provider } from '@providers';
 import { Contract } from 'ethers';
 import { logger } from '@utils';
 
-const simpleDVT = program.command('simple-dvt').description('interact with simple dvt module contract');
+const simpleDVT = program
+  .command('simple-dvt')
+  .aliases(['sdvt', 'sdvt-module'])
+  .description('interact with simple dvt module contract');
 addAragonAppSubCommands(simpleDVT, simpleDVTContract);
 addParsingCommands(simpleDVT, simpleDVTContract);
 addLogsCommands(simpleDVT, simpleDVTContract);

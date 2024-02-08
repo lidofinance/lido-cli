@@ -10,7 +10,34 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
     .description('returns operators count')
     .action(async () => {
       const total = await contract.getNodeOperatorsCount();
-      logger.log('Total', total);
+      logger.log('Total', Number(total));
+    });
+
+  command
+    .command('operator-list')
+    .description('returns list of operators')
+    .action(async () => {
+      const total = await contract.getNodeOperatorsCount();
+      const operatorIds = new Array(Number(total)).fill(0).map((_, index) => index);
+
+      const result = await Promise.all(
+        operatorIds.map(async (operatorId) => {
+          const operator = await contract.getNodeOperator(operatorId, true);
+          const parsed = operator.toObject();
+
+          return {
+            active: parsed.active,
+            name: parsed.name,
+            rewardAddress: parsed.rewardAddress,
+            vetted: parsed.totalVettedValidators,
+            exited: parsed.totalExitedValidators,
+            deposited: parsed.totalDepositedValidators,
+            total: parsed.totalAddedValidators,
+          };
+        }),
+      );
+
+      logger.table(result);
     });
 
   command
@@ -211,9 +238,10 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
       );
 
       const filteredResult = result.filter((v) => v);
+      const sortedResult = filteredResult.sort((a, b) => Number(a?.operatorId) - Number(b?.operatorId));
 
-      if (filteredResult.length) {
-        logger.table(filteredResult);
+      if (sortedResult.length) {
+        logger.table(sortedResult);
       } else {
         logger.log('No manager addresses');
       }
