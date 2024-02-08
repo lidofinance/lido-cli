@@ -1,6 +1,8 @@
 import { authorizedCall, getLatestBlock, getProvider, logger } from '@utils';
+import chalk from 'chalk';
 import { Command } from 'commander';
 import { Contract, EventLog, formatEther } from 'ethers';
+import prompts from 'prompts';
 
 export const addConsensusCommands = (command: Command, contract: Contract) => {
   command
@@ -60,6 +62,20 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .option('-q, --quorum <string>', 'quorum')
     .action(async (options) => {
       const { address, quorum } = options;
+      const { confirm } = await prompts({
+        type: 'confirm',
+        name: 'confirm',
+        message: chalk.red(
+          'This change will affect the operation of Ejector. Are all operators ready for this change?',
+        ),
+        initial: false,
+      });
+
+      if (!confirm) {
+        logger.error('Aborted');
+        return;
+      }
+
       await authorizedCall(contract, 'addMember', [address, quorum]);
     });
 
@@ -70,6 +86,20 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .option('-q, --quorum <string>', 'quorum')
     .action(async (options) => {
       const { address, quorum } = options;
+      const { confirm } = await prompts({
+        type: 'confirm',
+        name: 'confirm',
+        message: chalk.red(
+          'This change will affect the operation of Ejector. Are all operators ready for this change?',
+        ),
+        initial: false,
+      });
+
+      if (!confirm) {
+        logger.error('Aborted');
+        return;
+      }
+
       await authorizedCall(contract, 'removeMember', [address, quorum]);
     });
 
