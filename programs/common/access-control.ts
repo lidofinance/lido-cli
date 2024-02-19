@@ -31,6 +31,11 @@ export const addAccessControlSubCommands = (command: Command, contract: Contract
       const roleHash = await getRoleHash(contract, role);
       const count = await contract.getRoleMemberCount(roleHash);
 
+      if (count == 0) {
+        logger.log('No members');
+        return;
+      }
+
       for (let i = 0; i < count; i++) {
         const count = await contract.getRoleMember(roleHash, i);
         logger.log(`Role member at ${i}`, count);
