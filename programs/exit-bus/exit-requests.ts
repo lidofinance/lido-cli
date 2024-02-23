@@ -24,6 +24,7 @@ export type GroupedRequestsByOperator = {
   wc0x00: number;
   wc0x01: number;
   exitSignaledNYP: number;
+  exiting: number;
   delayed: number;
   exited: number;
   exitedSlashed: number;
@@ -144,6 +145,7 @@ export const groupRequestsByOperator = (
       wc0x00: 0,
       wc0x01: 0,
       exitSignaledNYP: 0,
+      exiting: 0,
       delayed: 0,
       exited: 0,
       exitedSlashed: 0,
@@ -158,6 +160,7 @@ export const groupRequestsByOperator = (
     if (item.wcType == '0x00') operatorRequestsStat.wc0x00 += 1;
     if (item.wcType == '0x01') operatorRequestsStat.wc0x01 += 1;
     if (item.status == 'active_ongoing') operatorRequestsStat.exitSignaledNYP += 1;
+    if (item.status == 'active_exiting') operatorRequestsStat.exiting += 1;
     if (item.delayed == true) operatorRequestsStat.delayed += 1;
     if (item.status == 'exited_unslashed' || item.status == 'withdrawal_done' || item.status == 'withdrawal_possible')
       operatorRequestsStat.exited += 1;
