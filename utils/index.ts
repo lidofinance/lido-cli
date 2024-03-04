@@ -1,6 +1,7 @@
 export * from './abi';
 export * from './authorized-call';
 export * from './block';
+export * from './bool';
 export * from './call-tx';
 export * from './compare-calls';
 export * from './contract';

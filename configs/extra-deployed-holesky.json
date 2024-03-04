@@ -1,5 +1,8 @@
 {
   "unlimitedStake": {
     "address": "0xc589bfa706a94fc0fc48720d62e0f442dee0cb5d"
+  },
+  "allowedRelayList": {
+    "address": "0x2d86C5855581194a386941806E38cA119E50aEA3"
   }
 }

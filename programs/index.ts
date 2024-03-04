@@ -1,6 +1,7 @@
 export * from './accounting-consensus';
 export * from './accounting-oracle';
 export * from './accounts';
+export * from './allowed-list';
 export * from './burner';
 export * from './deposit-contract';
 export * from './dsm';
