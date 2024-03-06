@@ -16,6 +16,7 @@ export * from './print-tx';
 export * from './role-hash';
 export * from './scripts';
 export * from './sleep';
+export * from './split-hex';
 export * from './staking-limit';
 export * from './stringify';
 export * from './to-hex-string';
