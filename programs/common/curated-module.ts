@@ -1,8 +1,9 @@
 import { Command } from 'commander';
 import { Contract, EventLog, concat, toBeHex } from 'ethers';
-import { authorizedCall, contractCallTxWithConfirm, formatDate, getLatestBlock, logger } from '@utils';
+import { authorizedCall, contractCallTxWithConfirm, formatDate, getLatestBlock, joinHex, logger } from '@utils';
 import { getPenalizedOperators } from '../staking-module';
 import { aclContract } from '@contracts';
+import { DepositData, supplementAndVerifyDepositDataArray } from 'utils/deposit-data';
 
 export const addCuratedModuleSubCommands = (command: Command, contract: Contract) => {
   command
@@ -87,6 +88,23 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
     .option('-s, --signatures <string>', 'signatures')
     .action(async (options) => {
       const { operatorId, count, publicKeys, signatures } = options;
+      await authorizedCall(contract, 'addSigningKeys', [operatorId, count, publicKeys, signatures]);
+    });
+
+  command
+    .command('add-keys-from-file')
+    .description('adds signing keys from deposit data file')
+    .argument('<operator-id>', 'node operator id')
+    .argument('<file-path>', 'file path')
+    .action(async (operatorId, filePath) => {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const depositData: DepositData[] = require(filePath);
+      await supplementAndVerifyDepositDataArray(depositData);
+
+      const count = depositData.length;
+      const publicKeys = joinHex(depositData.map(({ pubkey }) => pubkey));
+      const signatures = joinHex(depositData.map(({ signature }) => signature));
+
       await authorizedCall(contract, 'addSigningKeys', [operatorId, count, publicKeys, signatures]);
     });
 

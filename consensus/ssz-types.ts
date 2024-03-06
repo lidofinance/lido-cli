@@ -53,3 +53,8 @@ export const AttestationDataBigint = new ContainerType(
   },
   { typeName: 'AttestationData', jsonCase: 'eth2', cachePermanentRootStruct: true },
 );
+
+export const DepositMessage = new ContainerType(
+  { pubkey: BLSPubkey, withdrawalCredentials: Bytes32, amount: UintNum64 },
+  { typeName: 'DepositMessage', jsonCase: 'eth2' },
+);

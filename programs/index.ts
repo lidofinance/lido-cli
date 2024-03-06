@@ -4,6 +4,7 @@ export * from './accounts';
 export * from './allowed-list';
 export * from './burner';
 export * from './deposit-contract';
+export * from './deposit-data';
 export * from './dsm';
 export * from './exit-bus-consensus';
 export * from './exit-bus-oracle';
