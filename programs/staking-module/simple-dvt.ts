@@ -33,10 +33,10 @@ const expectedStETHAddress = lidoAddress;
 const expectedWstETHAddress = wstethAddress;
 const expectedSplitMainAddress = splitMainAddress;
 
-const intl = new Intl.NumberFormat('en-GB', { minimumFractionDigits: 2 });
+const intl = new Intl.NumberFormat('en-GB', { minimumFractionDigits: 5, maximumFractionDigits: 5 });
 
 const formatETH = (wei: bigint) => {
-  return intl.format(Number(wei / 10n ** 15n) / 1000);
+  return intl.format(Number(wei) / 1e18);
 };
 
 const getFormattedAccountInfo = async (account: string) => {
