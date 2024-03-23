@@ -8,6 +8,7 @@ import { splitArgsAndOverrides } from './split-args-and-overrides';
 const title = chalk.gray;
 const chain = chalk.green.bold;
 const value = chalk.blue.bold;
+const warn = chalk.red.bold;
 
 export const printTx = async (contract: Contract, method: string, argsWithOverrides: unknown[] = []) => {
   const provider = getProvider(contract);
@@ -30,4 +31,10 @@ export const printTx = async (contract: Contract, method: string, argsWithOverri
   if (overrides.value) {
     logger.log(title('Value:'), value(`${overrides.value.toString()} (${formatEther(overrides.value)} ETH)`));
   }
+
+  logger.log('');
+  logger.log(warn('--------------------------------------------------------------------------------------------'));
+  logger.log(warn('If you make any changes on the testnet, please inform the stakeholders in the Discord thread'));
+  logger.log(warn('--------------------------------------------------------------------------------------------'));
+  logger.log('');
 };

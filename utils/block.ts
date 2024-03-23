@@ -14,3 +14,11 @@ export const getBlock = async (blockTag: BlockTag) => {
 
   return block;
 };
+
+export const getLatestBlockRange = async (limit: number): Promise<[number, number]> => {
+  const latestBlock = await getLatestBlock();
+  const toBlock = latestBlock.number;
+  const fromBlock = Math.max(toBlock - Number(limit), 0);
+
+  return [fromBlock, toBlock];
+};

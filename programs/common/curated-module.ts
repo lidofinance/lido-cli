@@ -1,8 +1,17 @@
 import { Command } from 'commander';
 import { Contract, EventLog, concat, toBeHex } from 'ethers';
-import { authorizedCall, contractCallTxWithConfirm, formatDate, getLatestBlock, logger } from '@utils';
+import {
+  authorizedCall,
+  contractCallTxWithConfirm,
+  formatDate,
+  getLatestBlock,
+  joinHex,
+  logger,
+  splitHex,
+} from '@utils';
 import { getPenalizedOperators } from '../staking-module';
 import { aclContract } from '@contracts';
+import { DepositData, supplementAndVerifyDepositDataArray } from 'utils/deposit-data';
 
 export const addCuratedModuleSubCommands = (command: Command, contract: Contract) => {
   command
@@ -79,6 +88,38 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
     });
 
   command
+    .command('keys')
+    .description('returns signing keys')
+    .argument('<operator-id>', 'operator id')
+    .argument('[from-index]', 'from index')
+    .argument('[count]', 'keys count')
+    .action(async (operatorId, fromIndex, count) => {
+      if (fromIndex == null && count == null) {
+        const total = await contract.getNodeOperator(operatorId, true);
+
+        fromIndex = 0;
+        count = total.totalAddedValidators;
+      }
+
+      const [pubkeys, signatures, used] = await contract.getSigningKeys(
+        Number(operatorId),
+        Number(fromIndex),
+        Number(count),
+      );
+
+      const pubkeysArray = splitHex(pubkeys, 48 * 2);
+      const signaturesArray = splitHex(signatures, 96 * 2);
+
+      const keysData = pubkeysArray.map((pubkey: string, index: number) => ({
+        pubkey,
+        signature: signaturesArray[index],
+        used: used[index],
+      }));
+
+      logger.log('Keys', keysData);
+    });
+
+  command
     .command('add-keys')
     .description('adds signing keys')
     .option('-o, --operator-id <number>', 'node operator id')
@@ -87,6 +128,23 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
     .option('-s, --signatures <string>', 'signatures')
     .action(async (options) => {
       const { operatorId, count, publicKeys, signatures } = options;
+      await authorizedCall(contract, 'addSigningKeys', [operatorId, count, publicKeys, signatures]);
+    });
+
+  command
+    .command('add-keys-from-file')
+    .description('adds signing keys from deposit data file')
+    .argument('<operator-id>', 'node operator id')
+    .argument('<file-path>', 'file path')
+    .action(async (operatorId, filePath) => {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const depositData: DepositData[] = require(filePath);
+      await supplementAndVerifyDepositDataArray(depositData);
+
+      const count = depositData.length;
+      const publicKeys = joinHex(depositData.map(({ pubkey }) => pubkey));
+      const signatures = joinHex(depositData.map(({ signature }) => signature));
+
       await authorizedCall(contract, 'addSigningKeys', [operatorId, count, publicKeys, signatures]);
     });
 
