@@ -16,11 +16,12 @@ import {
   gnosisSafeProxyFactoryContract,
 } from '@contracts';
 import chalk from 'chalk';
+import Table from 'cli-table3';
 
 const header = chalk.white.bold;
 
-const match = chalk.green;
-const unmatch = chalk.gray;
+const ok = chalk.green.bold;
+const warn = chalk.yellow.bold;
 
 const checkPass = (text: string) => chalk.green.bold(text) + ' ✅';
 const checkFail = (text: string) => chalk.red.bold(text) + ' ❌';
@@ -31,6 +32,8 @@ const passOrWarn = (text: string, check: boolean) => (check ? checkPass(text) : 
 const expectedStETHAddress = lidoAddress;
 const expectedWstETHAddress = wstethAddress;
 const expectedSplitMainAddress = splitMainAddress;
+
+const intl = new Intl.NumberFormat('en-GB', { minimumFractionDigits: 2 });
 
 export const checkWrapperContract = async (wrapperAddress: string, fromBlock: number, toBlock: number) => {
   const wrapperContract = new Contract(wrapperAddress, obolLidoSplitAbi, provider);
@@ -131,11 +134,33 @@ export const check0xSplit = async (splitWalletAddress: string, fromBlock: number
   const minAllocation = Math.min(...allocations);
   const isFairAllocation = maxAllocation - minAllocation <= 1;
 
-  logger.log('');
-  logger.log('Account                                    Share');
-  accounts.forEach((account, index) => {
-    logger.log(account, passOrFail(String(allocations[index]), isFairAllocation));
+  const accountsTable = new Table({
+    head: ['Account', 'Share', 'Nonce', 'Balance'],
+    colAligns: ['left', 'right', 'right', 'right'],
+    style: { head: ['gray'], compact: true },
   });
+
+  accountsTable.push(
+    ...(await Promise.all(
+      accounts.map(async (account, index) => {
+        const share = passOrFail(String(allocations[index]), isFairAllocation);
+
+        const [txCount, balance] = await Promise.all([
+          provider.getTransactionCount(account, 'latest'),
+          provider.getBalance(account),
+        ]);
+
+        const balanceEth = intl.format(Number(balance / 10n ** 16n) / 100);
+        const txCountFormatted = txCount > 0 ? ok(txCount) : warn(txCount);
+        const balanceFormatted = balance > 0 ? ok(balanceEth) : warn(balanceEth);
+
+        return [account, share, txCountFormatted, balanceFormatted];
+      }),
+    )),
+  );
+
+  logger.log('');
+  logger.log(accountsTable.toString());
   logger.log('');
 
   return { splitWalletAccounts: accounts };
@@ -173,18 +198,32 @@ export const checkGnosisSafe = async (safeAddress: string, splitAccounts: string
   logger.log('Owners amount:  ', passOrFail(`${isAmountMatch ? '' : 'do not '}match Split`, isAmountMatch));
   logger.log('Owners:         ', passOrWarn(`${isOwnersMatch ? '' : 'do not '}match Split`, isOwnersMatch));
 
-  const rows = Math.max(gnosisOwners.length, splitAccounts.length);
-  const placeholder = ' '.repeat(40);
+  const ownersTable = new Table({
+    head: ['Account', 'In split', 'Nonce', 'Balance'],
+    colAligns: ['left', 'right', 'right', 'right'],
+    style: { head: ['gray'], compact: true },
+  });
 
-  logger.log('Split accounts                             Gnosis owners');
+  ownersTable.push(
+    ...(await Promise.all(
+      sortedGnosisOwners.map(async (account) => {
+        const [txCount, balance] = await Promise.all([
+          provider.getTransactionCount(account, 'latest'),
+          provider.getBalance(account),
+        ]);
 
-  for (let i = 0; i < rows; i++) {
-    const splitAccount = splitAccounts[i] ?? placeholder;
-    const gnosisOwner = gnosisOwners[i] ?? placeholder;
+        const balanceEth = intl.format(Number(balance / 10n ** 16n) / 100);
+        const txCountFormatted = txCount > 0 ? ok(txCount) : warn(txCount);
+        const balanceFormatted = balance > 0 ? ok(balanceEth) : warn(balanceEth);
 
-    logger.log(
-      gnosisOwners.includes(splitAccount) ? match(splitAccount) : unmatch(splitAccount),
-      splitAccounts.includes(gnosisOwner) ? match(gnosisOwner) : unmatch(gnosisOwner),
-    );
-  }
+        const isInSplit = sortedSplitAccounts.includes(account) ? ok('yes') : warn('no');
+
+        return [account, isInSplit, txCountFormatted, balanceFormatted];
+      }),
+    )),
+  );
+
+  logger.log('');
+  logger.log(ownersTable.toString());
+  logger.log('');
 };
