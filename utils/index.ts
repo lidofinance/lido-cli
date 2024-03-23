@@ -3,7 +3,6 @@ export * from './authorized-call';
 export * from './block';
 export * from './bool';
 export * from './call-tx';
-export * from './chain-id';
 export * from './compare-calls';
 export * from './contract';
 export * from './csv';

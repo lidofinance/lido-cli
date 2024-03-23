@@ -1,8 +1,8 @@
 import { program } from '@command';
 import { simpleDVTContract } from '@contracts';
 import { addAragonAppSubCommands, addCuratedModuleSubCommands, addLogsCommands, addParsingCommands } from './common';
-import { getLatestBlock, logger } from '@utils';
-import { check0xSplit, checkWrapperContract } from './staking-module';
+import { getLatestBlockRange } from '@utils';
+import { check0xSplit, checkGnosisSafe, checkWrapperContract } from './staking-module';
 
 const simpleDVT = program
   .command('simple-dvt')
@@ -16,14 +16,26 @@ addCuratedModuleSubCommands(simpleDVT, simpleDVTContract);
 simpleDVT
   .command('check-reward-address')
   .description('check split contracts')
-  .argument('<address>', 'address of the reward address')
+  .argument('<reward-address>', 'cluster reward address')
   .option('-b, --blocks <number>', 'blocks', '1000000000')
-  .action(async (wrapperAddress, { blocks }) => {
-    const latestBlock = await getLatestBlock();
-    const toBlock = latestBlock.number;
-    const fromBlock = Math.max(toBlock - Number(blocks), 0);
+  .action(async (rewardAddress, { blocks }) => {
+    const [fromBlock, toBlock] = await getLatestBlockRange(blocks);
 
-    const { splitWalletAddress } = await checkWrapperContract(wrapperAddress, fromBlock, toBlock);
-    logger.log('');
+    const { splitWalletAddress } = await checkWrapperContract(rewardAddress, fromBlock, toBlock);
     await check0xSplit(splitWalletAddress, fromBlock, toBlock);
+  });
+
+simpleDVT
+  .command('check-cluster-addresses')
+  .description('check split contracts')
+  .argument('<reward-address>', 'cluster reward address')
+  .argument('<manager-address>', 'cluster manager address')
+  .option('-b, --blocks <number>', 'blocks', '1000000000')
+  .action(async (rewardAddress, managerAddress, { blocks }) => {
+    const [fromBlock, toBlock] = await getLatestBlockRange(blocks);
+
+    const { splitWalletAddress } = await checkWrapperContract(rewardAddress, fromBlock, toBlock);
+    const { splitWalletAccounts } = await check0xSplit(splitWalletAddress, fromBlock, toBlock);
+
+    await checkGnosisSafe(managerAddress, splitWalletAccounts);
   });

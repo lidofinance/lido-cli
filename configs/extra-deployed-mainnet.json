@@ -1,5 +1,28 @@
 {
   "allowedRelayList": {
     "address": "0xF95f069F9AD107938F6ba802a3da87892298610E"
+  },
+  "obolLidoSplit": {
+    "factory": {
+      "obol": {
+        "address": "0xA9d94139A310150Ca1163b5E23f3E1dbb7D9E2A6"
+      },
+      "ssv": {
+        "address": "0x3df147bd18854bfa03291034666469237504d4ca"
+      }
+    }
+  },
+  "0xSplit": {
+    "splitMain": {
+      "address": "0x2ed6c4B5dA6378c7897AC67Ba9e43102Feb694EE"
+    }
+  },
+  "gnosis": {
+    "factory": {
+      "address": "0xa6b71e26c5e0845f74c812102ca7114b6a896ab2"
+    },
+    "singleton": {
+      "address": "0xd9db270c1b5e3bd161e8c8503c55ceabee709552"
+    }
   }
 }
