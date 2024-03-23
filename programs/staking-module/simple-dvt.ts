@@ -35,6 +35,26 @@ const expectedSplitMainAddress = splitMainAddress;
 
 const intl = new Intl.NumberFormat('en-GB', { minimumFractionDigits: 2 });
 
+const formatETH = (wei: bigint) => {
+  return intl.format(Number(wei / 10n ** 15n) / 1000);
+};
+
+const getFormattedAccountInfo = async (account: string) => {
+  const [txCount, balance] = await Promise.all([
+    provider.getTransactionCount(account, 'latest'),
+    provider.getBalance(account),
+  ]);
+
+  const balanceEth = formatETH(balance);
+  const txCountFormatted = txCount > 0 ? ok(txCount) : warn(txCount);
+  const balanceFormatted = balance > 0 ? ok(balanceEth) : warn(balanceEth);
+
+  return {
+    nonce: txCountFormatted,
+    balance: balanceFormatted,
+  };
+};
+
 export const checkWrapperContract = async (wrapperAddress: string, fromBlock: number, toBlock: number) => {
   const wrapperContract = new Contract(wrapperAddress, obolLidoSplitAbi, provider);
 
@@ -144,17 +164,8 @@ export const check0xSplit = async (splitWalletAddress: string, fromBlock: number
     ...(await Promise.all(
       accounts.map(async (account, index) => {
         const share = passOrFail(String(allocations[index]), isFairAllocation);
-
-        const [txCount, balance] = await Promise.all([
-          provider.getTransactionCount(account, 'latest'),
-          provider.getBalance(account),
-        ]);
-
-        const balanceEth = intl.format(Number(balance / 10n ** 16n) / 100);
-        const txCountFormatted = txCount > 0 ? ok(txCount) : warn(txCount);
-        const balanceFormatted = balance > 0 ? ok(balanceEth) : warn(balanceEth);
-
-        return [account, share, txCountFormatted, balanceFormatted];
+        const { nonce, balance } = await getFormattedAccountInfo(account);
+        return [account, share, nonce, balance];
       }),
     )),
   );
@@ -207,18 +218,9 @@ export const checkGnosisSafe = async (safeAddress: string, splitAccounts: string
   ownersTable.push(
     ...(await Promise.all(
       sortedGnosisOwners.map(async (account) => {
-        const [txCount, balance] = await Promise.all([
-          provider.getTransactionCount(account, 'latest'),
-          provider.getBalance(account),
-        ]);
-
-        const balanceEth = intl.format(Number(balance / 10n ** 16n) / 100);
-        const txCountFormatted = txCount > 0 ? ok(txCount) : warn(txCount);
-        const balanceFormatted = balance > 0 ? ok(balanceEth) : warn(balanceEth);
-
         const isInSplit = sortedSplitAccounts.includes(account) ? ok('yes') : warn('no');
-
-        return [account, isInSplit, txCountFormatted, balanceFormatted];
+        const { nonce, balance } = await getFormattedAccountInfo(account);
+        return [account, isInSplit, nonce, balance];
       }),
     )),
   );
