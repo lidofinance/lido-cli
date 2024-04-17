@@ -1,10 +1,19 @@
 import { program } from '@command';
 import { tmContract, votingContract } from '@contracts';
-import { contractCallTxWithConfirm, executeVote, logger, voteAgainst, voteFor } from '@utils';
-import { addLogsCommands, addParsingCommands } from './common';
+import {
+  authorizedCall,
+  contractCallTxWithConfirm,
+  executeVote,
+  logger,
+  voteAgainst,
+  voteFor,
+  waitForEnd,
+} from '@utils';
+import { addAragonAppSubCommands, addLogsCommands, addParsingCommands } from './common';
 import { votingNewVote } from '@scripts';
 
 const voting = program.command('voting').description('interact with voting contract');
+addAragonAppSubCommands(voting, votingContract);
 addParsingCommands(voting, votingContract);
 addLogsCommands(voting, votingContract);
 
@@ -15,6 +24,8 @@ voting
   .action(async (voteId) => {
     const vote = await votingContract.getVote(voteId);
     logger.log('Vote', vote.toObject());
+
+    if (vote.open) await waitForEnd(voteId);
   });
 
 voting
@@ -23,6 +34,22 @@ voting
   .action(async () => {
     const time = await votingContract.voteTime();
     logger.log('Vote time in seconds', Number(time));
+  });
+
+voting
+  .command('change-vote-time')
+  .description('changes vote time')
+  .argument('<time>', 'time in seconds')
+  .action(async (time) => {
+    await authorizedCall(votingContract, 'unsafelyChangeVoteTime', [Number(time)]);
+  });
+
+voting
+  .command('change-objection-time')
+  .description('changes objection time')
+  .argument('<time>', 'time in seconds')
+  .action(async (time) => {
+    await authorizedCall(votingContract, 'unsafelyChangeObjectionPhaseTime', [Number(time)]);
   });
 
 voting
