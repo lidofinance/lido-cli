@@ -108,7 +108,7 @@ dsm
   .description('returns the list of guardians')
   .action(async () => {
     const guardians = await dsmContract.getGuardians();
-    logger.log('Guardians', guardians);
+    logger.log('Guardians', guardians.toArray());
   });
 
 dsm
