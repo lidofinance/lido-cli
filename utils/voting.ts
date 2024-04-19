@@ -70,7 +70,7 @@ export const waitForEnd = async (voteId: number, progressBar?: SingleBar) => {
   const currentPosition = Math.min(block.timestamp - voteStart, Number(voteTime));
 
   if (!vote.open) {
-    progressBar?.update(currentPosition);
+    progressBar?.update(currentPosition, { secondsLeft });
     progressBar?.stop();
     logger.log('');
 
