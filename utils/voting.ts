@@ -78,13 +78,13 @@ export const waitForEnd = async (voteId: number, progressBar?: SingleBar) => {
   }
 
   if (progressBar) {
-    progressBar.update(currentPosition);
+    progressBar.update(currentPosition, { secondsLeft });
   } else {
     progressBar = new progress.SingleBar(
-      { format: `Vote #${voteId} in progress |{bar}| {percentage}% | ${secondsLeft} seconds left` },
+      { format: `Vote #${voteId} in progress |{bar}| {percentage}% | {secondsLeft}s left` },
       progress.Presets.shades_classic,
     );
-    progressBar.start(Number(voteTime), currentPosition);
+    progressBar.start(Number(voteTime), currentPosition, { secondsLeft });
   }
 
   await sleep(10_000);
