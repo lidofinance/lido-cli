@@ -9,14 +9,14 @@ const accountFile = parsed?.ACCOUNT_FILE;
 const accountFilePassword = parsed?.ACCOUNT_FILE_PASSWORD;
 
 const getWallet = () => {
-  const accountToInpersonate = program.getOptionValue('inpersonate');
+  const accountToimpersonate = program.getOptionValue('impersonate');
 
-  if (accountToInpersonate) {
-    if (!isAddress(accountToInpersonate)) {
-      throw new Error('Invalid inpersonate address');
+  if (accountToimpersonate) {
+    if (!isAddress(accountToimpersonate)) {
+      throw new Error('Invalid impersonate address');
     }
 
-    return new JsonRpcSigner(provider, accountToInpersonate);
+    return new JsonRpcSigner(provider, accountToimpersonate);
   }
 
   if (privateKey && accountFile) {
