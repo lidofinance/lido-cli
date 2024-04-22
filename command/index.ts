@@ -1,2 +1,7 @@
 import { Command } from 'commander';
-export const program = new Command();
+const program = new Command();
+
+program.option('-i, --inpersonate <address>', 'inpersonate account');
+program.parse();
+
+export { program };
