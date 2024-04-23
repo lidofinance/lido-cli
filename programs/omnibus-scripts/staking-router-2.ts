@@ -54,7 +54,7 @@ export const stakingRouterV2 = async () => {
     data: iface.encodeFunctionData('revokeRole', [resumeRoleHash, OLD_DSM]),
   });
 
-  // 3. Grant unvetting role to new DSM
+  // 4. Grant unvetting role to new DSM
   const stakingRouterImplContract = new Contract(STAKING_ROUTER_IMPLEMENTATION, iface, provider);
   const unvettingRoleHash = await getRoleHash(stakingRouterImplContract, 'STAKING_MODULE_UNVETTING_ROLE');
   const [, unvettingRoleGrantScript] = encodeFromAgent({
@@ -62,23 +62,27 @@ export const stakingRouterV2 = async () => {
     data: iface.encodeFunctionData('grantRole', [unvettingRoleHash, NEW_DSM]),
   });
 
-  // 4. Update staking router implementation
+  // 5. Update staking router implementation
   const [, stakingRouterUpdateScript] = encodeFromAgent({
     to: stakingRouterAddress,
     data: iface.encodeFunctionData('proxy__upgradeTo', [STAKING_ROUTER_IMPLEMENTATION]),
   });
 
-  // 5. Call finalize upgrade on Staking Router
+  // 6. Call finalize upgrade on Staking Router
   const stakingRouterFinalizeScript: CallScriptAction = {
     to: stakingRouterAddress,
     data: iface.encodeFunctionData('finalizeUpgrade_v2', [PRIORITY_EXIT_SHARE_THRESHOLDS_BP]),
   };
 
-  // 6. Update NOR implementation
+  // 7, 8. Update NOR implementation
   const norProxyContract = getAppProxyContract(async () => norAddress);
   const norAppId = await norProxyContract.appId();
-  const [norUpdateCalldata] = await updateAragonApp(NOR_VERSION, NOR_IMPLEMENTATION, NOR_CONTENT_URI, norAppId);
-  const [, norUpdateVotingScript] = votingForward(norUpdateCalldata);
+  const [, norNewVersionCall, norSetAppCall] = await updateAragonApp(
+    NOR_VERSION,
+    NOR_IMPLEMENTATION,
+    NOR_CONTENT_URI,
+    norAppId,
+  );
 
   // Collect all calls
   const calls: CallScriptAction[] = [
@@ -88,7 +92,8 @@ export const stakingRouterV2 = async () => {
     unvettingRoleGrantScript,
     stakingRouterUpdateScript,
     stakingRouterFinalizeScript,
-    norUpdateVotingScript,
+    norNewVersionCall,
+    norSetAppCall,
   ];
 
   const description = [
@@ -98,7 +103,8 @@ export const stakingRouterV2 = async () => {
     `4. Grant unvetting role to new DSM ${NEW_DSM}`,
     `5. Update staking router implementation to ${STAKING_ROUTER_IMPLEMENTATION}`,
     `6. Finalize upgrade with priority exit share thresholds: ${PRIORITY_EXIT_SHARE_THRESHOLDS_BP}`,
-    `7. Update NOR implementation to ${NOR_IMPLEMENTATION}`,
+    `7. Create new NOR version with address ${NOR_IMPLEMENTATION}`,
+    `8. Update NOR app to new version`,
   ].join('\n');
 
   const voteEvmScript = encodeCallScript(calls);
