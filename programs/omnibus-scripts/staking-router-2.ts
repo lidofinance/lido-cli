@@ -6,13 +6,13 @@ import {
   stakingRouterContract,
 } from '@contracts';
 import { provider } from '@providers';
-import { encodeFromAgent, updateAragonApp, votingForward, votingNewVote } from '@scripts';
+import { encodeFromAgent, updateAragonApp, votingNewVote } from '@scripts';
 import { CallScriptAction, encodeCallScript, forwardVoteFromTm, getRoleHash } from '@utils';
 import { Contract, Interface } from 'ethers';
 
 const LOCATOR_IMPLEMENTAION = '0xa12Fd7c4c75D78E208B203EDc96053E33BdBFab8';
 
-const OLD_DSM = '0x045dd46212A178428c088573A7d102B9d89a022A';
+const OLD_DSM = '0x336c1efd15284104a04e705f430e4d4a7fc2c6c1';
 const NEW_DSM = '0xb8ae82f7bff2553baf158b7a911dc10162045c53';
 
 const STAKING_ROUTER_IMPLEMENTATION = '0xb1867e93aea81975cf11b8415ccd70e9b07e09a6';
