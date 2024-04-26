@@ -1,7 +1,7 @@
 import { program } from '@command';
 import { csAccountingContract, csModuleContract } from '@contracts';
 import { addAccessControlSubCommands, addLogsCommands, addParsingCommands, addPauseUntilSubCommands } from './common';
-import { logger, splitHex } from '@utils';
+import { contractCallTxWithConfirm, logger, splitHex } from '@utils';
 import { wallet } from '@providers';
 import { ZeroAddress } from 'ethers';
 
@@ -53,7 +53,7 @@ csm
     const { keysCount, publicKeys, singatures, managerAddress, rewardAddress, referrer } = options;
     const value = await csAccountingContract.getBondAmountByKeysCount(1);
 
-    await csModuleContract.addNodeOperatorETH(
+    await contractCallTxWithConfirm(csModuleContract, 'addNodeOperatorETH', [
       keysCount,
       publicKeys,
       singatures,
@@ -62,7 +62,7 @@ csm
       [], // early adoption proof
       referrer,
       { value },
-    );
+    ]);
   });
 
 csm
