@@ -329,7 +329,7 @@
       "usePredefinedAddressInstead": null
     },
     "contract": "contracts/0.8.9/DepositSecurityModule.sol",
-    "address": "0x336c1efd15284104a04e705f430e4d4a7fc2c6c1",
+    "address": "0xb8ae82f7bff2553baf158b7a911dc10162045c53",
     "constructorArgs": [
       "0xFfC41725C09407E4713FB4d02bc814c40ed15FD1",
       "0x4242424242424242424242424242424242424242",
