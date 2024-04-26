@@ -3,6 +3,8 @@ export * from './accounting-oracle';
 export * from './accounts';
 export * from './allowed-list';
 export * from './burner';
+export * from './csm-consensus';
+export * from './csm-oracle';
 export * from './deposit-contract';
 export * from './deposit-data';
 export * from './dsm';
