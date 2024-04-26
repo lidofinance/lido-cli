@@ -22,7 +22,7 @@ const TREASURY_FEE = 200; // 2%
 const MAX_DEPOSITS_PER_BLOCK = 30;
 const MIN_DEPOSIT_BLOCK_DISTANCE = 25;
 
-const CSM_ORACLE_INITIAL_EPOCH = 47475;
+const CSM_ORACLE_INITIAL_EPOCH = 47480;
 
 export const CSM = async () => {
   const iface = new Interface([
