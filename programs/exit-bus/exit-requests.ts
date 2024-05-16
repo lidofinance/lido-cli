@@ -79,6 +79,11 @@ export const fetchLastExitRequestsDetailed = async (forBlocks = 7200) => {
   // fetch exit requests from events on EL
   const requests = await fetchLastExitRequests(forBlocks, Number(blockNumber));
 
+  // skip validator status check if there are no exit requests
+  if (requests.length === 0) {
+    return [];
+  }
+
   // fetch validator from CL
   const validators = await fetchAllValidators(Number(slot));
   const validatorsMap = getValidatorsMap(validators);
