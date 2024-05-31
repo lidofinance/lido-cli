@@ -1,5 +1,5 @@
 import { program } from '@command';
-import {consensusForExitBusContract, exitBusOracleContract} from '@contracts';
+import { consensusForExitBusContract } from '@contracts';
 import { addAccessControlSubCommands, addConsensusCommands, addLogsCommands, addParsingCommands } from './common';
 
 const oracle = program
