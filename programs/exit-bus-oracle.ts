@@ -26,7 +26,7 @@ import {
   groupRequestsByOperator,
 } from './exit-bus';
 import { getNodeOperators, getStakingModules } from './staking-module';
-import {addVersionedSubCommands} from "./common/versioned";
+import { addVersionedSubCommands } from './common/versioned';
 
 export type LidoValidator = {
   validator: ValidatorContainer;

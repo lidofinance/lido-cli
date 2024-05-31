@@ -68,6 +68,17 @@ lido
     await contractCallTxWithConfirm(lidoContract, 'deposit', [maxDepositCount, moduleId, '0x']);
   });
 
+
+
+lido
+  .command('wc')
+  .description('Get WC')
+  .action(async () => {
+    const wc = await lidoContract.getWithdrawalCredentials()
+
+    console.log(wc);
+  });
+
 lido
   .command('depositable-ether')
   .description('returns depositable ether amount')
