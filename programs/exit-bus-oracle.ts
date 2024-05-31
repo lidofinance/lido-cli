@@ -26,6 +26,7 @@ import {
   groupRequestsByOperator,
 } from './exit-bus';
 import { getNodeOperators, getStakingModules } from './staking-module';
+import {addVersionedSubCommands} from "./common/versioned";
 
 export type LidoValidator = {
   validator: ValidatorContainer;
@@ -42,6 +43,7 @@ addOssifiableProxyCommands(oracle, exitBusOracleContract);
 addParsingCommands(oracle, exitBusOracleContract);
 addPauseUntilSubCommands(oracle, exitBusOracleContract);
 addLogsCommands(oracle, exitBusOracleContract);
+addVersionedSubCommands(oracle, exitBusOracleContract);
 
 oracle
   .command('exit-requests')
