@@ -10,6 +10,7 @@ import {
   addPauseUntilSubCommands,
 } from './common';
 import { contractCallTxWithConfirm, logger } from '@utils';
+import { addVersionedSubCommands } from './common/versioned';
 
 const withdrawal = program
   .command('withdrawal-request')
@@ -20,6 +21,7 @@ addOssifiableProxyCommands(withdrawal, withdrawalRequestContract);
 addParsingCommands(withdrawal, withdrawalRequestContract);
 addPauseUntilSubCommands(withdrawal, withdrawalRequestContract);
 addLogsCommands(withdrawal, withdrawalRequestContract);
+addVersionedSubCommands(withdrawal, withdrawalRequestContract);
 
 withdrawal
   .command('request')

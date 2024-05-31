@@ -8,6 +8,7 @@ import {
   addParsingCommands,
 } from './common';
 import { logger } from '@utils';
+import { addVersionedSubCommands } from './common/versioned';
 
 const oracle = program
   .command('accounting-oracle')
@@ -18,6 +19,7 @@ addBaseOracleCommands(oracle, accountingOracleContract);
 addOssifiableProxyCommands(oracle, accountingOracleContract);
 addParsingCommands(oracle, accountingOracleContract);
 addLogsCommands(oracle, accountingOracleContract);
+addVersionedSubCommands(oracle, accountingOracleContract);
 
 oracle
   .command('extra-data-format')
