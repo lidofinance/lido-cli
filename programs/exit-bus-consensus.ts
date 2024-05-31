@@ -1,7 +1,6 @@
 import { program } from '@command';
 import {consensusForExitBusContract, exitBusOracleContract} from '@contracts';
 import { addAccessControlSubCommands, addConsensusCommands, addLogsCommands, addParsingCommands } from './common';
-import { addVersionedSubCommands } from './common/versioned';
 
 const oracle = program
   .command('exit-bus-consensus')
@@ -11,4 +10,3 @@ addAccessControlSubCommands(oracle, consensusForExitBusContract);
 addParsingCommands(oracle, consensusForExitBusContract);
 addConsensusCommands(oracle, consensusForExitBusContract);
 addLogsCommands(oracle, consensusForExitBusContract);
-addVersionedSubCommands(oracle, exitBusOracleContract);
