@@ -7,14 +7,14 @@
       "contract": "contracts/0.8.9/proxy/OssifiableProxy.sol",
       "address": "0xe38B18b7656f47Dd65c86D17d828fF1c9499ABC9",
       "constructorArgs": [
-        "0xC192F327C92CAa62790f2ccc1648b824db641F95",
+        "0x6e99b6E2ccB4DfaeA9EaE7C6F7AC694bF45f90D1",
         "0xB498933ADAaCC74dCf8f1291Cce0C46e66FAAf41",
         "0x"
       ]
     },
     "implementation": {
       "contract": "contracts/0.8.9/oracle/AccountingOracle.sol",
-      "address": "0xC192F327C92CAa62790f2ccc1648b824db641F95",
+      "address": "0x6e99b6E2ccB4DfaeA9EaE7C6F7AC694bF45f90D1",
       "constructorArgs": [
         "0x5bF85BadDac33F91B38617c18a3F829f912Ca060",
         "0xFfC41725C09407E4713FB4d02bc814c40ed15FD1",
@@ -144,7 +144,7 @@
   "app:node-operators-registry": {
     "implementation": {
       "contract": "contracts/0.4.24/nos/NodeOperatorsRegistry.sol",
-      "address": "0x1De515A9453FABf35D65f649079ea109d5D70383",
+      "address": "0xc1bcf8fb7352751ba84754158b43347166f8cdfd",
       "constructorArgs": []
     },
     "aragonApp": {
@@ -461,7 +461,7 @@
     },
     "implementation": {
       "contract": "contracts/0.8.9/LidoLocator.sol",
-      "address": "0xD141C08fD5355b4db880C7a23209ec6b0455f140",
+      "address": "0x3fb931564DD070cf6C89a3d1e95B9601F64f4C34",
       "constructorArgs": [
         [
           "0xe38B18b7656f47Dd65c86D17d828fF1c9499ABC9",
@@ -469,7 +469,7 @@
           "0x3691a90399f0D0C0d031BB8eB3aB8F121b6cdDC9",
           "0x233fCE0ED7Df9ac4D05D72f24bf2EF5dC284C2B7",
           "0xFfC41725C09407E4713FB4d02bc814c40ed15FD1",
-          "0x3f40cb2aFEc35e8Ae59D35182071872dEb6f73B5",
+          "0xcC305F5A25BFd87518D8b39CfeE3E9B85D7cE606",
           "0x233fCE0ED7Df9ac4D05D72f24bf2EF5dC284C2B7",
           "0x13543040D5100ca3b6c5301b5B9A76C1d1950823",
           "0x7a290b0153eD799bc86202B7e59317a18Ed36a93",
@@ -527,23 +527,24 @@
   },
   "oracleReportSanityChecker": {
     "deployParameters": {
-      "churnValidatorsPerDayLimit": 1500,
+      "exitedValidatorsPerDayLimit": 1500,
       "oneOffCLBalanceDecreaseBPLimit": 500,
       "annualBalanceIncreaseBPLimit": 1000,
       "simulatedShareRateDeviationBPLimit": 250,
-      "maxValidatorExitRequestsPerReport": 2000,
-      "maxAccountingExtraDataListItemsCount": 100,
-      "maxNodeOperatorsPerExtraDataItemCount": 100,
+      "maxValidatorExitRequestsPerReport": 25,
+      "maxAccountingExtraDataListItemsCount": 3,
+      "maxNodeOperatorsPerExtraDataItemCount": 4,
       "requestTimestampMargin": 128,
-      "maxPositiveTokenRebase": 5000000
+      "maxPositiveTokenRebase": 5000000,
+      "appearedValidatorsPerDayLimit": 1500
     },
     "contract": "contracts/0.8.9/sanity_checks/OracleReportSanityChecker.sol",
-    "address": "0x3f40cb2aFEc35e8Ae59D35182071872dEb6f73B5",
+    "address": "0xcC305F5A25BFd87518D8b39CfeE3E9B85D7cE606",
     "constructorArgs": [
       "0x5bF85BadDac33F91B38617c18a3F829f912Ca060",
       "0xB498933ADAaCC74dCf8f1291Cce0C46e66FAAf41",
-      [1500, 500, 1000, 250, 2000, 100, 100, 128, 5000000],
-      [[], [], [], [], [], [], [], [], [], []]
+      [1500, 500, 1000, 250, 25, 3, 4, 128, 5000000, 1500],
+      [[], [], [], [], [], [], [], [], [], [], []]
     ]
   },
   "scratchDeployGasUsed": "122457977",
