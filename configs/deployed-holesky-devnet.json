@@ -329,7 +329,7 @@
       "usePredefinedAddressInstead": null
     },
     "contract": "contracts/0.8.9/DepositSecurityModule.sol",
-    "address": "0xb8ae82f7bff2553baf158b7a911dc10162045c53",
+    "address": "0xe009CC787AdF692526d93AA12a37935fEcAD5ee0",
     "constructorArgs": [
       "0xFfC41725C09407E4713FB4d02bc814c40ed15FD1",
       "0x4242424242424242424242424242424242424242",
@@ -461,7 +461,7 @@
     },
     "implementation": {
       "contract": "contracts/0.8.9/LidoLocator.sol",
-      "address": "0xdF247665fC0352fB4D1Ddd41C6F3be4A4aED2F7e",
+      "address": "0xD141C08fD5355b4db880C7a23209ec6b0455f140",
       "constructorArgs": [
         [
           "0xe38B18b7656f47Dd65c86D17d828fF1c9499ABC9",
