@@ -1,6 +1,6 @@
 import { provider } from '@providers';
 import { logger } from '@utils';
-import { Contract, EventLog, ZeroAddress } from 'ethers';
+import { AbiCoder, Contract, EventLog, ZeroAddress } from 'ethers';
 import {
   lidoAddress,
   wstethAddress,
@@ -14,6 +14,7 @@ import {
   splitMainAddress,
   gnosisSafeAbi,
   gnosisSafeProxyFactoryContract,
+  gnosisSafeSingletonAddress,
 } from '@contracts';
 import chalk from 'chalk';
 import Table from 'cli-table3';
@@ -199,13 +200,18 @@ export const checkGnosisSafe = async (safeAddress: string, splitAccounts: string
   const isExpectedVersion = version === expectedGnosisVersion;
   const isExpectedThreshold = threshold >= expectedMinThreshold;
 
+  const singletonBytes = await provider.getStorage(safeAddress, 0);
+  const singletonAddress = AbiCoder.defaultAbiCoder().decode(['address'], singletonBytes).toString();
+  const isGnosisSingleton = singletonAddress.toLocaleLowerCase() === gnosisSafeSingletonAddress.toLocaleLowerCase();
+
   logger.log('');
   logger.log(header('GnosisSafe contract'));
   logger.log('');
 
+  logger.log('Singleton:      ', passOrFail(singletonAddress, isGnosisSingleton));
+  logger.log('Proxy bytecode: ', passOrFail(`${isCodeMatch ? '' : 'do not '}match GnosisProxy`, isCodeMatch));
+  logger.log('Gnosis version: ', passOrFail(version, isExpectedVersion));
   logger.log('Threshold:      ', passOrFail(threshold, isExpectedThreshold));
-  logger.log('MS version:     ', passOrFail(version, isExpectedVersion));
-  logger.log('MS bytecode:    ', passOrFail(`${isCodeMatch ? '' : 'do not '}match GnosisProxy`, isCodeMatch));
   logger.log('Owners amount:  ', passOrFail(`${isAmountMatch ? '' : 'do not '}match Split`, isAmountMatch));
   logger.log('Owners:         ', passOrWarn(`${isOwnersMatch ? '' : 'do not '}match Split`, isOwnersMatch));
 

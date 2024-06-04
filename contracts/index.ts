@@ -2,6 +2,7 @@ export * from './allowed-list';
 export * from './app-proxy';
 export * from './aragon';
 export * from './burner';
+export * from './csm';
 export * from './deposit-contract';
 export * from './dsm';
 export * from './ens';

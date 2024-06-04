@@ -29,7 +29,7 @@ accounts
   .command('encrypt')
   .description('encrypt provided private key')
   .argument('<password>', 'password')
-  .option('-k, --private-key <string>', 'private key to encrypt', wallet.privateKey)
+  .option('-k, --private-key <string>', 'private key to encrypt', wallet instanceof Wallet ? wallet.privateKey : '')
   .option('-f, --file-name <string>', 'file name to store result', 'account.json')
   .action(async (password, options) => {
     const { privateKey, fileName } = options;
