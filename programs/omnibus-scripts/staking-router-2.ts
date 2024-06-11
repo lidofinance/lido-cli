@@ -14,7 +14,7 @@ import {
 import { provider } from '@providers';
 import { encodeFromAgent, updateAragonApp, votingNewVote } from '@scripts';
 import { CallScriptAction, encodeCallScript, forwardVoteFromTm, getRoleHash } from '@utils';
-import { Contract, Interface } from 'ethers';
+import { concat, Contract, Interface } from 'ethers';
 
 // SR 2
 
@@ -41,6 +41,7 @@ const VEBO_CONSENSUS_VERSION = 2;
 const CS_MODULE_ADDRESS = '0xb43fD1a6932345e5A0dc72a2b397c09f3390c1D0';
 const CS_ACCOUNTING_ADDRESS = '0x9bd601f8b7A0F24fA58f6502EEC077Dc753476f6';
 const CS_ORACLE_HASH_CONSENSUS_ADDRESS = '0xd2776403ADbc77958DD3DF490cDbCD2f4dFCf021';
+const CS_SETTLE_EL_STEALING_ADDRESS = '0x611b010b2fA34eE4E8cb1cf7d166402c219BF3C2';
 
 const CS_MODULE_NAME = 'CommunityStaking';
 const CS_STAKE_SHARE_LIMIT = 2000; // 20%
@@ -51,6 +52,10 @@ const CS_MAX_DEPOSITS_PER_BLOCK = 30;
 const CS_MIN_DEPOSIT_BLOCK_DISTANCE = 25;
 
 const CS_ORACLE_INITIAL_EPOCH = 57606; // 57600 for ao and vebo
+
+// ET
+
+const EASYTRACK_ADDRESS = '0x12077456B1BAB9836bf05D6994D5a47c7A096204';
 
 export const stakingRouterV2 = async () => {
   const iface = new Interface([
@@ -66,6 +71,7 @@ export const stakingRouterV2 = async () => {
     'function updateInitialEpoch(uint256)',
     'function addStakingModule(string,address,uint256,uint256,uint256,uint256,uint256,uint256)',
     'function setConsensusVersion(uint256)',
+    'function addEVMScriptFactory(address,bytes)',
   ]);
 
   /**
@@ -217,7 +223,15 @@ export const stakingRouterV2 = async () => {
     data: iface.encodeFunctionData('updateInitialEpoch', [CS_ORACLE_INITIAL_EPOCH]),
   };
 
-  // TODO: easy track part of the script
+  // 21. Add CS settle EL stealing factory to ET
+  const settleIface = new Interface(['function settleELRewardsStealingPenalty(uint256[])']);
+  const settleSelector = settleIface.getFunction('settleELRewardsStealingPenalty')?.selector;
+  if (!settleSelector) throw new Error('Could not find settleELRewardsStealingPenalty selector');
+  const csSettleFactoryBytes = concat([CS_MODULE_ADDRESS, settleSelector]);
+  const addCSSettlingFactoryToETScript: CallScriptAction = {
+    to: EASYTRACK_ADDRESS,
+    data: iface.encodeFunctionData('addEVMScriptFactory', [CS_SETTLE_EL_STEALING_ADDRESS, csSettleFactoryBytes]),
+  };
 
   // Collect all calls
   const calls: CallScriptAction[] = [
@@ -244,6 +258,7 @@ export const stakingRouterV2 = async () => {
     resumeScript,
     resumeRoleRevokeScript,
     updateInitialEpochScript,
+    addCSSettlingFactoryToETScript,
   ];
 
   const description = [
@@ -270,7 +285,7 @@ export const stakingRouterV2 = async () => {
     `18. Resume staking module`,
     `19. Revoke resume role from agent ${aragonAgentAddress}`,
     `20. Update initial epoch to ${CS_ORACLE_INITIAL_EPOCH}`,
-    // TODO: easy track part of the script
+    `21. Add CS settle EL stealing factory to ET with address ${CS_SETTLE_EL_STEALING_ADDRESS}`,
   ].join('\n');
 
   const voteEvmScript = encodeCallScript(calls);
