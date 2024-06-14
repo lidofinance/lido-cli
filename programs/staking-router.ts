@@ -1,9 +1,10 @@
 import { program } from '@command';
 import { stakingRouterContract } from '@contracts';
 import { authorizedCall, logger } from '@utils';
-import { Result, parseEther } from 'ethers';
+import { Contract, Interface, Result, parseEther } from 'ethers';
 import { addAccessControlSubCommands, addLogsCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
 import { getNodeOperators, getStakingModules } from './staking-module';
+import { wallet } from '@providers';
 
 const router = program
   .command('staking-router')
@@ -60,6 +61,45 @@ router
   .action(async (moduleId, options) => {
     const { targetShare, moduleFee, treasuryFee } = options;
     await authorizedCall(stakingRouterContract, 'updateStakingModule', [moduleId, targetShare, moduleFee, treasuryFee]);
+  });
+
+router
+  .command('update-module-v2')
+  .description('updates staking module parameters')
+  .argument('<module-id>', 'module id')
+  .option('-s, --stake-share-limit <number>', 'stake share limit in basis points: 100 = 1%, 10000 = 100%', '10000')
+  .option(
+    '-p, --priority-exit-share-threshold <number>',
+    'priority exit share threshold in basis points: 100 = 1%, 10000 = 100%',
+    '10000',
+  )
+  .option('-f, --module-fee <number>', 'module share in basis points: 100 = 1%, 10000 = 100%', '500')
+  .option('-t, --treasury-fee <number>', 'treasury share in basis points: 100 = 1%, 10000 = 100%', '500')
+  .option('-m, --max-deposits-per-block <number>', 'max deposits per block')
+  .option('-d, --min-deposit-block-distance <number>', 'min deposit block distance')
+  .action(async (moduleId, options) => {
+    const {
+      stakeShareLimit,
+      priorityExitShareThreshold,
+      moduleFee,
+      treasuryFee,
+      maxDepositsPerBlock,
+      minDepositBlockDistance,
+    } = options;
+    const iface = new Interface([
+      'function updateStakingModule(uint256,uint256,uint256,uint256,uint256,uint256,uint256)',
+    ]);
+    const contract = new Contract(await stakingRouterContract.getAddress(), iface, wallet);
+
+    await authorizedCall(contract, 'updateStakingModule', [
+      moduleId,
+      stakeShareLimit,
+      priorityExitShareThreshold,
+      moduleFee,
+      treasuryFee,
+      maxDepositsPerBlock,
+      minDepositBlockDistance,
+    ]);
   });
 
 router
