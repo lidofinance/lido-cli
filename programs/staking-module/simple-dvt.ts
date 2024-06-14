@@ -18,6 +18,7 @@ import {
 } from '@contracts';
 import chalk from 'chalk';
 import Table from 'cli-table3';
+import { fetchEtherscanSignatureDetailsForAddress } from '../etherscan/';
 
 const header = chalk.white.bold;
 
@@ -234,4 +235,53 @@ export const checkGnosisSafe = async (safeAddress: string, splitAccounts: string
   logger.log('');
   logger.log(ownersTable.toString());
   logger.log('');
+
+  return { gnosisOwners: sortedGnosisOwners };
+};
+
+export const checkSignatures = async (clusterName: string, addresses: string[]) => {
+  logger.log('');
+  logger.log(header('Last signatures from etherscan'));
+  logger.log('');
+
+  for (const address of addresses) {
+    try {
+      logger.log(header(address));
+
+      const signedMessages = await fetchEtherscanSignatureDetailsForAddress(address);
+
+      if (!signedMessages.length) {
+        logger.log('');
+        logger.error('No signed messages found');
+        continue;
+      }
+
+      const joiningMessages = signedMessages.filter(({ message }) => isJoiningMessage(message, clusterName));
+
+      if (joiningMessages.length) {
+        joiningMessages.map(({ message, signature }) => {
+          logger.log('');
+          logger.log('Message:  ', chalk.green(message));
+          logger.log('Signature:', signature);
+        });
+      } else {
+        signedMessages.map(({ message, signature }) => {
+          logger.log('');
+          logger.log('Message:  ', chalk.yellow(message));
+          logger.log('Signature:', signature);
+        });
+      }
+
+      logger.log('');
+    } catch (error) {
+      logger.log('');
+      logger.error('Failed to fetch signatures');
+    } finally {
+      logger.log('');
+    }
+  }
+};
+
+const isJoiningMessage = (message: string, clusterName: string) => {
+  return message.includes(clusterName) && message.includes('is joining');
 };

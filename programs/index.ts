@@ -9,6 +9,7 @@ export * from './csm';
 export * from './deposit-contract';
 export * from './deposit-data';
 export * from './dsm';
+export * from './etherscan';
 export * from './exit-bus-consensus';
 export * from './exit-bus-oracle';
 export * from './ldo';

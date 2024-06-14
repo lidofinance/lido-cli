@@ -1,4 +1,10 @@
 import {
+  accountingOracleAddress,
+  aragonAgentAddress,
+  burnerAddress,
+  burnerContract,
+  exitBusOracleAddress,
+  exitBusOracleContract,
   getAppProxyContract,
   locatorContract,
   norAddress,
@@ -8,103 +14,278 @@ import {
 import { provider } from '@providers';
 import { encodeFromAgent, updateAragonApp, votingNewVote } from '@scripts';
 import { CallScriptAction, encodeCallScript, forwardVoteFromTm, getRoleHash } from '@utils';
-import { Contract, Interface } from 'ethers';
+import { concat, Contract, Interface } from 'ethers';
 
-const LOCATOR_IMPLEMENTAION = '0xa12Fd7c4c75D78E208B203EDc96053E33BdBFab8';
+// SR 2
 
-const OLD_DSM = '0x336c1efd15284104a04e705f430e4d4a7fc2c6c1';
-const NEW_DSM = '0xb8ae82f7bff2553baf158b7a911dc10162045c53';
+const LOCATOR_IMPLEMENTAION = '0xcf720cb5635523ed1de57bb0d984445f6b7ca628';
+const STAKING_ROUTER_IMPLEMENTATION = '0x43DAe324195BcCf10999673092522084Fc46116E';
+const AO_IMPLEMENTATION = '0x382ec3b6471ca45821332c47a1740939a0ac4359';
 
-const STAKING_ROUTER_IMPLEMENTATION = '0xb1867e93aea81975cf11b8415ccd70e9b07e09a6';
+const OLD_DSM = '0xE9c9FFcC3E837815C99bb661f147B337A8E0C79D';
+const NEW_DSM = '0x9078C4e99A3b29f77164Da4892f68abA498cF5D9';
 
-const NOR_IMPLEMENTATION = '0x287278aaac35e5e52b0f7266872139812d32679b';
-const NOR_CONTENT_URI =
-  '0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+const NOR_IMPLEMENTATION = '0xcd4569620ac8c0eb8821d16c714c8b1a7b3f10a8';
+const NOR_CONTENT_URI = '0x' + '00'.repeat(51);
 const NOR_VERSION = ['2', '0', '0'];
 
 const PRIORITY_EXIT_SHARE_THRESHOLDS_BP = [10_000];
+const MAX_DEPOSITS_PER_BLOCK = [50];
+const MIN_DEPOSIT_BLOCK_DISTANCES = [25];
+
+const AO_CONSENSUS_VERSION = 2;
+const VEBO_CONSENSUS_VERSION = 2;
+
+// CSM
+
+const CS_MODULE_ADDRESS = '0x26aBc20a47f7e8991F1d26Bf0fC2bE8f24E9eF2A';
+const CS_ACCOUNTING_ADDRESS = '0x782c7c96959bE2258a7b67439435885b39946c9E';
+const CS_ORACLE_HASH_CONSENSUS_ADDRESS = '0x64c48254123A4c62278Fa671BEA32B45099Aeb9b';
+const CS_SETTLE_EL_STEALING_ADDRESS = '0xC86D7B14BE8c1E8718EaC65F95306A71d0E75aA8';
+
+const CS_MODULE_NAME = 'CommunityStaking';
+const CS_STAKE_SHARE_LIMIT = 2000; // 20%
+const CS_PRIORITY_EXIT_SHARE_THRESHOLD = 2500; // 25%
+const CS_STAKING_MODULE_FEE = 800; // 8%
+const CS_TREASURY_FEE = 200; // 2%
+const CS_MAX_DEPOSITS_PER_BLOCK = 30;
+const CS_MIN_DEPOSIT_BLOCK_DISTANCE = 25;
+
+const CS_ORACLE_INITIAL_EPOCH = 58050; // 57600 for ao and vebo
+
+// ET
+
+const EASYTRACK_ADDRESS = '0x12077456B1BAB9836bf05D6994D5a47c7A096204';
 
 export const stakingRouterV2 = async () => {
   const iface = new Interface([
-    'function finalizeUpgrade_v2(uint256[])',
     'function proxy__upgradeTo(address)',
+    'function finalizeUpgrade_v2(uint256[],uint256[],uint256[])',
+    'function finalizeUpgrade_v2(uint256)',
+    'function finalizeUpgrade_v3()',
     'function revokeRole(bytes32,address)',
     'function grantRole(bytes32,address)',
     'function STAKING_MODULE_UNVETTING_ROLE() view returns (bytes32)',
+    'function RESUME_ROLE() view returns (bytes32)',
+    'function resume()',
+    'function updateInitialEpoch(uint256)',
+    'function addStakingModule(string,address,uint256,uint256,uint256,uint256,uint256,uint256)',
+    'function setConsensusVersion(uint256)',
+    'function addEVMScriptFactory(address,bytes)',
   ]);
 
-  // 1. Update locator implementation
+  /**
+   * SR 2
+   */
+
+  // 1. Update Locator implementation
   const locatorProxyAddress = await locatorContract.getAddress();
-  const [, locatorScript] = encodeFromAgent({
+  const [, locatorUpgradeScript] = encodeFromAgent({
     to: locatorProxyAddress,
     data: iface.encodeFunctionData('proxy__upgradeTo', [LOCATOR_IMPLEMENTAION]),
   });
 
   // 2. Revoke pause role from old DSM
-  const pauseRoleHash = await getRoleHash(stakingRouterContract, 'STAKING_MODULE_PAUSE_ROLE');
-  const [, pauseRoleRevokeScript] = encodeFromAgent({
+  const srPauseRoleHash = await getRoleHash(stakingRouterContract, 'STAKING_MODULE_PAUSE_ROLE');
+  const [, pauseRoleRevokeFromOldDSMScript] = encodeFromAgent({
     to: stakingRouterAddress,
-    data: iface.encodeFunctionData('revokeRole', [pauseRoleHash, OLD_DSM]),
+    data: iface.encodeFunctionData('revokeRole', [srPauseRoleHash, OLD_DSM]),
   });
 
   // 3. Revoke resume role from old DSM
-  const resumeRoleHash = await getRoleHash(stakingRouterContract, 'STAKING_MODULE_RESUME_ROLE');
-  const [, resumeRoleRevokeScript] = encodeFromAgent({
+  const srResumeRoleHash = await getRoleHash(stakingRouterContract, 'STAKING_MODULE_RESUME_ROLE');
+  const [, resumeRoleRevokeFromOldDSMScript] = encodeFromAgent({
     to: stakingRouterAddress,
-    data: iface.encodeFunctionData('revokeRole', [resumeRoleHash, OLD_DSM]),
+    data: iface.encodeFunctionData('revokeRole', [srResumeRoleHash, OLD_DSM]),
   });
 
   // 4. Grant unvetting role to new DSM
   const stakingRouterImplContract = new Contract(STAKING_ROUTER_IMPLEMENTATION, iface, provider);
   const unvettingRoleHash = await getRoleHash(stakingRouterImplContract, 'STAKING_MODULE_UNVETTING_ROLE');
-  const [, unvettingRoleGrantScript] = encodeFromAgent({
+  const [, unvettingRoleGrantToDSMScript] = encodeFromAgent({
     to: stakingRouterAddress,
     data: iface.encodeFunctionData('grantRole', [unvettingRoleHash, NEW_DSM]),
   });
 
-  // 5. Update staking router implementation
+  // 5. Update SR implementation
   const [, stakingRouterUpdateScript] = encodeFromAgent({
     to: stakingRouterAddress,
     data: iface.encodeFunctionData('proxy__upgradeTo', [STAKING_ROUTER_IMPLEMENTATION]),
   });
 
-  // 6. Call finalize upgrade on Staking Router
+  // 6. Call finalize upgrade on SR
   const stakingRouterFinalizeScript: CallScriptAction = {
     to: stakingRouterAddress,
-    data: iface.encodeFunctionData('finalizeUpgrade_v2', [PRIORITY_EXIT_SHARE_THRESHOLDS_BP]),
+    data: iface.encodeFunctionData('finalizeUpgrade_v2(uint256[],uint256[],uint256[])', [
+      PRIORITY_EXIT_SHARE_THRESHOLDS_BP,
+      MAX_DEPOSITS_PER_BLOCK,
+      MIN_DEPOSIT_BLOCK_DISTANCES,
+    ]),
   };
 
   // 7, 8. Update NOR implementation
   const norProxyContract = getAppProxyContract(async () => norAddress);
   const norAppId = await norProxyContract.appId();
-  const [, norNewVersionCall, norSetAppCall] = await updateAragonApp(
+  const [, norNewVersionBumpScript, norSetAppScript] = await updateAragonApp(
     NOR_VERSION,
     NOR_IMPLEMENTATION,
     NOR_CONTENT_URI,
     norAppId,
   );
 
+  // 9. Call finalize upgrade on NOR
+  const norFinalizeScript: CallScriptAction = {
+    to: norAddress,
+    data: iface.encodeFunctionData('finalizeUpgrade_v3', []),
+  };
+
+  // 10. Update AO implementation
+  const [, accountingOracleUpgradeScript] = encodeFromAgent({
+    to: accountingOracleAddress,
+    data: iface.encodeFunctionData('proxy__upgradeTo', [AO_IMPLEMENTATION]),
+  });
+
+  // 11. Call finalize upgrade on AO
+  const accountingOracleFinalizeScript: CallScriptAction = {
+    to: accountingOracleAddress,
+    data: iface.encodeFunctionData('finalizeUpgrade_v2(uint256)', [AO_CONSENSUS_VERSION]),
+  };
+
+  // 12. Grant manage consensus role to agent
+  const manageConsensusRoleHash = await getRoleHash(exitBusOracleContract, 'MANAGE_CONSENSUS_VERSION_ROLE');
+  const [, manageConsensusRoleGrantToAgentScript] = encodeFromAgent({
+    to: exitBusOracleAddress,
+    data: iface.encodeFunctionData('grantRole', [manageConsensusRoleHash, aragonAgentAddress]),
+  });
+
+  // 13. Update VEBO consensus version
+  const [, exitBusOracleVersionScript] = encodeFromAgent({
+    to: exitBusOracleAddress,
+    data: iface.encodeFunctionData('setConsensusVersion', [VEBO_CONSENSUS_VERSION]),
+  });
+
+  /**
+   * CSM
+   */
+
+  // 14. Grant staking module manage role to agent
+  const srModuleManageRoleHash = await getRoleHash(stakingRouterContract, 'STAKING_MODULE_MANAGE_ROLE');
+  const [, moduleManageRoleGrantToAgentScript] = encodeFromAgent({
+    to: stakingRouterAddress,
+    data: iface.encodeFunctionData('grantRole', [srModuleManageRoleHash, aragonAgentAddress]),
+  });
+
+  // 15. Add staking module
+  const [, addStakingModuleScript] = encodeFromAgent({
+    to: stakingRouterAddress,
+    data: iface.encodeFunctionData('addStakingModule', [
+      CS_MODULE_NAME,
+      CS_MODULE_ADDRESS,
+      CS_STAKE_SHARE_LIMIT,
+      CS_PRIORITY_EXIT_SHARE_THRESHOLD,
+      CS_STAKING_MODULE_FEE,
+      CS_TREASURY_FEE,
+      CS_MAX_DEPOSITS_PER_BLOCK,
+      CS_MIN_DEPOSIT_BLOCK_DISTANCE,
+    ]),
+  });
+
+  // 16. Grant request burn role to CSAccounting contract
+  const burnerRequestBurnRoleHash = await getRoleHash(burnerContract, 'REQUEST_BURN_SHARES_ROLE');
+  const [, requestBurnRoleGrantScript] = encodeFromAgent({
+    to: burnerAddress,
+    data: iface.encodeFunctionData('grantRole', [burnerRequestBurnRoleHash, CS_ACCOUNTING_ADDRESS]),
+  });
+
+  // 17. Grant resume role to agent
+  const csModuleContract = new Contract(CS_MODULE_ADDRESS, iface, provider);
+  const csmResumeRoleHash = await getRoleHash(csModuleContract, 'RESUME_ROLE');
+  const resumeRoleGrantScript: CallScriptAction = {
+    to: CS_MODULE_ADDRESS,
+    data: iface.encodeFunctionData('grantRole', [csmResumeRoleHash, aragonAgentAddress]),
+  };
+
+  // 18. Resume staking module
+  const [, resumeScript] = encodeFromAgent({
+    to: CS_MODULE_ADDRESS,
+    data: iface.encodeFunctionData('resume', []),
+  });
+
+  // 19. Revoke resume role from agent
+  const resumeRoleRevokeScript: CallScriptAction = {
+    to: CS_MODULE_ADDRESS,
+    data: iface.encodeFunctionData('revokeRole', [csmResumeRoleHash, aragonAgentAddress]),
+  };
+
+  // 20. Update initial epoch
+  const updateInitialEpochScript: CallScriptAction = {
+    to: CS_ORACLE_HASH_CONSENSUS_ADDRESS,
+    data: iface.encodeFunctionData('updateInitialEpoch', [CS_ORACLE_INITIAL_EPOCH]),
+  };
+
+  // 21. Add CS settle EL stealing factory to ET
+  const settleIface = new Interface(['function settleELRewardsStealingPenalty(uint256[])']);
+  const settleSelector = settleIface.getFunction('settleELRewardsStealingPenalty')?.selector;
+  if (!settleSelector) throw new Error('Could not find settleELRewardsStealingPenalty selector');
+  const csSettleFactoryBytes = concat([CS_MODULE_ADDRESS, settleSelector]);
+  const addCSSettlingFactoryToETScript: CallScriptAction = {
+    to: EASYTRACK_ADDRESS,
+    data: iface.encodeFunctionData('addEVMScriptFactory', [CS_SETTLE_EL_STEALING_ADDRESS, csSettleFactoryBytes]),
+  };
+
   // Collect all calls
   const calls: CallScriptAction[] = [
-    locatorScript,
-    pauseRoleRevokeScript,
-    resumeRoleRevokeScript,
-    unvettingRoleGrantScript,
+    // SR
+    locatorUpgradeScript,
+    pauseRoleRevokeFromOldDSMScript,
+    resumeRoleRevokeFromOldDSMScript,
+    unvettingRoleGrantToDSMScript,
     stakingRouterUpdateScript,
     stakingRouterFinalizeScript,
-    norNewVersionCall,
-    norSetAppCall,
+    norNewVersionBumpScript,
+    norSetAppScript,
+    norFinalizeScript,
+    accountingOracleUpgradeScript,
+    accountingOracleFinalizeScript,
+    manageConsensusRoleGrantToAgentScript,
+    exitBusOracleVersionScript,
+
+    // CSM
+    moduleManageRoleGrantToAgentScript,
+    addStakingModuleScript,
+    requestBurnRoleGrantScript,
+    resumeRoleGrantScript,
+    resumeScript,
+    resumeRoleRevokeScript,
+    updateInitialEpochScript,
+    addCSSettlingFactoryToETScript,
   ];
 
   const description = [
-    `1. Update locator implementation to ${LOCATOR_IMPLEMENTAION} with new DSM ${NEW_DSM}`,
+    // SR
+    `1. Update locator implementation to ${LOCATOR_IMPLEMENTAION} with new DSM and Sanity Checker`,
     `2. Revoke pause role from old DSM ${OLD_DSM}`,
     `3. Revoke resume role from old DSM ${OLD_DSM}`,
     `4. Grant unvetting role to new DSM ${NEW_DSM}`,
-    `5. Update staking router implementation to ${STAKING_ROUTER_IMPLEMENTATION}`,
-    `6. Finalize upgrade with priority exit share thresholds: ${PRIORITY_EXIT_SHARE_THRESHOLDS_BP}`,
+    `5. Update SR implementation to ${STAKING_ROUTER_IMPLEMENTATION}`,
+    `6. Finalize SR upgrade`,
     `7. Create new NOR version with address ${NOR_IMPLEMENTATION}`,
     `8. Update NOR app to new version`,
+    `9. Finalize NOR upgrade`,
+    `10. Update AO implementation to ${AO_IMPLEMENTATION}`,
+    `11. Finalize AO upgrade and set consensus version to ${AO_CONSENSUS_VERSION}`,
+    `12. Update VEBO consensus version to ${VEBO_CONSENSUS_VERSION}`,
+    `13. Grant manage consensus role to agent ${aragonAgentAddress}`,
+
+    // CSM
+    `14. Grant staking module manage role to agent ${aragonAgentAddress}`,
+    `15. Add staking module ${CS_MODULE_NAME} with address ${CS_MODULE_ADDRESS}`,
+    `16. Grant request burn shares role to CSAccounting contract with address ${CS_ACCOUNTING_ADDRESS}`,
+    `17. Grant resume role to agent ${aragonAgentAddress}`,
+    `18. Resume staking module`,
+    `19. Revoke resume role from agent ${aragonAgentAddress}`,
+    `20. Update initial epoch to ${CS_ORACLE_INITIAL_EPOCH}`,
+    `21. Add CS settle EL stealing factory to ET with address ${CS_SETTLE_EL_STEALING_ADDRESS}`,
   ].join('\n');
 
   const voteEvmScript = encodeCallScript(calls);
