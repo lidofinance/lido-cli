@@ -256,10 +256,10 @@ export const checkSignatures = async (clusterName: string, addresses: string[]) 
         continue;
       }
 
-      const signedClusterMessages = signedMessages.filter(({ message }) => message.includes(clusterName));
+      const joiningMessages = signedMessages.filter(({ message }) => isJoiningMessage(message, clusterName));
 
-      if (signedClusterMessages.length) {
-        signedClusterMessages.map(({ message, signature }) => {
+      if (joiningMessages.length) {
+        joiningMessages.map(({ message, signature }) => {
           logger.log('');
           logger.log('Message:  ', chalk.green(message));
           logger.log('Signature:', signature);
@@ -267,7 +267,7 @@ export const checkSignatures = async (clusterName: string, addresses: string[]) 
       } else {
         signedMessages.map(({ message, signature }) => {
           logger.log('');
-          logger.log('Message:  ', message);
+          logger.log('Message:  ', chalk.yellow(message));
           logger.log('Signature:', signature);
         });
       }
@@ -280,4 +280,8 @@ export const checkSignatures = async (clusterName: string, addresses: string[]) 
       logger.log('');
     }
   }
+};
+
+const isJoiningMessage = (message: string, clusterName: string) => {
+  return message.includes(clusterName) && message.includes('is joining');
 };
