@@ -1,5 +1,5 @@
 import { program } from '@command';
-import { checkTmCanForward, forwardVoteFromTm, logger, printTx } from '@utils';
+import { checkTmCanForward, forwardVoteFromTm, logger, printTxToContract } from '@utils';
 import { printVoteTxData, promptVoting } from './omnibus/';
 import { tmContract } from '@contracts';
 
@@ -13,7 +13,7 @@ omnibus
     if (!voteTxData) return;
 
     await printVoteTxData(voteTxData);
-    await printTx(tmContract, 'forward', [voteTxData.newVoteCalldata]);
+    await printTxToContract(tmContract, 'forward', [voteTxData.newVoteCalldata]);
   });
 
 omnibus

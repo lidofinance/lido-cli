@@ -1,11 +1,11 @@
 import { Contract, ContractTransactionResponse } from 'ethers';
 import { confirmTx } from './confirm-tx';
-import { printTx } from './print-tx';
+import { printTxToContract } from './print-tx';
 import { logger } from './logger';
 import { splitArgsAndOverrides } from './split-args-and-overrides';
 
 export const contractCallTxWithConfirm = async (contract: Contract, method: string, args: unknown[]) => {
-  await printTx(contract, method, args);
+  await printTxToContract(contract, method, args);
   await contractStaticCallTx(contract, method, args);
 
   const confirmed = await confirmTx();
