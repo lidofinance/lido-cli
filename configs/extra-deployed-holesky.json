@@ -27,5 +27,14 @@
     "singleton": {
       "address": "0xd9db270c1b5e3bd161e8c8503c55ceabee709552"
     }
+  },
+  "csm": {
+    "accounting": { "address": "0xc093e53e8F4b55A223c18A2Da6fA00e60DD5EFE1" },
+    "earlyAdoption": { "address": "0x71E92eA77C198a770d9f33A03277DbeB99989660" },
+    "feeDistributor": { "address": "0xD7ba648C8F72669C6aE649648B516ec03D07c8ED" },
+    "feeOracle": { "address": "0xaF57326C7d513085051b50912D51809ECC5d98Ee" },
+    "module": { "address": "0x4562c3e63c2e586cD1651B958C22F88135aCAd4f" },
+    "verifier": { "address": "0x6DcA479178E6Ae41CCEB72a88FfDaa3e10E83CB7" },
+    "hashConsensus": { "address": "0xbF38618Ea09B503c1dED867156A0ea276Ca1AE37" }
   }
 }
