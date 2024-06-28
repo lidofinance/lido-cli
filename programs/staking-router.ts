@@ -1,10 +1,15 @@
 import { program } from '@command';
 import { stakingRouterContract } from '@contracts';
 import { authorizedCall, logger } from '@utils';
-import { Contract, Interface, Result, parseEther } from 'ethers';
+import { Result, parseEther } from 'ethers';
 import { addAccessControlSubCommands, addLogsCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
-import { getNodeOperators, getStakingModules } from './staking-module';
-import { wallet } from '@providers';
+import { formatStakingModuleObject, getNodeOperators, getStakingModules } from './staking-module';
+import Table from 'cli-table3';
+import chalk from 'chalk';
+
+const ok = chalk.green.bold;
+const warn = chalk.yellow.bold;
+const head = chalk.white.bold;
 
 const router = program
   .command('staking-router')
@@ -29,7 +34,7 @@ router
   .argument('<module-id>', 'staking module id')
   .action(async (moduleId) => {
     const module = await stakingRouterContract.getStakingModule(moduleId);
-    logger.log('Module', module);
+    logger.log('Module', formatStakingModuleObject(module));
   });
 
 router
@@ -37,34 +42,42 @@ router
   .description('adds staking module')
   .option('-n, --name <string>', 'staking module name')
   .option('-a, --address <string>', 'staking module address')
-  .option('-s, --target-share <number>', 'target share in basis points: 100 = 1%, 10000 = 100%', '10000')
+  .option('-s, --stake-share-limit <number>', 'stake share limit in basis points: 100 = 1%, 10000 = 100%', '10000')
+  .option(
+    '-p, --priority-exit-share-threshold <number>',
+    'priority exit share threshold in basis points: 100 = 1%, 10000 = 100%',
+    '10000',
+  )
   .option('-f, --module-fee <number>', 'module share in basis points: 100 = 1%, 10000 = 100%', '500')
   .option('-t, --treasury-fee <number>', 'treasury share in basis points: 100 = 1%, 10000 = 100%', '500')
+  .option('-m, --max-deposits-per-block <number>', 'max deposits per block')
+  .option('-d, --min-deposit-block-distance <number>', 'min deposit block distance')
   .action(async (options) => {
-    const { name, address, targetShare, moduleFee, treasuryFee } = options;
+    const {
+      name,
+      address,
+      stakeShareLimit,
+      priorityExitShareThreshold,
+      moduleFee,
+      treasuryFee,
+      maxDepositsPerBlock,
+      minDepositBlockDistance,
+    } = options;
+
     await authorizedCall(stakingRouterContract, 'addStakingModule', [
       name,
       address,
-      targetShare,
+      stakeShareLimit,
+      priorityExitShareThreshold,
       moduleFee,
       treasuryFee,
+      maxDepositsPerBlock,
+      minDepositBlockDistance,
     ]);
   });
 
 router
   .command('update-module')
-  .description('updates staking module parameters')
-  .argument('<module-id>', 'module id')
-  .option('-s, --target-share <number>', 'target share in basis points: 100 = 1%, 10000 = 100%', '10000')
-  .option('-f, --module-fee <number>', 'module share in basis points: 100 = 1%, 10000 = 100%', '500')
-  .option('-t, --treasury-fee <number>', 'treasury share in basis points: 100 = 1%, 10000 = 100%', '500')
-  .action(async (moduleId, options) => {
-    const { targetShare, moduleFee, treasuryFee } = options;
-    await authorizedCall(stakingRouterContract, 'updateStakingModule', [moduleId, targetShare, moduleFee, treasuryFee]);
-  });
-
-router
-  .command('update-module-v2')
   .description('updates staking module parameters')
   .argument('<module-id>', 'module id')
   .option('-s, --stake-share-limit <number>', 'stake share limit in basis points: 100 = 1%, 10000 = 100%', '10000')
@@ -86,12 +99,8 @@ router
       maxDepositsPerBlock,
       minDepositBlockDistance,
     } = options;
-    const iface = new Interface([
-      'function updateStakingModule(uint256,uint256,uint256,uint256,uint256,uint256,uint256)',
-    ]);
-    const contract = new Contract(await stakingRouterContract.getAddress(), iface, wallet);
 
-    await authorizedCall(contract, 'updateStakingModule', [
+    await authorizedCall(stakingRouterContract, 'updateStakingModule', [
       moduleId,
       stakeShareLimit,
       priorityExitShareThreshold,
@@ -210,11 +219,30 @@ router
       const operatorIds = operators.map(({ operatorId }) => operatorId);
 
       const digests = await stakingRouterContract.getNodeOperatorDigests(module.id, operatorIds);
-      const operatorsDigests = operators.map((operator, index) => {
+
+      const operatorsTable = new Table({
+        head: [
+          'OpId',
+          'Name',
+          'Status',
+          'Target',
+          'Active',
+          'Refunded',
+          'Stuck',
+          'Stuck TS',
+          'Depositable',
+          'Exited',
+          'Deposited',
+        ],
+        colAligns: ['right', 'left', 'left', 'right', 'right', 'right', 'right', 'right', 'right', 'right', 'right'],
+        style: { head: ['gray'], compact: true },
+      });
+
+      operators.map((operator, index) => {
         const { operatorId, name } = operator;
         const { isActive, summary } = digests[index].toObject();
         const {
-          isTargetLimitActive,
+          targetLimitMode,
           targetValidatorsCount,
           stuckValidatorsCount,
           refundedValidatorsCount,
@@ -224,23 +252,29 @@ router
           totalDepositedValidators,
         } = summary;
 
-        return {
+        const targetLimitDesc = [null, 'Soft', 'Hard'][targetLimitMode];
+        const targetValidatorsText = warn(Number(targetValidatorsCount));
+
+        operatorsTable.push([
           operatorId,
-          name,
-          isActive: isActive,
-          target: isTargetLimitActive ? targetValidatorsCount : null,
-          active: Number(totalDepositedValidators - totalExitedValidators),
-          refunded: Number(refundedValidatorsCount),
-          stuck: Number(stuckValidatorsCount),
-          stuckTS: stuckPenaltyEndTimestamp ? Number(stuckPenaltyEndTimestamp) : null,
-          depositable: Number(depositableValidatorsCount),
-          exited: Number(totalExitedValidators),
-          deposited: Number(totalDepositedValidators),
-        };
+          head(name),
+          isActive ? ok('Active') : warn('Disabled'),
+          targetLimitMode > 0 ? `${targetValidatorsText} ${targetLimitDesc}` : null,
+          Number(totalDepositedValidators - totalExitedValidators),
+          Number(refundedValidatorsCount),
+          stuckValidatorsCount ? warn(Number(stuckValidatorsCount)) : 0,
+          stuckPenaltyEndTimestamp ? warn(Number(stuckPenaltyEndTimestamp)) : null,
+          depositableValidatorsCount ? ok(Number(depositableValidatorsCount)) : 0,
+          Number(totalExitedValidators),
+          Number(totalDepositedValidators),
+        ]);
+
+        return {};
       });
 
+      logger.log();
       logger.log('Module', module.id, module.stakingModuleAddress);
-      logger.table(operatorsDigests);
+      logger.log(operatorsTable.toString());
     }
   });
 
