@@ -270,11 +270,13 @@ router
   .argument('<module-id>', 'module id')
   .argument('<node-operator-id>', 'node operator id')
   .argument('<target-limit>', 'target limit')
-  .action(async (moduleId, nodeOperatorId, targetLimit) => {
+  .option('-h, --hard-limit', 'hard limit', false)
+  .action(async (moduleId, nodeOperatorId, targetLimit, options) => {
+    const { hardLimit } = options;
     await authorizedCall(stakingRouterContract, 'updateTargetValidatorsLimits', [
       moduleId,
       nodeOperatorId,
-      true,
+      hardLimit ? 2 : 1,
       targetLimit,
     ]);
   });
@@ -285,7 +287,7 @@ router
   .argument('<module-id>', 'module id')
   .argument('<node-operator-id>', 'node operator id')
   .action(async (moduleId, nodeOperatorId) => {
-    await authorizedCall(stakingRouterContract, 'updateTargetValidatorsLimits', [moduleId, nodeOperatorId, false, 0]);
+    await authorizedCall(stakingRouterContract, 'updateTargetValidatorsLimits', [moduleId, nodeOperatorId, 0, 0]);
   });
 
 router
