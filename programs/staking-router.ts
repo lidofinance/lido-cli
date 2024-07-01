@@ -38,6 +38,16 @@ router
   });
 
 router
+  .command('module-summary')
+  .aliases(['summary'])
+  .description('returns staking module summary')
+  .argument('<module-id>', 'staking module id')
+  .action(async (moduleId) => {
+    const summary = await stakingRouterContract.getStakingModuleSummary(moduleId);
+    logger.log('Summary', summary.toObject());
+  });
+
+router
   .command('add-module')
   .description('adds staking module')
   .option('-n, --name <string>', 'staking module name')
