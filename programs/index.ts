@@ -27,6 +27,7 @@ export * from './scripts';
 export * from './simple-dvt';
 export * from './staking-router';
 export * from './tx';
+export * from './unlimited-stake';
 export * from './validators';
 export * from './voting';
 export * from './withdrawal-request';
