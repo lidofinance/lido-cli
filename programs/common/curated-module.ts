@@ -174,9 +174,10 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
     .description('sets target validators limit')
     .option('-o, --operator-id <number>', 'node operator id')
     .option('-l, --limit <number>', 'target limit')
+    .option('-h, --hard-limit', 'hard limit', false)
     .action(async (options) => {
-      const { operatorId, limit } = options;
-      await authorizedCall(contract, 'updateTargetValidatorsLimits', [operatorId, true, limit]);
+      const { operatorId, limit, hardLimit } = options;
+      await authorizedCall(contract, 'updateTargetValidatorsLimits', [operatorId, hardLimit ? 2 : 1, limit]);
     });
 
   command
@@ -185,7 +186,7 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
     .option('-o, --operator-id <number>', 'node operator id')
     .action(async (options) => {
       const { operatorId } = options;
-      await authorizedCall(contract, 'updateTargetValidatorsLimits', [operatorId, false, 0]);
+      await authorizedCall(contract, 'updateTargetValidatorsLimits', [operatorId, 0, 0]);
     });
 
   command
