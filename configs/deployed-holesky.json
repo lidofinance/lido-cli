@@ -172,6 +172,41 @@
       ]
     }
   },
+  "app:sandbox": {
+    "stakingRouterModuleParams": {
+      "moduleName": "NOR SandBox",
+      "moduleType": "curated-onchain-v1",
+      "targetShare": 100,
+      "moduleFee": 500,
+      "treasuryFee": 500,
+      "penaltyDelay": 86400,
+      "easyTrackAddress": "0x1763b9ED3586B08AE796c7787811a2E1bc16163a",
+      "easyTrackFactories": {
+        "IncreaseNodeOperatorStakingLimit": "0xbD37e55748c6f4Ece637AeD3e278e7575346B587"
+      }
+    },
+    "aragonApp": {
+      "name": "sandbox",
+      "fullName": "sandbox.lidopm.eth",
+      "id": "0x85d2fceef13a6c14c43527594f79fb91a8ef8f15024a43486efac8df2b11e632",
+      "ipfsCid": "QmX9AFu9NEmvpKcC6tzJyhEC1krv4JZriWgG9QcMnnezQe",
+      "contentURI": "0x697066733a516d5839414675394e456d76704b634336747a4a79684543316b7276344a5a72695767473951634d6e6e657a5165"
+    },
+    "proxy": {
+      "address": "0xD6C2ce3BB8bea2832496Ac8b5144819719f343AC",
+      "contract": "@aragon/os/contracts/apps/AppProxyUpgradeable.sol",
+      "constructorArgs": [
+        "0x3b03f75Ec541Ca11a223bB58621A3146246E1644",
+        "0x85d2fceef13a6c14c43527594f79fb91a8ef8f15024a43486efac8df2b11e632",
+        "0x"
+      ]
+    },
+    "implementation": {
+      "contract": "contracts/0.4.24/nos/NodeOperatorsRegistry.sol",
+      "address": "0xE0270CF2564d81E02284e16539F59C1B5a4718fE",
+      "constructorArgs": []
+    }
+  },
   "app:simple-dvt": {
     "stakingRouterModuleParams": {
       "moduleName": "SimpleDVT",
