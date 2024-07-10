@@ -16,7 +16,7 @@ export const importConfigFile = (path?: string) => {
   return json;
 };
 
-export const getContracts = () => {
+export const getConfig = () => {
   const deployedFile = envs?.DEPLOYED;
 
   if (!deployedFile) {
@@ -30,7 +30,11 @@ export const getContracts = () => {
 };
 
 export const getContractDeploy = (path: string) => {
-  return getValueByPath(getContracts(), path);
+  return getValueByPath(getConfig(), path);
+};
+
+export const getConfigValue = (path: string) => {
+  return getValueByPath(getConfig(), path);
 };
 
 export const getDeployedAddress = (...contractKeys: string[]) => {
@@ -65,7 +69,7 @@ export const getOptionalDeployedAddress = (...contractKeys: string[]) => {
 };
 
 export const getAddressMap = () => {
-  const contracts = getContracts();
+  const contracts = getConfig();
 
   return Object.entries(contracts).reduce(
     (acc, [key, value]) => {

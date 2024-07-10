@@ -21,6 +21,7 @@ import {
   promptScriptsVEBOInitialEpoch,
   promptScriptsVEBOMembers,
   promptRolesBeneficiary,
+  joinVotingDesc,
 } from './generators';
 import chalk from 'chalk';
 
@@ -157,8 +158,4 @@ const promptScriptsRoles = async () => {
     beneficiary,
   );
   return [...srScripts, ...norScripts, ...aoScripts, ...veboScripts, ...oracleConfigScripts, ...sanityCheckerScripts];
-};
-
-const joinVotingDesc = (calls: CallScriptActionWithDescription[]) => {
-  return calls.map(({ desc }, index) => `${index + 1}. ${desc}`).join('\n');
 };

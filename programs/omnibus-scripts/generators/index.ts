@@ -1,6 +1,7 @@
 export * from './access-control';
 export * from './accounting-oracle';
 export * from './aragon';
+export * from './desc';
 export * from './dsm';
 export * from './exit-bus-oracle';
 export * from './lido';
