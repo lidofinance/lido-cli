@@ -122,6 +122,28 @@ router
   });
 
 router
+  .command('set-stake-share-limit')
+  .aliases(['set-stake-limit'])
+  .description('sets stake share limit')
+  .argument('<module-id>', 'module id')
+  .argument('<stake-share-limit>', 'stake share limit in basis points: 100 = 1%, 10000 = 100%')
+  .action(async (moduleId, stakeShareLimit) => {
+    const module = await stakingRouterContract.getStakingModule(moduleId);
+    const { priorityExitShareThreshold, stakingModuleFee, treasuryFee, maxDepositsPerBlock, minDepositBlockDistance } =
+      module;
+
+    await authorizedCall(stakingRouterContract, 'updateStakingModule', [
+      moduleId,
+      stakeShareLimit,
+      priorityExitShareThreshold,
+      stakingModuleFee,
+      treasuryFee,
+      maxDepositsPerBlock,
+      minDepositBlockDistance,
+    ]);
+  });
+
+router
   .command('update-refunded-validators')
   .description('updates refunded validators count')
   .argument('<module-id>', 'module id')
