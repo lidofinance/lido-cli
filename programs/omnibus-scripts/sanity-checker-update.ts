@@ -4,7 +4,7 @@ import { encodeFromAgent, votingNewVote } from '@scripts';
 import { CallScriptAction, encodeCallScript, forwardVoteFromTm } from '@utils';
 import { Interface } from 'ethers';
 
-const NEW_LOCATOR_IMPLEMENTAION = '0xcf720cb5635523ed1de57bb0d984445f6b7ca628';
+const NEW_LOCATOR_IMPLEMENTAION = '0xa19a59aF0680F6D9676ABD77E1Ba7e4c205F55a0';
 
 export const sanityChecker = async () => {
   const iface = new Interface(['function proxy__upgradeTo(address)']);
