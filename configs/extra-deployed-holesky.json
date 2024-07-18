@@ -34,7 +34,7 @@
     "feeDistributor": { "address": "0xD7ba648C8F72669C6aE649648B516ec03D07c8ED" },
     "feeOracle": { "address": "0xaF57326C7d513085051b50912D51809ECC5d98Ee" },
     "module": { "address": "0x4562c3e63c2e586cD1651B958C22F88135aCAd4f" },
-    "verifier": { "address": "0x6DcA479178E6Ae41CCEB72a88FfDaa3e10E83CB7" },
+    "verifier": { "address": "0xEaBA76fAf7A5473fAC6a2511d8115beAb43Cf8a7" },
     "hashConsensus": { "address": "0xbF38618Ea09B503c1dED867156A0ea276Ca1AE37" }
   }
 }
