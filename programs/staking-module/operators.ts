@@ -22,21 +22,34 @@ export const getNodeOperatorIds = async (moduleAddress: string, limit = 500) => 
   return operatorIds;
 };
 
+export const isOperatorNamesSupported = async (moduleAddress: string) => {
+  try {
+    const moduleContract = norContract.attach(moduleAddress) as typeof norContract;
+    await moduleContract.getNodeOperator(0, true);
+    return true;
+  } catch (error) {
+    if (error != null && typeof error === 'object' && 'code' in error && error?.code === 'CALL_EXCEPTION') {
+      return false;
+    }
+
+    throw error;
+  }
+};
+
 export const getNodeOperators = async (moduleAddress: string): Promise<NodeOperator[]> => {
   const operatorIdsBigInt: bigint[] = await getNodeOperatorIds(moduleAddress);
   const operatorIds = operatorIdsBigInt.map((operatorId) => Number(operatorId));
+  const isNamesSupported = await isOperatorNamesSupported(moduleAddress);
 
   // try to detect name if it's a curated module implementation
-  try {
-    const moduleContract = norContract.attach(moduleAddress) as typeof norContract;
-
+  if (isNamesSupported) {
     return await Promise.all(
       operatorIds.map(async (operatorId) => {
-        const result: { name: string } = await moduleContract.getNodeOperator(operatorId, true);
+        const result: { name: string } = await norContract.getNodeOperator(operatorId, true);
         return { operatorId, name: result.name };
       }),
     );
-  } catch {
+  } else {
     return operatorIds.map((operatorId) => {
       return { operatorId, name: 'unknown' };
     });
