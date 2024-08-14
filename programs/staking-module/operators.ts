@@ -6,10 +6,18 @@ export type NodeOperator = {
   name: string;
 };
 
-export const getNodeOperatorIds = async (moduleAddress: string) => {
+export const getNodeOperatorIds = async (moduleAddress: string, limit = 500) => {
   const stakingModuleContract = getStakingModuleContract(moduleAddress);
   const nodeOperatorsCount = await stakingModuleContract.getNodeOperatorsCount();
-  const operatorIds: Promise<bigint[]> = stakingModuleContract.getNodeOperatorIds(0, nodeOperatorsCount);
+  const operatorIds: bigint[] = [];
+
+  let offset = 0;
+
+  while (offset < nodeOperatorsCount) {
+    const result = await stakingModuleContract.getNodeOperatorIds(offset, limit);
+    operatorIds.push(...result);
+    offset += limit;
+  }
 
   return operatorIds;
 };
