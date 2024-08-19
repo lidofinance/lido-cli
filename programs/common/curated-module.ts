@@ -78,6 +78,15 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
     });
 
   command
+    .command('rename-operator')
+    .description('renames node operator')
+    .argument('<operator-id>', 'operator id')
+    .argument('<name>', 'operator name')
+    .action(async (operatorId, name) => {
+      await authorizedCall(contract, 'setNodeOperatorName', [Number(operatorId), name]);
+    });
+
+  command
     .command('key')
     .description('returns signing key')
     .argument('<operator-id>', 'operator id')
