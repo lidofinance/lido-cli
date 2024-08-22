@@ -43,16 +43,16 @@ export const getNodeOperators = async (moduleAddress: string): Promise<NodeOpera
 
   // try to detect name if it's a curated module implementation
   if (isNamesSupported) {
+    const moduleContract = norContract.attach(moduleAddress) as typeof norContract;
+
     return await Promise.all(
       operatorIds.map(async (operatorId) => {
-        const result: { name: string } = await norContract.getNodeOperator(operatorId, true);
+        const result: { name: string } = await moduleContract.getNodeOperator(operatorId, true);
         return { operatorId, name: result.name };
       }),
     );
   } else {
-    return operatorIds.map((operatorId) => {
-      return { operatorId, name: 'unknown' };
-    });
+    return operatorIds.map((operatorId) => ({ operatorId, name: 'unknown' }));
   }
 };
 
