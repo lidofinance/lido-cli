@@ -45,20 +45,22 @@ csm
   .description('adds node operator')
   .option('-k, --keys-count <number>', 'keys count', '1')
   .option('-p, --public-keys <string>', 'public keys')
-  .option('-s, --singatures <string>', 'signatures')
+  .option('-s, --signatures <string>', 'signatures')
   .option('-m, --manager-address <string>', 'manager address', wallet.address)
   .option('-a, --reward-address <string>', 'reward address', wallet.address)
+  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
   .option('-r, --referrer <string>', 'referrer', ZeroAddress)
   .action(async (options) => {
-    const { keysCount, publicKeys, singatures, managerAddress, rewardAddress, referrer } = options;
-    const value = await csAccountingContract.getBondAmountByKeysCount(1);
+    const { keysCount, publicKeys, signatures, managerAddress, rewardAddress, extendedManagerPermissions, referrer } =
+      options;
+    const curveId = await csAccountingContract.DEFAULT_BOND_CURVE_ID();
+    const value = await csAccountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
 
     await contractCallTxWithConfirm(csModuleContract, 'addNodeOperatorETH', [
       keysCount,
       publicKeys,
-      singatures,
-      managerAddress,
-      rewardAddress,
+      signatures,
+      [managerAddress, rewardAddress, !!extendedManagerPermissions],
       [], // early adoption proof
       referrer,
       { value },
