@@ -149,6 +149,31 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
     });
 
   command
+    .command('add-keys-from-range')
+    .description('Adds signing keys from a deposit data file for a specified range')
+    .argument('<operator-id>', 'Node operator ID')
+    .argument('<file-path>', 'Path to the file containing deposit data')
+    .argument('<start-index>', 'Start index of the key range (inclusive)')
+    .argument('<end-index>', 'End index of the key range (exclusive)')
+    .action(async (operatorId, filePath, startIndex, endIndex) => {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const depositData: DepositData[] = require(filePath);
+      // Validate and slice the array to get only the specified range
+      if (startIndex < 0 || endIndex > depositData.length || startIndex >= endIndex) {
+        throw new Error('Invalid start or end index');
+      }
+      const selectedDepositData = depositData.slice(startIndex, endIndex);
+
+      await supplementAndVerifyDepositDataArray(selectedDepositData);
+
+      const count = selectedDepositData.length;
+      const publicKeys = joinHex(selectedDepositData.map(({ pubkey }) => pubkey));
+      const signatures = joinHex(selectedDepositData.map(({ signature }) => signature));
+
+      await authorizedCall(contract, 'addSigningKeys', [operatorId, count, publicKeys, signatures]);
+    });
+
+  command
     .command('remove-keys')
     .description('removes signing keys')
     .option('-o, --operator-id <number>', 'node operator id')
