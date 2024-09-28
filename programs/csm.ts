@@ -68,6 +68,17 @@ csm
   });
 
 csm
+  .command('change-reward-address')
+  .description('change reward address')
+  .option('-i, --operator-id <number>', 'node operator id')
+  .option('-a, --reward-address <string>', 'new reward address')
+  .action(async (options) => {
+    const { operatorId, rewardAddress } = options;
+
+    await contractCallTxWithConfirm(csModuleContract, 'changeNodeOperatorRewardAddress', [operatorId, rewardAddress]);
+  });
+
+csm
   .command('keys')
   .description('returns signing keys')
   .argument('<operator-id>', 'operator id')
