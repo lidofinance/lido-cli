@@ -91,19 +91,29 @@ withdrawal
   .command('claimable')
   .description('returns withdrawal status')
   .option('-a, --address <string>', 'owner address', wallet.address)
-  .option('-l, --limit <number>', 'limit', '100')
+  .option('-l, --limit <number>', 'max ids amount per request', '100')
   .action(async (options) => {
     const { address, limit } = options;
     const requestIds: Result = await withdrawalRequestContract.getWithdrawalRequests(address);
-    const limitedRequestIds: number[] = requestIds
+    const sortedRequestIds: number[] = requestIds
       .toArray()
-      .slice(-Number(limit))
       .map((id) => Number(id))
       .sort((a, b) => a - b);
 
-    const requests = await withdrawalRequestContract.getWithdrawalStatus(limitedRequestIds);
+    // Split ids into batches
+    const requestIdsBatches = [];
+    for (let i = 0; i < sortedRequestIds.length; i += Number(limit)) {
+      requestIdsBatches.push(sortedRequestIds.slice(i, i + Number(limit)));
+    }
 
-    const requestsWithId = limitedRequestIds.map((id, index) => ({ id, ...requests[index].toObject() }));
+    // Get requests status in batches
+    const requestsInBatches = await Promise.all(
+      requestIdsBatches.map((batch) => withdrawalRequestContract.getWithdrawalStatus(batch)),
+    );
+    const requests = requestsInBatches.flat();
+
+    // Filter out finalized and unclaimed requests
+    const requestsWithId = sortedRequestIds.map((id, index) => ({ id, ...requests[index].toObject() }));
     const filteredRequests = requestsWithId.filter(
       (request) => request.isClaimed === false && request.isFinalized === true,
     );

@@ -1,4 +1,10 @@
-import { CallScriptAction, authorizedCallTest, encodeCallScript, logger } from '@utils';
+import {
+  CallScriptAction,
+  CallScriptActionWithDescription,
+  authorizedCallTest,
+  encodeCallScript,
+  logger,
+} from '@utils';
 import { aragonAgentAddress, votingAddress } from '@contracts';
 import { Contract } from 'ethers';
 import { agentForward } from './agent';
@@ -73,13 +79,15 @@ export const promptFrom = async () => {
   return from;
 };
 
-export const encodeFromAgent = (call: CallScriptAction) => {
+export const encodeFromAgent = <T extends CallScriptAction | CallScriptActionWithDescription>(call: T) => {
   const encoded = encodeCallScript([call]);
-  const [agentEncoded, agentCall] = agentForward(encoded);
-  return [agentEncoded, agentCall] as const;
+  const desc = 'desc' in call ? call.desc : '';
+  const [agentEncoded, agentCall] = agentForward(encoded, desc);
+
+  return [agentEncoded, agentCall] as [string, T];
 };
 
-export const encodeFromVoting = (call: CallScriptAction) => {
+export const encodeFromVoting = <T extends CallScriptAction | CallScriptActionWithDescription>(call: T) => {
   const encoded = encodeCallScript([call]);
-  return [encoded, call] as const;
+  return [encoded, call] as [string, T];
 };
