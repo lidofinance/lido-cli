@@ -49,6 +49,14 @@ export const getDeployedAddress = (...contractKeys: string[]) => {
     throw new Error(`Contracts by ${contractKeys} not found`);
   }
 
+  if ('proxy' in contract) {
+    return (contract.proxy as { address: string }).address;
+  }
+
+  if ('implementation' in contract) {
+    return (contract.implementation as { address: string }).address;
+  }
+
   if ('proxyAddress' in contract) {
     return contract.proxyAddress as string;
   }
