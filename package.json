@@ -40,5 +40,6 @@
   },
   "optionalDependencies": {
     "@chainsafe/blst": "^0.2.8"
-  }
+  },
+  "packageManager": "yarn@4.5.3"
 }
