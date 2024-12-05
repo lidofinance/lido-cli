@@ -4,3 +4,6 @@ export * from './devnet-start';
 export * from './sanity-checker-update';
 export * from './staking-router-2';
 export * from './staking-router-fix';
+
+// Vaults
+export * from './vaults-devnet-start';
