@@ -29,7 +29,7 @@ locator
   .command('oracle-components')
   .description('returns oracle components')
   .action(async () => {
-    const components = await locatorContract.oracleReportComponentsForLido();
+    const components = await locatorContract.oracleReportComponents();
     const [
       accountingOracle,
       elRewardsVault,
@@ -66,6 +66,7 @@ locator
     ] = await locatorContract.oracleReportComponentsForLido();
 
     const [
+      accounting,
       legacyOracle,
       validatorsExitBusOracle,
       depositSecurityModule,
@@ -74,6 +75,7 @@ locator
       treasury,
       oracleDaemonConfig,
     ] = await Promise.all([
+      locatorContract.accounting(),
       locatorContract.legacyOracle(),
       locatorContract.validatorsExitBusOracle(),
       locatorContract.depositSecurityModule(),
@@ -84,6 +86,7 @@ locator
     ]);
 
     logger.log('Components', {
+      accounting,
       accountingOracle,
       elRewardsVault,
       oracleReportSanityChecker,
@@ -114,6 +117,14 @@ locator
   .description('returns report sanity checker')
   .action(async () => {
     const address = await locatorContract.oracleReportSanityChecker();
+    logger.log('Address', address);
+  });
+
+locator
+  .command('accounting')
+  .description('returns accounting')
+  .action(async () => {
+    const address = await locatorContract.accounting();
     logger.log('Address', address);
   });
 
