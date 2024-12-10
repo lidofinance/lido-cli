@@ -77,9 +77,9 @@ export const vaultsDevnetStart = async () => {
   logger.log();
 
   // DSM
-  logger.log(head('DSM'));
-  const dsmScripts = await promptScriptsDSM();
-  logger.log();
+  // logger.log(head('DSM'));
+  // const dsmScripts = await promptScriptsDSM();
+  // logger.log();
 
   // Roles
   logger.log(head('Roles'));
@@ -92,7 +92,7 @@ export const vaultsDevnetStart = async () => {
     ...wqResumeScripts,
     ...veboScripts,
     ...aoScripts,
-    ...dsmScripts,
+    // ...dsmScripts,
     ...rolesScripts,
   ];
 
