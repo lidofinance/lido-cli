@@ -27,7 +27,7 @@ export const fetchSignatureDetailsById = async (id: number) => {
 };
 
 export const extractSignatureIdsFromText = (content: string) => {
-  const regexp = /href="\/verifySig\/([0-9]+)"/g;
+  const regexp = /href=["']\/verifySig\/([0-9]+)["']/g;
   const matches = [...content.matchAll(regexp)];
   const ids = matches.map(([, id]) => Number(id));
   return ids;

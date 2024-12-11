@@ -13,7 +13,9 @@ export const txWithConfirmation = async (to: string | undefined | null, value: b
 
   const tx = await wallet.sendTransaction({
     from: wallet.address,
-    to: wallet.address,
+    data,
+    value,
+    to,
   });
 
   logger.success('Tx sent', tx.hash);

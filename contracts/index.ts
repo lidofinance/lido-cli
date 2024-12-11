@@ -1,4 +1,5 @@
 export * from './allowed-list';
+export * from './apm-registry';
 export * from './app-proxy';
 export * from './aragon';
 export * from './burner';
