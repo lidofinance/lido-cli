@@ -58,6 +58,49 @@ export const promptScriptsOracleMembers = async (
   return calls;
 };
 
+export const encodeScriptsOracleMembers = async (
+  oracleName: string,
+  hashConsensusContract: Contract,
+  members: string[],
+  quorum: number,
+) => {
+  const calls: CallScriptActionWithDescription[] = [];
+  const total = members.length;
+
+  if (total === 0) {
+    logger.warn('No members to add. Skipping adding members');
+    return [];
+  }
+
+  logger.log('Preparing scripts to grant required role and add members');
+
+  if (!validateOracleQuorum(quorum, total)) {
+    const minQuorum = getOracleMinQuorum(total);
+    throw new Error(`Quorum ${quorum} is not in range [${minQuorum}...${total}]`);
+  }
+
+  const [, grantManageMembersRoleCall] = await encodeFromAgentGrantRole(
+    `${oracleName} consensus`,
+    hashConsensusContract,
+    'MANAGE_MEMBERS_AND_QUORUM_ROLE',
+    aragonAgentAddress,
+  );
+  calls.push(grantManageMembersRoleCall);
+
+  for (let i = 0; i < total; i++) {
+    const quorumForIteration = Math.min(i + 1, quorum);
+    const [, addMemberCall] = await encodeFromAgentAddOracle(
+      `${oracleName} consensus`,
+      hashConsensusContract,
+      members[i],
+      quorumForIteration,
+    );
+    calls.push(addMemberCall);
+  }
+
+  return calls;
+};
+
 export const promptMembersNumber = async (initialMembers: number) => {
   const { total } = await prompts({
     type: 'number',
@@ -70,7 +113,7 @@ export const promptMembersNumber = async (initialMembers: number) => {
 };
 
 export const promptMembersQuorum = async (total: number) => {
-  const minQuorum = Math.min(Math.floor(total / 2) + 1, total);
+  const minQuorum = getOracleMinQuorum(total);
 
   const { quorum } = await prompts({
     type: 'number',
@@ -78,13 +121,22 @@ export const promptMembersQuorum = async (total: number) => {
     initial: Math.floor(total / 2) + 1,
     validate: (value) => {
       const isDefaultValue = value === '';
-      const inRange = Number(value) >= minQuorum && Number(value) <= total;
+      const inRange = validateOracleQuorum(Number(value), total);
       return isDefaultValue || inRange;
     },
     message: `Enter quorum (must be in range [${minQuorum}...${total}])`,
   });
 
   return quorum;
+};
+
+export const getOracleMinQuorum = (total: number) => {
+  return Math.min(Math.floor(total / 2) + 1, total);
+};
+
+export const validateOracleQuorum = (quorum: number, total: number) => {
+  const minQuorum = getOracleMinQuorum(total);
+  return quorum >= minQuorum && quorum <= total;
 };
 
 export const promptOracleAddress = async (index: number) => {
@@ -141,6 +193,28 @@ export const getFarFutureEpoch = async (hashConsensusContract: Contract) => {
 
 export const promptScriptsOracleInitialEpoch = async (oracleName: string, hashConsensusContract: Contract) => {
   const initialEpoch = await promptOracleInitialEpoch();
+  return await encodeScriptsOracleInitialEpoch(oracleName, hashConsensusContract, initialEpoch);
+};
+
+export const encodeScriptsOracleInitialEpochIfPassed = async (
+  oracleName: string,
+  hashConsensusContract: Contract,
+  initialEpoch?: number,
+) => {
+  if (initialEpoch != null) {
+    return await encodeScriptsOracleInitialEpoch(oracleName, hashConsensusContract, initialEpoch);
+  }
+
+  return [];
+};
+
+export const encodeScriptsOracleInitialEpoch = async (
+  oracleName: string,
+  hashConsensusContract: Contract,
+  initialEpoch: number,
+) => {
+  logger.log('Preparing scripts to update initial epoch');
+
   const [, updateInitialEpochCall] = await encodeFromAgentUpdateInitialEpoch(
     oracleName,
     hashConsensusContract,

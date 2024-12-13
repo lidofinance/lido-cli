@@ -18,7 +18,7 @@ export const encodeFromAgentGrantRole = async (
   });
 };
 
-export const encodeFromAgentGrantRolesAccessControlWithConfirmed = async (
+export const encodeFromAgentGrantRolesAccessControlWithConfirm = async (
   contractName: string,
   rolesToGrant: string[],
   contract: Contract,
