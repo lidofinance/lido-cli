@@ -6,3 +6,5 @@ node_modules
 
 reports/*
 wallets/*
+
+/configs/deployed-local-devnet.json

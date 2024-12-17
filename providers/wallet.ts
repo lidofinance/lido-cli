@@ -3,10 +3,11 @@ import * as dotenv from 'dotenv';
 import { provider } from './el-provider';
 
 const { parsed } = dotenv.config();
-const privateKey = parsed?.PRIVATE_KEY;
-const accountFile = parsed?.ACCOUNT_FILE;
-const accountFilePassword = parsed?.ACCOUNT_FILE_PASSWORD;
-const accountToImpersonate = parsed?.IMPERSONATE;
+const envs = { ...parsed, ...process.env };
+const privateKey = envs?.PRIVATE_KEY;
+const accountFile = envs?.ACCOUNT_FILE;
+const accountFilePassword = envs?.ACCOUNT_FILE_PASSWORD;
+const accountToImpersonate = envs?.IMPERSONATE;
 
 const impersonateAccount = async (accountToImpersonate: string) => {
   await provider.send('hardhat_impersonateAccount', [accountToImpersonate]);
