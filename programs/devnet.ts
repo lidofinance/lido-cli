@@ -1,6 +1,14 @@
 import { program } from '@command';
 import { votingNewVote } from '@scripts';
-import { CallScriptActionWithDescription, encodeCallScript, forwardVoteFromTm, splitAddresses, logger } from '@utils';
+import {
+  CallScriptActionWithDescription,
+  encodeCallScript,
+  forwardVoteFromTm,
+  splitAddresses,
+  logger,
+  compareContractCalls,
+  authorizedCall,
+} from '@utils';
 import chalk from 'chalk';
 import {
   encodeScriptsAO,
@@ -12,6 +20,10 @@ import {
   joinVotingDesc,
   DEFAULT_DEVNET_CONFIG,
 } from './omnibus-scripts/generators';
+import { getLocatorContract, getProxyContract, locatorContract } from '@contracts';
+import { getCreateAddress } from 'ethers';
+import { wallet } from '@providers';
+import { findDeploymentTransaction } from 'utils';
 
 const devnet = program.command('devnet').description('scripts for devnet');
 
@@ -87,4 +99,66 @@ devnet
     const voteEvmScript = encodeCallScript(votingCalls);
     const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
     await forwardVoteFromTm(newVoteCalldata);
+  });
+
+devnet
+  .command('replace-dsm-with-eoa')
+  .argument('<eoa>', 'EOA address')
+  .action(async (eoa) => {
+    const getProxyAddress = async () => await locatorContract.getAddress();
+    const locatorProxyContract = getProxyContract(getProxyAddress);
+    const curLocatorImplementationAddress = await locatorProxyContract.proxy__getImplementation();
+
+    const currentDSMAddress = await locatorContract.depositSecurityModule();
+    const currentDSMAddressBytes = currentDSMAddress.slice(2).toLowerCase();
+    const eoaBytes = eoa.slice(2).toLowerCase();
+
+    if (eoaBytes.length !== 40) {
+      logger.error('Invalid EOA address');
+      return;
+    }
+
+    const currentLocatorImplementationDeploymentTx = await findDeploymentTransaction(curLocatorImplementationAddress);
+    const newLocatorDeploymentData = currentLocatorImplementationDeploymentTx.data.replaceAll(
+      currentDSMAddressBytes,
+      eoaBytes,
+    );
+
+    const newLocatorDeployTx = {
+      data: newLocatorDeploymentData,
+      gasLimit: 5000000,
+    };
+
+    const txResponse = await wallet.sendTransaction(newLocatorDeployTx);
+    logger.log('New Locator deployment tx hash:', txResponse.hash);
+
+    const newLocatorImplementationAddress = getCreateAddress(txResponse);
+    logger.log('New Locator implementation address:', newLocatorImplementationAddress);
+
+    logger.log('Locator implementations diff');
+
+    const curLocatorImplementationContract = getLocatorContract(curLocatorImplementationAddress);
+    const newLocatorImplementationContract = getLocatorContract(newLocatorImplementationAddress);
+
+    await compareContractCalls(
+      [curLocatorImplementationContract, newLocatorImplementationContract],
+      [
+        { method: 'accountingOracle' },
+        { method: 'depositSecurityModule' },
+        { method: 'elRewardsVault' },
+        { method: 'legacyOracle' },
+        { method: 'lido' },
+        { method: 'oracleReportSanityChecker' },
+        { method: 'postTokenRebaseReceiver' },
+        { method: 'burner' },
+        { method: 'stakingRouter' },
+        { method: 'treasury' },
+        { method: 'validatorsExitBusOracle' },
+        { method: 'withdrawalQueue' },
+        { method: 'withdrawalVault' },
+        { method: 'oracleDaemonConfig' },
+      ],
+    );
+
+    await authorizedCall(locatorProxyContract, 'proxy__upgradeTo', [newLocatorImplementationAddress]);
   });

@@ -6,6 +6,7 @@ export * from './call-tx';
 export * from './compare-calls';
 export * from './contract';
 export * from './csv';
+export * from './deployemnt-tx';
 export * from './format-date';
 export * from './get-value';
 export * from './join-hex';
