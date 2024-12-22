@@ -8,3 +8,5 @@ reports/*
 wallets/*
 
 /configs/deployed-local-devnet.json
+
+generated-keys
