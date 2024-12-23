@@ -132,6 +132,8 @@ devnet
     const txResponse = await wallet.sendTransaction(newLocatorDeployTx);
     logger.log('New Locator deployment tx hash:', txResponse.hash);
 
+    await txResponse.wait();
+
     const newLocatorImplementationAddress = getCreateAddress(txResponse);
     logger.log('New Locator implementation address:', newLocatorImplementationAddress);
 
