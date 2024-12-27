@@ -14,6 +14,7 @@ export * from './logger';
 export * from './modules';
 export * from './parse-method-call';
 export * from './print-tx';
+export * from './pubkey';
 export * from './role-hash';
 export * from './scripts';
 export * from './sleep';
