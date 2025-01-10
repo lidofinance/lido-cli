@@ -1,7 +1,14 @@
 import { program } from '@command';
 import { csAccountingContract, csModuleContract } from '@contracts';
 import { addAccessControlSubCommands, addLogsCommands, addParsingCommands, addPauseUntilSubCommands } from './common';
-import { contractCallTxWithConfirm, logger, splitHex } from '@utils';
+import {
+  contractCallTxWithConfirm,
+  joinHex,
+  logger,
+  splitHex,
+  supplementAndVerifyDepositDataArray,
+  DepositData,
+} from '@utils';
 import { wallet } from '@providers';
 import { ZeroAddress } from 'ethers';
 
@@ -55,6 +62,39 @@ csm
       options;
     const curveId = await csAccountingContract.DEFAULT_BOND_CURVE_ID();
     const value = await csAccountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
+
+    await contractCallTxWithConfirm(csModuleContract, 'addNodeOperatorETH', [
+      keysCount,
+      publicKeys,
+      signatures,
+      [managerAddress, rewardAddress, !!extendedManagerPermissions],
+      [], // early adoption proof
+      referrer,
+      { value },
+    ]);
+  });
+
+csm
+  .command('add-operator-with-keys-from-file')
+  .description('adds node operator with keys from file')
+  .argument('<file-path>', 'file path')
+  .option('-m, --manager-address <string>', 'manager address', wallet.address)
+  .option('-a, --reward-address <string>', 'reward address', wallet.address)
+  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
+  .option('-r, --referrer <string>', 'referrer', ZeroAddress)
+  .action(async (filePath, options) => {
+    const { managerAddress, rewardAddress, extendedManagerPermissions, referrer } = options;
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const depositData: DepositData[] = require(filePath);
+    await supplementAndVerifyDepositDataArray(depositData);
+
+    const keysCount = depositData.length;
+    const curveId = await csAccountingContract.DEFAULT_BOND_CURVE_ID();
+    const value = await csAccountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
+
+    const publicKeys = joinHex(depositData.map(({ pubkey }) => pubkey));
+    const signatures = joinHex(depositData.map(({ signature }) => signature));
 
     await contractCallTxWithConfirm(csModuleContract, 'addNodeOperatorETH', [
       keysCount,

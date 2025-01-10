@@ -11,7 +11,7 @@ import {
 } from '@utils';
 import { getPenalizedOperators } from '../staking-module';
 import { aclContract } from '@contracts';
-import { DepositData, supplementAndVerifyDepositDataArray } from 'utils/deposit-data';
+import { DepositData, supplementAndVerifyDepositDataArray } from '@utils';
 
 export const addCuratedModuleSubCommands = (command: Command, contract: Contract) => {
   command
