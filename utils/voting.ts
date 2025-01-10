@@ -1,7 +1,6 @@
 import { tmContract, votingContract } from '@contracts';
 import { sleep } from './sleep';
 import { contractCallTx, contractCallTxWithConfirm } from './call-tx';
-import { getSignerAddress } from './contract';
 import { logger } from './logger';
 import progress, { SingleBar } from 'cli-progress';
 import { provider } from '@providers';
@@ -89,16 +88,4 @@ export const waitForEnd = async (voteId: number, progressBar?: SingleBar) => {
 
   await sleep(10_000);
   await waitForEnd(voteId, progressBar);
-};
-
-export const checkTmCanForward = async () => {
-  const signerAddress = await getSignerAddress(tmContract);
-  const canForward = await tmContract.canForward(signerAddress, '0x');
-
-  if (!canForward) {
-    logger.warn('TM can not forward, check your LDO balance');
-    return false;
-  }
-
-  return true;
 };
