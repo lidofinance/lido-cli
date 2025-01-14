@@ -26,8 +26,9 @@ export const devnetCSMStart = async () => {
   const CS_TREASURY_FEE = process.env.CS_TREASURY_FEE ?? 200; // 2%
   const CS_MAX_DEPOSITS_PER_BLOCK = process.env.CS_MAX_DEPOSITS_PER_BLOCK ?? 30;
   const CS_MIN_DEPOSIT_BLOCK_DISTANCE = process.env.CS_MIN_DEPOSIT_BLOCK_DISTANCE ?? 25;
-
-  const CS_ORACLE_INITIAL_EPOCH = process.env.CS_ORACLE_INITIAL_EPOCH ?? 1;
+  // 60 (50 + 10)
+  // https://github.com/lidofinance/community-staking-module/blob/e1bbb4133d18206fc3a1a63ae660a670be08b6ea/script/DeployLocalDevNet.s.sol#L22
+  const CS_ORACLE_INITIAL_EPOCH = process.env.CS_ORACLE_INITIAL_EPOCH ?? 60;
 
   const iface = new Interface([
     'function proxy__upgradeTo(address)',
@@ -38,7 +39,9 @@ export const devnetCSMStart = async () => {
     'function grantRole(bytes32,address)',
     'function STAKING_MODULE_UNVETTING_ROLE() view returns (bytes32)',
     'function RESUME_ROLE() view returns (bytes32)',
+    'function MODULE_MANAGER_ROLE() view returns (bytes32)',
     'function resume()',
+    'function activatePublicRelease()',
     'function updateInitialEpoch(uint256)',
     'function addStakingModule(string,address,uint256,uint256,uint256,uint256,uint256,uint256)',
     'function setConsensusVersion(uint256)',
@@ -86,19 +89,38 @@ export const devnetCSMStart = async () => {
     data: iface.encodeFunctionData('grantRole', [csmResumeRoleHash, aragonAgentAddress]),
   });
 
-  // // 5. Resume staking module
+  // 5. Grant csmModuleManager role to agent
+  const csmModuleManagerRoleHash = await getRoleHash(csModuleContract, 'MODULE_MANAGER_ROLE');
+  const [, csmModuleManagerRoleGrantScript] = encodeFromAgent({
+    to: CS_MODULE_ADDRESS,
+    data: iface.encodeFunctionData('grantRole', [csmModuleManagerRoleHash, aragonAgentAddress]),
+  });
+
+  // 6. Resume staking module
   const [, resumeScript] = encodeFromAgent({
     to: CS_MODULE_ADDRESS,
     data: iface.encodeFunctionData('resume', []),
   });
 
-  // 6. Revoke resume role from agent
+  // 7. Activate public release
+  const [, activatePublicReleaseScript] = encodeFromAgent({
+    to: CS_MODULE_ADDRESS,
+    data: iface.encodeFunctionData('activatePublicRelease', []),
+  });
+
+  // 8. Revoke resume role from agent
   const [, resumeRoleRevokeScript] = encodeFromAgent({
     to: CS_MODULE_ADDRESS,
     data: iface.encodeFunctionData('revokeRole', [csmResumeRoleHash, aragonAgentAddress]),
   });
 
-  // 7. Update initial epoch
+  // 9. Revoke csmModuleManager role from agent
+  const [, resumeCsmModuleManagerRoleRevokeScript] = encodeFromAgent({
+    to: CS_MODULE_ADDRESS,
+    data: iface.encodeFunctionData('revokeRole', [csmModuleManagerRoleHash, aragonAgentAddress]),
+  });
+
+  // 10. Update initial epoch
   const [, updateInitialEpochScript] = encodeFromAgent({
     to: CS_ORACLE_HASH_CONSENSUS_ADDRESS,
     data: iface.encodeFunctionData('updateInitialEpoch', [CS_ORACLE_INITIAL_EPOCH]),
@@ -110,8 +132,11 @@ export const devnetCSMStart = async () => {
     addStakingModuleScript,
     requestBurnRoleGrantScript,
     resumeRoleGrantScript,
+    csmModuleManagerRoleGrantScript,
     resumeScript,
+    activatePublicReleaseScript,
     resumeRoleRevokeScript,
+    resumeCsmModuleManagerRoleRevokeScript,
     updateInitialEpochScript,
   ];
 
@@ -120,9 +145,12 @@ export const devnetCSMStart = async () => {
     `2. Add staking module ${CS_MODULE_NAME} with address ${CS_MODULE_ADDRESS}`,
     `3. Grant request burn shares role to CSAccounting contract with address ${CS_ACCOUNTING_ADDRESS}`,
     `4. Grant resume role to agent ${aragonAgentAddress}`,
-    `5. Resume staking module`,
-    `6. Revoke resume role from agent ${aragonAgentAddress}`,
-    `7. Update initial epoch to ${CS_ORACLE_INITIAL_EPOCH}`,
+    `5. Grant csmModuleManager role to agent ${aragonAgentAddress}`,
+    `6. Resume staking module`,
+    `7. Activate public release`,
+    `8. Revoke resume role from agent ${aragonAgentAddress}`,
+    `9. Revoke csmModuleManager role from agent ${aragonAgentAddress}`,
+    `10. Update initial epoch to ${CS_ORACLE_INITIAL_EPOCH}`,
   ].join('\n');
 
   const voteEvmScript = encodeCallScript(calls);
