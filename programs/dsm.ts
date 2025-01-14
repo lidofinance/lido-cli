@@ -193,7 +193,7 @@ dsm
   .description('pauses deposits')
   .argument('<blockNumber>', 'block number')
   .option('-r, --signature-r <string>', 'signature r', ZeroHash)
-  .option('-vs, --signature-vs <string>', 'signature vs', ZeroHash)
+  .option('-v, --signature-vs <string>', 'signature vs', ZeroHash)
   .action(async (blockNumber, options) => {
     const { r, vs } = options;
     await authorizedCall(dsmContract, 'pauseDeposits', [blockNumber, { r, vs }]);
@@ -257,7 +257,7 @@ dsm
   .argument('<operatorIds>', 'operator ids separated by comma')
   .argument('<vettedSigningKeysCounts>', 'new vetted signing keys counts')
   .option('-r, --signature-r <string>', 'signature r', ZeroHash)
-  .option('-vs, --signature-vs <string>', 'signature vs', ZeroHash)
+  .option('-v, --signature-vs <string>', 'signature vs', ZeroHash)
   .action(async () => {
     // TODO: implement
     throw new Error('Not implemented');
