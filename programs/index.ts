@@ -19,7 +19,6 @@ export * from './ldo';
 export * from './lido';
 export * from './locator';
 export * from './nor';
-export * from './nor';
 export * from './omnibus';
 export * from './oracle-config';
 export * from './role';

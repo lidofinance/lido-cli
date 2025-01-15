@@ -73,3 +73,11 @@ export const postToAttestationPool = async (body: unknown) => {
     headers: { 'Content-Type': 'application/json' },
   });
 };
+
+export const postToVoluntaryExitsPool = async (body: unknown) => {
+  return await fetchCL(`eth/v1/beacon/pool/voluntary_exits`, {
+    body: stringify(body),
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  });
+};

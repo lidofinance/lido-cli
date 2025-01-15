@@ -1,16 +1,25 @@
 import { program } from '@command';
 import {
+  FAR_FUTURE_EPOCH,
   fetchAllLidoKeys,
   fetchAllValidators,
+  fetchBlockHeader,
   fetchFork,
   fetchGenesis,
   fetchSpec,
   fetchValidator,
   KAPIKey,
   postToAttestationPool,
+  postToVoluntaryExitsPool,
 } from '@providers';
 import { deriveEth2ValidatorKeys, deriveKeyFromMnemonic } from '@chainsafe/bls-keygen';
-import { AttestationDataBigint, computeDomain, signAttestationData } from '@consensus';
+import {
+  AttestationDataBigint,
+  VoluntaryExit,
+  computeDomain,
+  signAttestationData,
+  signVoluntaryExit,
+} from '@consensus';
 import { getBytes, hexlify } from 'ethers';
 import { logger } from '@utils';
 
@@ -120,8 +129,56 @@ validators
   });
 
 validators
+  .command('voluntary-exit')
+  .description('submit a voluntary exit for a validator')
+  .argument('<mnemonic>', 'mnemonic')
+  .argument('<index>', 'index of key')
+  .action(async (mnemonic, index) => {
+    const masterSK = deriveKeyFromMnemonic(mnemonic);
+    const { signing } = deriveEth2ValidatorKeys(masterSK, index);
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { SecretKey } = require('@chainsafe/blst');
+    const sk = SecretKey.fromBytes(signing);
+    const pkHex = hexlify(sk.toPublicKey().toBytes());
+
+    const genesis = await fetchGenesis();
+    const genesisValidatorsRoot = getBytes(genesis.genesis_validators_root);
+
+    const headBlockHeader = await fetchBlockHeader('head');
+    const headSlot = Number(headBlockHeader.header.message.slot);
+
+    const { validator, index: validatorIndex } = await fetchValidator(pkHex);
+
+    if (validator.exit_epoch != FAR_FUTURE_EPOCH.toString()) {
+      logger.warn('Validator is already exiting');
+      return;
+    }
+
+    const spec = await fetchSpec();
+    const exitEpoch = String(Math.floor(headSlot / Number(spec.SLOTS_PER_EPOCH)));
+    const forkVersion = getBytes(spec.CAPELLA_FORK_VERSION);
+
+    const DOMAIN_VOLUNTARY_EXIT = Uint8Array.from([4, 0, 0, 0]);
+    const domain = computeDomain(DOMAIN_VOLUNTARY_EXIT, forkVersion, genesisValidatorsRoot);
+
+    const voluntaryExitMessage = {
+      epoch: exitEpoch,
+      validator_index: validatorIndex,
+    };
+
+    const voluntaryExit = {
+      message: voluntaryExitMessage,
+      signature: hexlify(signVoluntaryExit(domain, sk, VoluntaryExit.fromJson(voluntaryExitMessage))),
+    };
+
+    const result = await postToVoluntaryExitsPool(voluntaryExit);
+    logger.log(result);
+  });
+
+validators
   .command('slash-by-attestations')
-  .description('slash a validator by attestations ')
+  .description('slash a validator by attestations')
   .argument('<mnemonic>', 'mnemonic')
   .argument('<index>', 'index of key')
   .argument('<slot>', 'slot')
