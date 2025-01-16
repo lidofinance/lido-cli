@@ -66,11 +66,14 @@ export const fetchSpec = async () => {
   return result.data as Record<string, string>;
 };
 
-export const postToAttestationPool = async (body: unknown) => {
-  return await fetchCL(`eth/v1/beacon/pool/attester_slashings`, {
+export const postToAttestationPool = async (consensusVersion: string, body: unknown) => {
+  return await fetchCL(`eth/v2/beacon/pool/attester_slashings`, {
     body: stringify(body),
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Eth-Consensus-Version': consensusVersion,
+      'Content-Type': 'application/json',
+    },
   });
 };
 

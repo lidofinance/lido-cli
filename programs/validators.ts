@@ -21,7 +21,7 @@ import {
   signVoluntaryExit,
 } from '@consensus';
 import { getBytes, hexlify } from 'ethers';
-import { logger } from '@utils';
+import { detectConsensusVersionByEpoch, logger } from '@utils';
 
 const validators = program.command('validators').description('validators utils');
 
@@ -241,6 +241,7 @@ validators
       },
     };
 
-    const result = await postToAttestationPool(attesterSlashing);
+    const consensusVersion = detectConsensusVersionByEpoch(spec, Number(epoch));
+    const result = await postToAttestationPool(consensusVersion, attesterSlashing);
     logger.log(result);
   });
