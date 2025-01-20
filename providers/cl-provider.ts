@@ -16,6 +16,12 @@ export const fetchCL = async (url: string, init?: RequestInit) => {
   const response = await fetchCLResponse(url, init);
   return await response.json();
 };
+// invalid json response body at http://localhost:33001/eth/v1/beacon/pool/voluntary_exits reason: Unexpected end of JSON input
+// Because of this error, we just need to call endpoint.
+export const fetchCall = async (url: string, init?: RequestInit) => {
+  const response = await fetchCLResponse(url, init);
+  return response;
+};
 
 export const fetchAllValidators = async (stateId: string | number = 'head') => {
   const response = await fetchCLResponse(`eth/v1/beacon/states/${stateId}/validators`);
@@ -78,7 +84,7 @@ export const postToAttestationPool = async (consensusVersion: string, body: unkn
 };
 
 export const postToVoluntaryExitsPool = async (body: unknown) => {
-  return await fetchCL(`eth/v1/beacon/pool/voluntary_exits`, {
+  return await fetchCall(`eth/v1/beacon/pool/voluntary_exits`, {
     body: stringify(body),
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

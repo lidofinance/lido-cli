@@ -173,7 +173,7 @@ validators
     };
 
     const result = await postToVoluntaryExitsPool(voluntaryExit);
-    logger.log(result);
+    logger.log(result.statusText);
   });
 
 validators
