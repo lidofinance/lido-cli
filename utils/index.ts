@@ -5,6 +5,7 @@ export * from './bool';
 export * from './call-tx';
 export * from './compare-calls';
 export * from './confirm-tx';
+export * from './consensus-version';
 export * from './contract';
 export * from './csv';
 export * from './deployemnt-tx';

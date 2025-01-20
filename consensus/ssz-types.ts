@@ -58,3 +58,11 @@ export const DepositMessage = new ContainerType(
   { pubkey: BLSPubkey, withdrawalCredentials: Bytes32, amount: UintNum64 },
   { typeName: 'DepositMessage', jsonCase: 'eth2' },
 );
+
+export const VoluntaryExit = new ContainerType(
+  {
+    epoch: UintBn64,
+    validatorIndex: ValidatorIndex,
+  },
+  { typeName: 'VoluntaryExit', jsonCase: 'eth2', cachePermanentRootStruct: true },
+);

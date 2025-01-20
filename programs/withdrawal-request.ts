@@ -207,16 +207,6 @@ withdrawal
   });
 
 withdrawal
-  .command('user-requests')
-  .description('returns user requests')
-  .option('-a, --address <string>', 'owner address', wallet.address)
-  .action(async (options) => {
-    const { address } = options;
-    const requests = await withdrawalRequestContract.getWithdrawalRequests(address);
-    logger.log('Requests', requests);
-  });
-
-withdrawal
   .command('max-batches')
   .description('returns max batches length')
   .action(async () => {

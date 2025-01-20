@@ -2,7 +2,7 @@ import { lstatSync } from 'fs';
 import { resolve } from 'path';
 import { envs } from './envs';
 import { getValueByPath } from '@utils';
-import { ZeroAddress } from 'ethers';
+import { Contract, ZeroAddress } from 'ethers';
 
 export const importConfigFile = (path?: string) => {
   const fullPath = resolve('configs', path ?? '');
@@ -63,6 +63,14 @@ export const getDeployedAddress = (...contractKeys: string[]) => {
 export const getOptionalDeployedAddress = (...contractKeys: string[]) => {
   try {
     return getDeployedAddress(...contractKeys);
+  } catch {
+    return ZeroAddress;
+  }
+};
+
+export const getOptionalMethodAddress = async (contract: Contract, methodName: string) => {
+  try {
+    return await contract[methodName]();
   } catch {
     return ZeroAddress;
   }
