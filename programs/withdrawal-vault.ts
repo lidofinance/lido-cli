@@ -32,5 +32,5 @@ withdrawalVault
   .description('replace proxy implementation address')
   .argument('<implementation>', 'new implementation')
   .action(async (implementation) => {
-    await authorizedCall(withdrawalVaultProxyContract, 'proxy_upgradeTo', [implementation]);
+    await authorizedCall(withdrawalVaultProxyContract, 'proxy_upgradeTo', [implementation, '0x']);
   });
