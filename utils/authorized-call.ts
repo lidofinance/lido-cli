@@ -41,7 +41,7 @@ export const authorizedCall = async (contract: Contract, method: string, args: u
 export const authorizedCallEOA = async (contract: Contract, method: string, args: unknown[] = []) => {
   const signerAddress = await getSignerAddress(contract);
 
-  await contract[method].staticCall(...args, { from: signerAddress });
+  await contract[method].staticCall(...attachFromAddressToArgs(args, signerAddress));
   printSuccess('EOA');
 
   await contractCallTxWithConfirm(contract, method, args);
@@ -74,8 +74,24 @@ export const authorizedCallAgent = async (contract: Contract, method: string, ar
 export const authorizedCallTest = async (contract: Contract, method: string, args: unknown[] = [], from: string) => {
   const provider = getProvider(contract);
   const contractWithoutSigner = contract.connect(provider) as Contract;
-  await contractWithoutSigner[method].staticCall(...args, { from });
+  await contractWithoutSigner[method].staticCall(...attachFromAddressToArgs(args, from));
   return true;
+};
+
+const attachFromAddressToArgs = (args: unknown[] = [], from: string) => {
+  const options = { from };
+
+  if (args.length === 0) {
+    return [options];
+  }
+
+  const lastArg = args[args.length - 1];
+
+  if (typeof lastArg !== 'object') {
+    return [...args, options];
+  }
+
+  return [...args.slice(0, -1), { ...lastArg, ...options }];
 };
 
 const printSuccess = (from: string) => {
