@@ -1,6 +1,6 @@
 import { program } from '@command';
 import { stakingRouterContract } from '@contracts';
-import { authorizedCall, logger } from '@utils';
+import { authorizedCall, logger, writeToFile } from '@utils';
 import { Result, parseEther } from 'ethers';
 import { addAccessControlSubCommands, addLogsCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
 import {
@@ -11,6 +11,7 @@ import {
 } from './staking-module';
 import Table from 'cli-table3';
 import chalk from 'chalk';
+import { fetchLidoModuleKeys, fetchLidoModuleOperators, fetchLidoModuleOperator, KAPIOperator } from '@providers';
 
 const ok = chalk.green.bold;
 const warn = chalk.yellow.bold;
@@ -315,6 +316,56 @@ router
 
     const sortedKeys = activeKeys.sort((a, b) => a.activeKeys - b.activeKeys);
     logger.table(sortedKeys);
+  });
+
+router
+  .command('operator-active-keys-kapi')
+  .argument('<module-id>', 'module id')
+  .argument('<node-operator-id>', 'node-operator-id')
+  .option('-f, --file-name <string>', 'file name to store result', 'active-keys.json')
+  .action(async (moduleId, nodeOperatorId, options) => {
+    const { fileName } = options;
+
+    const keys = await fetchLidoModuleKeys({ used: true, moduleId, nodeOperatorId });
+
+    const operator: KAPIOperator = await fetchLidoModuleOperator(moduleId, nodeOperatorId);
+
+    const operatorActiveKeys = keys.filter((key) => {
+      return (
+        key.index >= operator.stoppedValidators &&
+        key.moduleAddress == operator.moduleAddress &&
+        key.operatorIndex == operator.index
+      );
+    });
+    const jsonData = JSON.stringify(operatorActiveKeys, null, 2);
+
+    await writeToFile(fileName, jsonData);
+  });
+
+router
+  .command('active-keys-kapi')
+  .argument('<module-id>', 'module id')
+  .option('-f, --file-name <string>', 'file name to store result', 'active-keys.json')
+  .action(async (moduleId, options) => {
+    const { fileName } = options;
+
+    const keys = await fetchLidoModuleKeys({ used: true, moduleId });
+
+    const operators: KAPIOperator[] = await fetchLidoModuleOperators(moduleId);
+
+    const activeKeys = operators
+      .map(({ moduleAddress, stoppedValidators }) => {
+        const operatorActiveKeys = keys.filter((key) => {
+          return key.index >= stoppedValidators && key.moduleAddress == moduleAddress;
+        });
+
+        return operatorActiveKeys;
+      })
+      .flat();
+
+    const jsonData = JSON.stringify(activeKeys, null, 2);
+
+    await writeToFile(fileName, jsonData);
   });
 
 router
