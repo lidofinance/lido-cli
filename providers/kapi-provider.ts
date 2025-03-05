@@ -73,7 +73,7 @@ export const fetchModuleLidoKeys = async (keyOptions: KeysOptions) => {
   return result.data.keys as KAPIKey[];
 };
 
-export const fetchModuleLidoOperators = async (moduleId: number) => {
+export const fetchLidoModuleOperators = async (moduleId: number) => {
   if (!envs?.KEYS_API_PROVIDER) {
     throw new Error('KEYS_API_PROVIDER is not defined');
   }
@@ -90,7 +90,7 @@ export const fetchModuleLidoOperators = async (moduleId: number) => {
   return result.data.operators as KAPIOperator[];
 };
 
-export const fetchLidoOperator = async (moduleId: number, nodeOperatorId: number) => {
+export const fetchLidoModuleOperator = async (moduleId: number, nodeOperatorId: number) => {
   if (!envs?.KEYS_API_PROVIDER) {
     throw new Error('KEYS_API_PROVIDER is not defined');
   }
