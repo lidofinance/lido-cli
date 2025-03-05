@@ -43,7 +43,7 @@ export const fetchAllLidoKeys = async () => {
   return result.data as KAPIKey[];
 };
 
-export const fetchModuleLidoKeys = async (keyOptions: KeysOptions) => {
+export const fetchLidoModuleKeys = async (keyOptions: KeysOptions) => {
   if (!envs?.KEYS_API_PROVIDER) {
     throw new Error('KEYS_API_PROVIDER is not defined');
   }

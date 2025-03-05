@@ -11,7 +11,7 @@ import {
 } from './staking-module';
 import Table from 'cli-table3';
 import chalk from 'chalk';
-import { fetchModuleLidoKeys, fetchLidoModuleOperators, fetchLidoModuleOperator, KAPIOperator } from '@providers';
+import { fetchLidoModuleKeys, fetchLidoModuleOperators, fetchLidoModuleOperator, KAPIOperator } from '@providers';
 
 const ok = chalk.green.bold;
 const warn = chalk.yellow.bold;
@@ -326,7 +326,7 @@ router
   .action(async (moduleId, nodeOperatorId, options) => {
     const { fileName } = options;
 
-    const keys = await fetchModuleLidoKeys({ used: true, moduleId, nodeOperatorId });
+    const keys = await fetchLidoModuleKeys({ used: true, moduleId, nodeOperatorId });
 
     const operator: KAPIOperator = await fetchLidoModuleOperator(moduleId, nodeOperatorId);
 
@@ -349,7 +349,7 @@ router
   .action(async (moduleId, options) => {
     const { fileName } = options;
 
-    const keys = await fetchModuleLidoKeys({ used: true, moduleId });
+    const keys = await fetchLidoModuleKeys({ used: true, moduleId });
 
     const operators: KAPIOperator[] = await fetchLidoModuleOperators(moduleId);
 
