@@ -11,7 +11,7 @@ import {
 } from './staking-module';
 import Table from 'cli-table3';
 import chalk from 'chalk';
-import { fetchModuleLidoKeys, fetchModuleLidoOperators, KAPIOperator } from '@providers';
+import { fetchModuleLidoKeys, fetchModuleLidoOperators, fetchLidoOperator, KAPIOperator } from '@providers';
 
 const ok = chalk.green.bold;
 const warn = chalk.yellow.bold;
@@ -319,21 +319,44 @@ router
   });
 
 router
-  .command('active-keys-kapi')
+  .command('operator-active-keys-kapi')
   .argument('<module-id>', 'module id')
-  .option('-o, --node-operator-id <number>', 'node operator id')
+  .argument('<node-operator-id>', 'node-operator-id')
   .option('-f, --file-name <string>', 'file name to store result', 'active-keys.json')
-  .action(async (moduleId, options) => {
-    const { fileName, nodeOperatorId } = options;
+  .action(async (moduleId, nodeOperatorId, options) => {
+    const { fileName } = options;
 
     const keys = await fetchModuleLidoKeys({ used: true, moduleId, nodeOperatorId });
 
-    const operators: KAPIOperator[] = await fetchModuleLidoOperators(moduleId, nodeOperatorId);
+    const operator: KAPIOperator = await fetchLidoOperator(moduleId, nodeOperatorId);
+
+    const operatorActiveKeys = keys.filter((key) => {
+      return (
+        key.index >= operator.stoppedValidators &&
+        key.moduleAddress == operator.moduleAddress &&
+        key.operatorIndex == operator.index
+      );
+    });
+    const jsonData = JSON.stringify(operatorActiveKeys, null, 2);
+
+    await writeToFile(fileName, jsonData);
+  });
+
+router
+  .command('active-keys-kapi')
+  .argument('<module-id>', 'module id')
+  .option('-f, --file-name <string>', 'file name to store result', 'active-keys.json')
+  .action(async (moduleId, options) => {
+    const { fileName } = options;
+
+    const keys = await fetchModuleLidoKeys({ used: true, moduleId });
+
+    const operators: KAPIOperator[] = await fetchModuleLidoOperators(moduleId);
 
     const activeKeys = operators
-      .map(({ moduleAddress, index, stoppedValidators }) => {
+      .map(({ moduleAddress, stoppedValidators }) => {
         const operatorActiveKeys = keys.filter((key) => {
-          return key.index >= stoppedValidators && key.moduleAddress == moduleAddress && key.operatorIndex == index;
+          return key.index >= stoppedValidators && key.moduleAddress == moduleAddress;
         });
 
         return operatorActiveKeys;

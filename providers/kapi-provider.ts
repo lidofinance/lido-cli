@@ -73,7 +73,7 @@ export const fetchModuleLidoKeys = async (keyOptions: KeysOptions) => {
   return result.data.keys as KAPIKey[];
 };
 
-export const fetchModuleLidoOperators = async (moduleId: number, nodeOperatorId?: number) => {
+export const fetchModuleLidoOperators = async (moduleId: number) => {
   if (!envs?.KEYS_API_PROVIDER) {
     throw new Error('KEYS_API_PROVIDER is not defined');
   }
@@ -82,16 +82,27 @@ export const fetchModuleLidoOperators = async (moduleId: number, nodeOperatorId?
     headers: { 'Content-Type': 'application/json' },
   };
 
-  const url = nodeOperatorId
-    ? `${envs.KEYS_API_PROVIDER}/v1/modules/${moduleId}/operators/${nodeOperatorId}`
-    : `${envs.KEYS_API_PROVIDER}/v1/modules/${moduleId}/operators`;
+  const url = `${envs.KEYS_API_PROVIDER}/v1/modules/${moduleId}/operators`;
 
   const response = await fetch(url, options);
   const result = await response.json();
 
-  if (result?.data?.operators) return result.data.operators as KAPIOperator[];
+  return result.data.operators as KAPIOperator[];
+};
 
-  if (result?.data?.operator) return [result.data.operator] as KAPIOperator[];
+export const fetchLidoOperator = async (moduleId: number, nodeOperatorId: number) => {
+  if (!envs?.KEYS_API_PROVIDER) {
+    throw new Error('KEYS_API_PROVIDER is not defined');
+  }
 
-  throw new Error('Invalid response');
+  const options = {
+    headers: { 'Content-Type': 'application/json' },
+  };
+
+  const url = `${envs.KEYS_API_PROVIDER}/v1/modules/${moduleId}/operators/${nodeOperatorId}`;
+
+  const response = await fetch(url, options);
+  const result = await response.json();
+
+  return result.data.operator as KAPIOperator;
 };
