@@ -1,5 +1,5 @@
 import { program } from '@command';
-import { csAccountingContract, csModuleContract, getCSMVersion, permissionslessGateContract } from '@contracts';
+import { csAccountingContract, csModuleContract, getCSMVersion, permissionlessGateContract } from '@contracts';
 import { addAccessControlSubCommands, addLogsCommands, addParsingCommands, addPauseUntilSubCommands } from './common';
 import {
   contractCallTxWithConfirm,
@@ -77,7 +77,7 @@ csm
         { value },
       ]);
     } else {
-      await contractCallTxWithConfirm(permissionslessGateContract, 'addNodeOperatorETH', [
+      await contractCallTxWithConfirm(permissionlessGateContract, 'addNodeOperatorETH', [
         keysCount,
         publicKeys,
         signatures,
@@ -123,7 +123,7 @@ csm
         { value },
       ]);
     } else {
-      await contractCallTxWithConfirm(permissionslessGateContract, 'addNodeOperatorETH', [
+      await contractCallTxWithConfirm(permissionlessGateContract, 'addNodeOperatorETH', [
         keysCount,
         publicKeys,
         signatures,

@@ -19,8 +19,8 @@ export const csFeeDistributorContract = new Contract(csFeeDistributorAddress, fe
 export const csFeeOracleAddress = getOptionalDeployedAddress('csm.feeOracle.address');
 export const csFeeOracleContract = new Contract(csFeeOracleAddress, feeOracleAbi, wallet);
 
-export const permissionslessGateAddress = getOptionalDeployedAddress('csm.permissionslessGate.address');
-export const permissionslessGateContract = new Contract(permissionslessGateAddress, permissionlessGateAbi, wallet);
+export const permissionlessGateAddress = getOptionalDeployedAddress('csm.permissionlessGate.address');
+export const permissionlessGateContract = new Contract(permissionlessGateAddress, permissionlessGateAbi, wallet);
 
 export async function getCSMVersion(provider: Provider | null): Promise<bigint> {
   if (!provider) throw new Error('No provider available for `getCSMVersion`');
