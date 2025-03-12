@@ -63,15 +63,7 @@ csm
 
     const csmVersion = await getCSMVersion(wallet.provider);
 
-    let curveId;
-
-    if (csmVersion < 2) {
-      //It should also work for CSM v2 in general.
-      curveId = await csAccountingContract.DEFAULT_BOND_CURVE_ID();
-    } else {
-      curveId = await permissionslessGateContract.CURVE_ID();
-    }
-
+    const curveId = await csAccountingContract.DEFAULT_BOND_CURVE_ID();
     const value = await csAccountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
 
     if (csmVersion < 2) {
@@ -113,14 +105,7 @@ csm
 
     const csmVersion = await getCSMVersion(wallet.provider);
 
-    let curveId;
-
-    if (csmVersion < 2) {
-      //It should also work for CSM v2 in general.
-      curveId = await csAccountingContract.DEFAULT_BOND_CURVE_ID();
-    } else {
-      curveId = await permissionslessGateContract.CURVE_ID();
-    }
+    const curveId = await csAccountingContract.DEFAULT_BOND_CURVE_ID();
     const keysCount = depositData.length;
     const value = await csAccountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
 
