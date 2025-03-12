@@ -2,7 +2,7 @@ import {
   aragonAgentAddress,
   burnerAddress,
   burnerContract,
-  getCSMVersion,
+  getVersion,
   stakingRouterAddress,
   stakingRouterContract,
 } from '@contracts';
@@ -42,7 +42,7 @@ export const devnetCSMStart = async () => {
     'function addStakingModule(string,address,uint256,uint256,uint256,uint256,uint256,uint256)',
   ]);
 
-  const csmVersion = await getCSMVersion(provider, CS_MODULE_ADDRESS);
+  const csmVersion = await getVersion(provider, CS_MODULE_ADDRESS);
 
   /**
    * CSM
