@@ -61,7 +61,7 @@ csm
     const { keysCount, publicKeys, signatures, managerAddress, rewardAddress, extendedManagerPermissions, referrer } =
       options;
 
-    const csmVersion = await getCSMVersion();
+    const csmVersion = await getCSMVersion(wallet.provider);
 
     let curveId;
 
@@ -111,7 +111,7 @@ csm
     const depositData: DepositData[] = require(filePath);
     await supplementAndVerifyDepositDataArray(depositData);
 
-    const csmVersion = await getCSMVersion();
+    const csmVersion = await getCSMVersion(wallet.provider);
 
     let curveId;
 

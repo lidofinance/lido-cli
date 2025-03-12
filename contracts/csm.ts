@@ -1,4 +1,4 @@
-import { Contract } from 'ethers';
+import { Contract, Provider } from 'ethers';
 import { wallet } from '@providers';
 import { getOptionalDeployedAddress } from '@configs';
 import moduleAbi from 'abi/csm/CSModule.json';
@@ -22,12 +22,10 @@ export const csFeeOracleContract = new Contract(csFeeOracleAddress, feeOracleAbi
 export const permissionslessGateAddress = getOptionalDeployedAddress('csm.permissionslessGateAddress.address');
 export const permissionslessGateContract = new Contract(permissionslessGateAddress, permissionlessGateAbi, wallet);
 
-export async function getCSMVersion(): Promise<bigint> {
-  const { provider } = wallet;
-  if (!provider) throw new Error(`No provider available for wallet=${wallet}`);
-
+export async function getCSMVersion(provider: Provider | null, module?: string): Promise<bigint> {
+  if (!provider) throw new Error('No provider available for `getCSMVersion`');
   //  See Initializable.sol
   const INITIALIZABLE_STORAGE = BigInt('0xf0c57e16840df040f15088dc2f81fe391c3923bec73e23a9662efc9c229c6a00');
-  const slotValue = await provider.getStorage(csModuleAddress, INITIALIZABLE_STORAGE);
+  const slotValue = await provider.getStorage(module ?? csModuleAddress, INITIALIZABLE_STORAGE);
   return BigInt(slotValue) & (2n ** 64n - 1n);
 }
