@@ -76,15 +76,27 @@ export const devnetCSMStart = async () => {
   });
   calls.push(addStakingModuleScript);
 
-  items.push(
-    `${itemIdx++}. Grant REQUEST_BURN_SHARES_ROLE role to CSAccounting contract with address ${CS_ACCOUNTING_ADDRESS}`,
-  );
-  const burnerRequestBurnRoleHash = await getRoleHash(burnerContract, 'REQUEST_BURN_SHARES_ROLE');
-  const [, requestBurnRoleGrantScript] = encodeFromAgent({
-    to: burnerAddress,
-    data: iface.encodeFunctionData('grantRole', [burnerRequestBurnRoleHash, CS_ACCOUNTING_ADDRESS]),
-  });
-  calls.push(requestBurnRoleGrantScript);
+  if (csmVersion < 2) {
+    items.push(
+      `${itemIdx++}. Grant REQUEST_BURN_SHARES_ROLE role to CSAccounting contract with address ${CS_ACCOUNTING_ADDRESS}`,
+    );
+    const burnerRequestBurnRoleHash = await getRoleHash(burnerContract, 'REQUEST_BURN_SHARES_ROLE');
+    const [, requestBurnRoleGrantScript] = encodeFromAgent({
+      to: burnerAddress,
+      data: iface.encodeFunctionData('grantRole', [burnerRequestBurnRoleHash, CS_ACCOUNTING_ADDRESS]),
+    });
+    calls.push(requestBurnRoleGrantScript);
+  } else {
+    items.push(
+      `${itemIdx++}. Grant REQUEST_BURN_MY_STETH_ROLE role to CSAccounting contract with address ${CS_ACCOUNTING_ADDRESS}`,
+    );
+    const burnerRequestBurnRoleHash = await getRoleHash(burnerContract, 'REQUEST_BURN_MY_STETH_ROLE');
+    const [, requestBurnRoleGrantScript] = encodeFromAgent({
+      to: burnerAddress,
+      data: iface.encodeFunctionData('grantRole', [burnerRequestBurnRoleHash, CS_ACCOUNTING_ADDRESS]),
+    });
+    calls.push(requestBurnRoleGrantScript);
+  }
 
   items.push(`${itemIdx++}. Grant RESUME role to agent ${aragonAgentAddress}`);
   const csModuleContract = new Contract(CS_MODULE_ADDRESS, iface, provider);
