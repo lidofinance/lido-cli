@@ -1,7 +1,26 @@
 [
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [
+      {
+        "name": "_sharesAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPooledEthBySharesRoundUp",
+    "outputs": [
+      {
+        "name": "etherAmount",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
     "name": "name",
     "outputs": [
       {
@@ -38,7 +57,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "totalSupply",
     "outputs": [
       {
@@ -98,7 +117,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "decimals",
     "outputs": [
       {
@@ -112,7 +131,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getTotalPooledEther",
     "outputs": [
       {
@@ -149,7 +168,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "isStopped",
     "outputs": [
       {
@@ -251,7 +270,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "symbol",
     "outputs": [
       {
@@ -311,7 +330,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getTotalShares",
     "outputs": [
       {
@@ -416,13 +435,13 @@
   },
   {
     "anonymous": false,
-    "inputs": [ ],
+    "inputs": [],
     "name": "Stopped",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [ ],
+    "inputs": [],
     "name": "Resumed",
     "type": "event"
   },

@@ -1,39 +1,44 @@
 [
   {
-    "constant": false,
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "_reportTimestamp",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "_timeElapsed",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "_preTotalShares",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "_preTotalEther",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "_postTotalShares",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "_postTotalEther",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "_sharesMintedAsFees",
         "type": "uint256"
       }
     ],
     "name": "handlePostTokenRebase",
-    "outputs": [ ],
-    "payable": false,
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   }

@@ -16,7 +16,7 @@
       }
     ],
     "name": "finalizeDAO",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -30,7 +30,7 @@
       }
     ],
     "name": "setOwner",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -48,7 +48,7 @@
       }
     ],
     "name": "deployLidoAPM",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -86,7 +86,7 @@
       }
     ],
     "name": "issueTokens",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -104,7 +104,7 @@
       }
     ],
     "name": "cancelAndTransferDomain",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -126,7 +126,7 @@
       }
     ],
     "name": "newDAO",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -164,14 +164,14 @@
       }
     ],
     "name": "createRepos",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getConfig",
     "outputs": [
       {
@@ -201,6 +201,32 @@
     ],
     "payable": false,
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_agentImpl",
+        "type": "address"
+      },
+      {
+        "name": "_financeImpl",
+        "type": "address"
+      },
+      {
+        "name": "_tokenManagerImpl",
+        "type": "address"
+      },
+      {
+        "name": "_votingImpl",
+        "type": "address"
+      }
+    ],
+    "name": "createStdAragonRepos",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -248,7 +274,7 @@
   },
   {
     "anonymous": false,
-    "inputs": [ ],
+    "inputs": [],
     "name": "TmplReposCreated",
     "type": "event"
   },
@@ -264,6 +290,11 @@
         "indexed": false,
         "name": "appId",
         "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "name": "initializeData",
+        "type": "bytes"
       }
     ],
     "name": "TmplAppInstalled",
@@ -300,7 +331,7 @@
   },
   {
     "anonymous": false,
-    "inputs": [ ],
+    "inputs": [],
     "name": "TmplDaoFinalized",
     "type": "event"
   }

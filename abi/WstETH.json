@@ -61,7 +61,7 @@
     "type": "event"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DOMAIN_SEPARATOR",
     "outputs": [
       {
@@ -141,7 +141,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "decimals",
     "outputs": [
       {
@@ -240,7 +240,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "name",
     "outputs": [
       {
@@ -310,12 +310,12 @@
       }
     ],
     "name": "permit",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "stETH",
     "outputs": [
       {
@@ -328,7 +328,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "stEthPerToken",
     "outputs": [
       {
@@ -341,7 +341,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "symbol",
     "outputs": [
       {
@@ -354,7 +354,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "tokensPerStEth",
     "outputs": [
       {
@@ -367,7 +367,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "totalSupply",
     "outputs": [
       {

@@ -77,6 +77,21 @@
             "internalType": "address",
             "name": "accounting",
             "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "predepositGuarantee",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "wstETH",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "vaultHub",
+            "type": "address"
           }
         ],
         "internalType": "struct LidoLocator.Config",
@@ -88,12 +103,12 @@
     "type": "constructor"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ZeroAddress",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "accounting",
     "outputs": [
       {
@@ -106,7 +121,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "accountingOracle",
     "outputs": [
       {
@@ -119,7 +134,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "burner",
     "outputs": [
       {
@@ -132,7 +147,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "coreComponents",
     "outputs": [
       {
@@ -170,7 +185,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "depositSecurityModule",
     "outputs": [
       {
@@ -183,7 +198,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "elRewardsVault",
     "outputs": [
       {
@@ -196,7 +211,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "legacyOracle",
     "outputs": [
       {
@@ -209,7 +224,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "lido",
     "outputs": [
       {
@@ -222,7 +237,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "oracleDaemonConfig",
     "outputs": [
       {
@@ -235,7 +250,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "oracleReportComponents",
     "outputs": [
       {
@@ -267,13 +282,18 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "oracleReportSanityChecker",
     "outputs": [
       {
@@ -286,7 +306,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "postTokenRebaseReceiver",
     "outputs": [
       {
@@ -299,7 +319,20 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
+    "name": "predepositGuarantee",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "stakingRouter",
     "outputs": [
       {
@@ -312,7 +345,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "treasury",
     "outputs": [
       {
@@ -325,7 +358,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "validatorsExitBusOracle",
     "outputs": [
       {
@@ -338,7 +371,20 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
+    "name": "vaultHub",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "withdrawalQueue",
     "outputs": [
       {
@@ -351,8 +397,21 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "withdrawalVault",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "wstETH",
     "outputs": [
       {
         "internalType": "address",

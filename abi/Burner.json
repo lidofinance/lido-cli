@@ -8,7 +8,7 @@
       },
       {
         "internalType": "address",
-        "name": "_treasury",
+        "name": "_locator",
         "type": "address"
       },
       {
@@ -31,8 +31,8 @@
     "type": "constructor"
   },
   {
-    "inputs": [ ],
-    "name": "AppAuthLidoFailed",
+    "inputs": [],
+    "name": "AppAuthFailed",
     "type": "error"
   },
   {
@@ -52,12 +52,12 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DirectETHTransfer",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "StETHRecoveryWrongFunc",
     "type": "error"
   },
@@ -73,12 +73,12 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ZeroBurnAmount",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ZeroRecoveryAmount",
     "type": "error"
   },
@@ -289,7 +289,7 @@
     "type": "event"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
@@ -302,7 +302,33 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
+    "name": "LIDO",
+    "outputs": [
+      {
+        "internalType": "contract ILido",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "LOCATOR",
+    "outputs": [
+      {
+        "internalType": "contract ILidoLocator",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "REQUEST_BURN_MY_STETH_ROLE",
     "outputs": [
       {
@@ -315,39 +341,13 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "REQUEST_BURN_SHARES_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [ ],
-    "name": "STETH",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [ ],
-    "name": "TREASURY",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -362,12 +362,12 @@
       }
     ],
     "name": "commitSharesToBurn",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getCoverSharesBurnt",
     "outputs": [
       {
@@ -380,7 +380,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getExcessStETH",
     "outputs": [
       {
@@ -393,7 +393,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getNonCoverSharesBurnt",
     "outputs": [
       {
@@ -468,7 +468,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getSharesRequestedToBurn",
     "outputs": [
       {
@@ -499,7 +499,7 @@
       }
     ],
     "name": "grantRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -541,7 +541,7 @@
       }
     ],
     "name": "recoverERC20",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -559,14 +559,14 @@
       }
     ],
     "name": "recoverERC721",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "recoverExcessStETH",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -584,7 +584,7 @@
       }
     ],
     "name": "renounceRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -597,7 +597,7 @@
       }
     ],
     "name": "requestBurnMyStETH",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -610,7 +610,7 @@
       }
     ],
     "name": "requestBurnMyStETHForCover",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -628,7 +628,7 @@
       }
     ],
     "name": "requestBurnShares",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -646,7 +646,7 @@
       }
     ],
     "name": "requestBurnSharesForCover",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -664,7 +664,7 @@
       }
     ],
     "name": "revokeRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },

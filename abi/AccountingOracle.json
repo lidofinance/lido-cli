@@ -8,11 +8,6 @@
       },
       {
         "internalType": "address",
-        "name": "lido",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "legacyOracle",
         "type": "address"
       },
@@ -31,47 +26,42 @@
     "type": "constructor"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "AddressCannotBeSame",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "AddressCannotBeZero",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "AdminCannotBeZero",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "CannotSubmitExtraDataBeforeMainData",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ExtraDataAlreadyProcessed",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ExtraDataHashCannotBeZeroForNonEmptyData",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ExtraDataItemsCountCannotBeZeroForNonEmptyData",
     "type": "error"
   },
   {
-    "inputs": [ ],
-    "name": "ExtraDataListOnlySupportsSingleTx",
-    "type": "error"
-  },
-  {
-    "inputs": [ ],
+    "inputs": [],
     "name": "HashCannotBeZero",
     "type": "error"
   },
@@ -103,12 +93,12 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InvalidContractVersionIncrement",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InvalidExitedValidatorsData",
     "type": "error"
   },
@@ -135,27 +125,27 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "LegacyOracleCannotBeZero",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "LidoCannotBeZero",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "LidoLocatorCannotBeZero",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NoConsensusReportToProcess",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NonZeroContractVersionOnInit",
     "type": "error"
   },
@@ -171,7 +161,7 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "RefSlotAlreadyProcessing",
     "type": "error"
   },
@@ -208,22 +198,22 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "SecondsPerSlotCannotBeZero",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "SenderIsNotTheConsensusContract",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "SenderNotAllowed",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "UnexpectedChainConfig",
     "type": "error"
   },
@@ -383,7 +373,7 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "VersionCannotBeSame",
     "type": "error"
   },
@@ -640,7 +630,7 @@
     "type": "event"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
@@ -653,7 +643,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "EXTRA_DATA_FORMAT_EMPTY",
     "outputs": [
       {
@@ -666,7 +656,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "EXTRA_DATA_FORMAT_LIST",
     "outputs": [
       {
@@ -679,7 +669,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "EXTRA_DATA_TYPE_EXITED_VALIDATORS",
     "outputs": [
       {
@@ -692,7 +682,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "EXTRA_DATA_TYPE_STUCK_VALIDATORS",
     "outputs": [
       {
@@ -705,7 +695,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "GENESIS_TIME",
     "outputs": [
       {
@@ -718,11 +708,11 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "LEGACY_ORACLE",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract ILegacyOracle",
         "name": "",
         "type": "address"
       }
@@ -731,20 +721,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
-    "name": "LIDO",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [ ],
+    "inputs": [],
     "name": "LOCATOR",
     "outputs": [
       {
@@ -757,7 +734,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "MANAGE_CONSENSUS_CONTRACT_ROLE",
     "outputs": [
       {
@@ -770,7 +747,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "MANAGE_CONSENSUS_VERSION_ROLE",
     "outputs": [
       {
@@ -783,7 +760,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "SECONDS_PER_SLOT",
     "outputs": [
       {
@@ -796,7 +773,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "SUBMIT_DATA_ROLE",
     "outputs": [
       {
@@ -817,12 +794,25 @@
       }
     ],
     "name": "discardConsensusReport",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "consensusVersion",
+        "type": "uint256"
+      }
+    ],
+    "name": "finalizeUpgrade_v2",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "getConsensusContract",
     "outputs": [
       {
@@ -835,7 +825,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getConsensusReport",
     "outputs": [
       {
@@ -863,7 +853,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getConsensusVersion",
     "outputs": [
       {
@@ -876,7 +866,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getContractVersion",
     "outputs": [
       {
@@ -889,7 +879,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getLastProcessingRefSlot",
     "outputs": [
       {
@@ -902,7 +892,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getProcessingState",
     "outputs": [
       {
@@ -1037,7 +1027,7 @@
       }
     ],
     "name": "grantRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1084,7 +1074,7 @@
       }
     ],
     "name": "initialize",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1112,7 +1102,7 @@
       }
     ],
     "name": "initializeWithoutMigration",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1130,7 +1120,7 @@
       }
     ],
     "name": "renounceRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1148,7 +1138,7 @@
       }
     ],
     "name": "revokeRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1161,7 +1151,7 @@
       }
     ],
     "name": "setConsensusContract",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1174,7 +1164,7 @@
       }
     ],
     "name": "setConsensusVersion",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1197,7 +1187,7 @@
       }
     ],
     "name": "submitConsensusReport",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1256,14 +1246,19 @@
             "type": "uint256[]"
           },
           {
-            "internalType": "uint256",
-            "name": "simulatedShareRate",
-            "type": "uint256"
-          },
-          {
             "internalType": "bool",
             "name": "isBunkerMode",
             "type": "bool"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "vaultsValues",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "int256[]",
+            "name": "vaultsInOutDeltas",
+            "type": "int256[]"
           },
           {
             "internalType": "uint256",
@@ -1292,14 +1287,14 @@
       }
     ],
     "name": "submitReportData",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "submitReportExtraDataEmpty",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1307,12 +1302,12 @@
     "inputs": [
       {
         "internalType": "bytes",
-        "name": "items",
+        "name": "data",
         "type": "bytes"
       }
     ],
     "name": "submitReportExtraDataList",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
