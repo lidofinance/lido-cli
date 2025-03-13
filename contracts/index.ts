@@ -26,6 +26,7 @@ export * from './staking-module';
 export * from './staking-router';
 export * from './token-manager';
 export * from './unlimited-stake';
+export * from './vault-hub';
 export * from './voting';
 export * from './withdrawal-request';
 export * from './wsteth';

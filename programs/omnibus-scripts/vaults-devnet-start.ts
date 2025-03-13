@@ -1,11 +1,11 @@
 import {
-  accountingContract,
   consensusForAccountingContract,
   consensusForExitBusContract,
   norContract,
   oracleConfigContract,
   sanityCheckerContract,
   stakingRouterContract,
+  vaultHubContract,
 } from '@contracts';
 import { wallet } from '@providers';
 import { votingNewVote } from '@scripts';
@@ -15,7 +15,7 @@ import {
   encodeFromAgentGrantRolesAccessControlWithConfirmed,
   encodeScriptsVEBOResumeIfPaused,
   encodeScriptsWQResumeIfPaused,
-  promptScriptsAddingGuardiansFromAgentIfEmpty,
+  // promptScriptsAddingGuardiansFromAgentIfEmpty,
   promptScriptsAOInitialEpoch,
   promptScriptsAOMembers,
   promptScriptsLidoResumeIfStopped,
@@ -121,10 +121,10 @@ const promptScriptsAO = async () => {
   return [...aoMembersScripts, ...aoInitialEpochScripts];
 };
 
-const promptScriptsDSM = async () => {
-  const guardiansScripts = await promptScriptsAddingGuardiansFromAgentIfEmpty(DEFAULT_CONFIG.DSM_GUARDIANS_MEMBERS);
-  return [...guardiansScripts];
-};
+// const promptScriptsDSM = async () => {
+//   const guardiansScripts = await promptScriptsAddingGuardiansFromAgentIfEmpty(DEFAULT_CONFIG.DSM_GUARDIANS_MEMBERS);
+//   return [...guardiansScripts];
+// };
 
 const promptScriptsRoles = async () => {
   const beneficiary = await promptRolesBeneficiary(DEFAULT_CONFIG.ROLES_BENEFICIARY);
@@ -148,9 +148,9 @@ const promptScriptsRoles = async () => {
     beneficiary,
   );
   const vaultHubScripts = await encodeFromAgentGrantRolesAccessControlWithConfirmed(
-    'Vault hub (Accounting)',
+    'Vault hub',
     VAULT_MANAGER_ROLES,
-    accountingContract,
+    vaultHubContract,
     beneficiary,
   );
   const oracleConfigScripts = await encodeFromAgentGrantRolesAccessControlWithConfirmed(
