@@ -1,6 +1,6 @@
 [
   {
-    "inputs": [],
+    "inputs": [ ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
@@ -65,12 +65,12 @@
       }
     ],
     "name": "deposit",
-    "outputs": [],
+    "outputs": [ ],
     "stateMutability": "payable",
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [ ],
     "name": "get_deposit_count",
     "outputs": [
       {
@@ -83,7 +83,7 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [ ],
     "name": "get_deposit_root",
     "outputs": [
       {

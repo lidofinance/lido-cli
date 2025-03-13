@@ -21,7 +21,7 @@
     "type": "constructor"
   },
   {
-    "inputs": [],
+    "inputs": [ ],
     "name": "AccessControlBadConfirmation",
     "type": "error"
   },
@@ -218,7 +218,7 @@
     "type": "error"
   },
   {
-    "inputs": [],
+    "inputs": [ ],
     "name": "InvalidInitialization",
     "type": "error"
   },
@@ -271,7 +271,7 @@
     "type": "error"
   },
   {
-    "inputs": [],
+    "inputs": [ ],
     "name": "NotInitializing",
     "type": "error"
   },
@@ -356,7 +356,7 @@
     "type": "error"
   },
   {
-    "inputs": [],
+    "inputs": [ ],
     "name": "TooManyVaults",
     "type": "error"
   },
@@ -608,7 +608,7 @@
     "type": "event"
   },
   {
-    "inputs": [],
+    "inputs": [ ],
     "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
@@ -621,7 +621,7 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [ ],
     "name": "LIDO",
     "outputs": [
       {
@@ -634,7 +634,7 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [ ],
     "name": "LIDO_LOCATOR",
     "outputs": [
       {
@@ -647,7 +647,7 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [ ],
     "name": "VAULT_MASTER_ROLE",
     "outputs": [
       {
@@ -660,7 +660,7 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [ ],
     "name": "VAULT_REGISTRY_ROLE",
     "outputs": [
       {
@@ -681,7 +681,7 @@
       }
     ],
     "name": "addFactory",
-    "outputs": [],
+    "outputs": [ ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -694,7 +694,7 @@
       }
     ],
     "name": "addImpl",
-    "outputs": [],
+    "outputs": [ ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -712,7 +712,7 @@
       }
     ],
     "name": "burnStethBackedByVault",
-    "outputs": [],
+    "outputs": [ ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -745,7 +745,7 @@
       }
     ],
     "name": "connectVault",
-    "outputs": [],
+    "outputs": [ ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -758,7 +758,7 @@
       }
     ],
     "name": "disconnectVault",
-    "outputs": [],
+    "outputs": [ ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -771,7 +771,7 @@
       }
     ],
     "name": "forceRebalance",
-    "outputs": [],
+    "outputs": [ ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -851,7 +851,7 @@
       }
     ],
     "name": "grantRole",
-    "outputs": [],
+    "outputs": [ ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -916,7 +916,7 @@
       }
     ],
     "name": "handleOracleReport",
-    "outputs": [],
+    "outputs": [ ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -953,7 +953,7 @@
       }
     ],
     "name": "initialize",
-    "outputs": [],
+    "outputs": [ ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -976,14 +976,14 @@
       }
     ],
     "name": "mintStethBackedByVault",
-    "outputs": [],
+    "outputs": [ ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [ ],
     "name": "rebalance",
-    "outputs": [],
+    "outputs": [ ],
     "stateMutability": "payable",
     "type": "function"
   },
@@ -1001,7 +1001,7 @@
       }
     ],
     "name": "renounceRole",
-    "outputs": [],
+    "outputs": [ ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1019,7 +1019,7 @@
       }
     ],
     "name": "revokeRole",
-    "outputs": [],
+    "outputs": [ ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1199,7 +1199,7 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [ ],
     "name": "stETH",
     "outputs": [
       {
@@ -1244,12 +1244,12 @@
       }
     ],
     "name": "transferAndBurnStethBackedByVault",
-    "outputs": [],
+    "outputs": [ ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [ ],
     "name": "treasury",
     "outputs": [
       {
@@ -1383,7 +1383,7 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [ ],
     "name": "vaultsCount",
     "outputs": [
       {

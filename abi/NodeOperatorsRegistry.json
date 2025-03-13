@@ -1,7 +1,7 @@
 [
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "hasInitialized",
     "outputs": [
       {
@@ -30,7 +30,7 @@
       }
     ],
     "name": "updateTargetValidatorsLimits",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -56,14 +56,14 @@
       }
     ],
     "name": "addSigningKeys",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "getType",
     "outputs": [
       {
@@ -115,7 +115,7 @@
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "getRecoveryVault",
     "outputs": [
       {
@@ -202,7 +202,7 @@
       }
     ],
     "name": "removeSigningKeysOperatorBH",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -239,7 +239,7 @@
       }
     ],
     "name": "setNodeOperatorName",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -284,7 +284,7 @@
       }
     ],
     "name": "invalidateReadyToDepositKeysRange",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -306,7 +306,7 @@
       }
     ],
     "name": "initialize",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -320,23 +320,23 @@
       }
     ],
     "name": "setStuckPenaltyDelay",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": false,
-    "inputs": [],
+    "inputs": [ ],
     "name": "finalizeUpgrade_v3",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "getStuckPenaltyDelay",
     "outputs": [
       {
@@ -361,14 +361,14 @@
       }
     ],
     "name": "removeSigningKey",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "getRewardDistributionState",
     "outputs": [
       {
@@ -397,7 +397,7 @@
       }
     ],
     "name": "removeSigningKeys",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -430,7 +430,7 @@
       }
     ],
     "name": "deactivateNodeOperator",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -456,7 +456,7 @@
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "STAKING_ROUTER_ROLE",
     "outputs": [
       {
@@ -489,14 +489,14 @@
       }
     ],
     "name": "addSigningKeysOperatorBH",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "appId",
     "outputs": [
       {
@@ -510,7 +510,7 @@
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "getActiveNodeOperatorsCount",
     "outputs": [
       {
@@ -547,7 +547,7 @@
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "getContractVersion",
     "outputs": [
       {
@@ -561,7 +561,7 @@
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "getInitializationBlock",
     "outputs": [
       {
@@ -601,14 +601,14 @@
       }
     ],
     "name": "onRewardsMinted",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "MANAGE_NODE_OPERATOR_ROLE",
     "outputs": [
       {
@@ -622,18 +622,18 @@
   },
   {
     "constant": false,
-    "inputs": [],
+    "inputs": [ ],
     "name": "distributeReward",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": false,
-    "inputs": [],
+    "inputs": [ ],
     "name": "onWithdrawalCredentialsChanged",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -647,7 +647,7 @@
       }
     ],
     "name": "activateNodeOperator",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -665,7 +665,7 @@
       }
     ],
     "name": "setNodeOperatorRewardAddress",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -734,14 +734,14 @@
       }
     ],
     "name": "finalizeUpgrade_v2",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "getStakingModuleSummary",
     "outputs": [
       {
@@ -774,7 +774,7 @@
       }
     ],
     "name": "updateExitedValidatorsCount",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -792,7 +792,7 @@
       }
     ],
     "name": "updateStuckValidatorsCount",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -806,7 +806,7 @@
       }
     ],
     "name": "transferToVault",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -851,14 +851,14 @@
       }
     ],
     "name": "updateRefundedValidatorsCount",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "getEVMScriptRegistry",
     "outputs": [
       {
@@ -872,7 +872,7 @@
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "getNodeOperatorsCount",
     "outputs": [
       {
@@ -897,7 +897,7 @@
       }
     ],
     "name": "setNodeOperatorStakingLimit",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -982,7 +982,7 @@
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "MAX_NODE_OPERATOR_NAME_LENGTH",
     "outputs": [
       {
@@ -1007,7 +1007,7 @@
       }
     ],
     "name": "decreaseVettedSigningKeysCount",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1041,7 +1041,7 @@
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "getKeysOpIndex",
     "outputs": [
       {
@@ -1055,7 +1055,7 @@
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "getNonce",
     "outputs": [
       {
@@ -1069,7 +1069,7 @@
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "kernel",
     "outputs": [
       {
@@ -1083,7 +1083,7 @@
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "getLocator",
     "outputs": [
       {
@@ -1097,7 +1097,7 @@
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "SET_NODE_OPERATOR_LIMIT_ROLE",
     "outputs": [
       {
@@ -1130,7 +1130,7 @@
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "isPetrified",
     "outputs": [
       {
@@ -1144,7 +1144,7 @@
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "MAX_STUCK_PENALTY_DELAY",
     "outputs": [
       {
@@ -1158,16 +1158,16 @@
   },
   {
     "constant": false,
-    "inputs": [],
+    "inputs": [ ],
     "name": "onExitedAndStuckValidatorsCountsUpdated",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "MAX_NODE_OPERATORS_COUNT",
     "outputs": [
       {
@@ -1192,7 +1192,7 @@
       }
     ],
     "name": "removeSigningKeyOperatorBH",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1214,14 +1214,14 @@
       }
     ],
     "name": "unsafeUpdateValidatorsCount",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [],
+    "inputs": [ ],
     "name": "MANAGE_SIGNING_KEYS",
     "outputs": [
       {

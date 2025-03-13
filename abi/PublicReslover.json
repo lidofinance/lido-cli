@@ -50,7 +50,7 @@
       }
     ],
     "name": "setAddr",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -68,7 +68,7 @@
       }
     ],
     "name": "setHash",
-    "outputs": [],
+    "outputs": [ ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
