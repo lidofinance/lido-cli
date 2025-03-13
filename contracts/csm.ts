@@ -6,6 +6,7 @@ import accountingAbi from 'abi/csm/CSAccounting.json';
 import feeDistributorAbi from 'abi/csm/CSFeeDistributor.json';
 import feeOracleAbi from 'abi/csm/CSFeeOracle.json';
 import permissionlessGateAbi from 'abi/csm/PermissionlessGate.json';
+import { getVersion } from './initializable';
 
 export const csModuleAddress = getOptionalDeployedAddress('csm.module.address');
 export const csModuleContract = new Contract(csModuleAddress, moduleAbi, wallet);
@@ -24,8 +25,5 @@ export const permissionlessGateContract = new Contract(permissionlessGateAddress
 
 export async function getCSMVersion(provider: Provider | null): Promise<bigint> {
   if (!provider) throw new Error('No provider available for `getCSMVersion`');
-  //  See Initializable.sol
-  const INITIALIZABLE_STORAGE = BigInt('0xf0c57e16840df040f15088dc2f81fe391c3923bec73e23a9662efc9c229c6a00');
-  const slotValue = await provider.getStorage(csModuleAddress, INITIALIZABLE_STORAGE);
-  return BigInt(slotValue) & (2n ** 64n - 1n);
+  return getVersion(provider, csModuleAddress);
 }
