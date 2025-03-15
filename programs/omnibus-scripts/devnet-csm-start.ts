@@ -11,13 +11,9 @@ import { CallScriptAction, encodeCallScript, forwardVoteFromTm, getRoleHash } fr
 import { Contract, Interface } from 'ethers';
 
 export const devnetCSMStart = async () => {
-  // Module address: 0x26aBc20a47f7e8991F1d26Bf0fC2bE8f24E9eF2A
   const CS_MODULE_ADDRESS = process.env.CS_MODULE_ADDRESS as string;
-  // Accounting address: 0x782c7c96959bE2258a7b67439435885b39946c9E
   const CS_ACCOUNTING_ADDRESS = process.env.CS_ACCOUNTING_ADDRESS as string;
-  // Oracle hash consensus address: 0x64c48254123A4c62278Fa671BEA32B45099Aeb9b
   const CS_ORACLE_HASH_CONSENSUS_ADDRESS = process.env.CS_ORACLE_HASH_CONSENSUS_ADDRESS as string;
-  // Settle EL stealing address: 0xC86D7B14BE8c1E8718EaC65F95306A71d0E75aA8
 
   const CS_MODULE_NAME = process.env.CS_MODULE_NAME ?? 'CommunityStaking';
   const CS_STAKE_SHARE_LIMIT = process.env.CS_STAKE_SHARE_LIMIT ?? 2000; // 20%
