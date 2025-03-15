@@ -1,0 +1,11 @@
+{
+  "csm": {
+    "accounting": { "address": "0x135A88dFe9fcE738C5582696386190d0F0Ce28f6" },
+    "earlyAdoption": { "address": "0x72C4842BcA43caFB80d6919914749ED2445151d9" },
+    "feeDistributor": { "address": "0x41155956b3d0029214fe135531a19A205873A98B" },
+    "feeOracle": { "address": "0x5B88070B7db5B4738b43A34BAf4BB776dc54a256" },
+    "module": { "address": "0x58E91B55A9dEc762B726afB790E1abC034Cd97e3" },
+    "verifier": { "address": "0xB9eCb67B328724fa3A55A9dD4a7F6F2246799a38" },
+    "hashConsensus": { "address": "0x255A0dde9B0132fE67d75cC6D3517A27CFD45176" }
+  }
+}

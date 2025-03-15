@@ -59,39 +59,51 @@ sanityChecker
 sanityChecker
   .command('set-oracle-report-limits')
   .description('sets oracle report limits')
-  .argument('<churn-validators-per-day-limit>', 'churn validators per day limit')
-  .argument('<one-off-cl-balance-decrease-bp-limit>', 'one off cl balance decrease limit in BP')
-  .argument('<annual-balance-increase-bp-limit>', 'annual balance increase limit in BP')
-  .argument('<simulated-share-rate-deviation-bp-limit>', 'simulated share rate deviation limit in BP')
-  .argument('<max-validator-exit-requests-per-report>', 'max validator exit requests per report')
-  .argument('<max-accounting-extra-data-list-items-count>', 'max accounting extra data list items count')
-  .argument('<max-node-operators-per-extra-data-item-count>', 'max node operators per extra data item count')
-  .argument('<request-timestamp-margin>', 'request timestamp margin')
-  .argument('<max-positive-token-rebase>', 'max positive token rebase')
+  .argument('<exitedValidatorsPerDayLimit>', 'exited validators per day limit')
+  .argument('<appearedValidatorsPerDayLimit>', 'appeared validators per day limit')
+  .argument('<annualBalanceIncreaseBPLimit>', 'annual balance increase BP limit')
+  .argument('<simulatedShareRateDeviationBPLimit>', 'simulated share rate deviation BP limit')
+  .argument('<maxValidatorExitRequestsPerReport>', 'max validator exit requests per report')
+  .argument('<maxItemsPerExtraDataTransaction>', 'max items per extra data transaction')
+  .argument('<maxNodeOperatorsPerExtraDataItem>', 'max node operators per extra data item')
+  .argument('<requestTimestampMargin>', 'request timestamp margin')
+  .argument('<maxPositiveTokenRebase>', 'max positive token rebase')
+  .argument('<initialSlashingAmountPWei>', 'initial slashing amount PWei')
+  .argument('<inactivityPenaltiesAmountPWei>', 'inactivity penalties amount PWei')
+  .argument('<clBalanceOraclesErrorUpperBPLimit>', 'CL balance oracles error upper BP limit')
+  .argument('<secondOpinionOracle>', 'second opinion oracle')
   .action(
     async (
-      churnValidatorsPerDayLimit,
-      oneOffCLBalanceDecreaseBPLimit,
+      exitedValidatorsPerDayLimit,
+      appearedValidatorsPerDayLimit,
       annualBalanceIncreaseBPLimit,
       simulatedShareRateDeviationBPLimit,
       maxValidatorExitRequestsPerReport,
-      maxAccountingExtraDataListItemsCount,
-      maxNodeOperatorsPerExtraDataItemCount,
+      maxItemsPerExtraDataTransaction,
+      maxNodeOperatorsPerExtraDataItem,
       requestTimestampMargin,
       maxPositiveTokenRebase,
+      initialSlashingAmountPWei,
+      inactivityPenaltiesAmountPWei,
+      clBalanceOraclesErrorUpperBPLimit,
+      secondOpinionOracle,
     ) => {
       await authorizedCall(sanityCheckerContract, 'setOracleReportLimits', [
         {
-          churnValidatorsPerDayLimit: Number(churnValidatorsPerDayLimit),
-          oneOffCLBalanceDecreaseBPLimit: Number(oneOffCLBalanceDecreaseBPLimit),
+          exitedValidatorsPerDayLimit: Number(exitedValidatorsPerDayLimit),
+          appearedValidatorsPerDayLimit: Number(appearedValidatorsPerDayLimit),
           annualBalanceIncreaseBPLimit: Number(annualBalanceIncreaseBPLimit),
           simulatedShareRateDeviationBPLimit: Number(simulatedShareRateDeviationBPLimit),
           maxValidatorExitRequestsPerReport: Number(maxValidatorExitRequestsPerReport),
-          maxAccountingExtraDataListItemsCount: Number(maxAccountingExtraDataListItemsCount),
-          maxNodeOperatorsPerExtraDataItemCount: Number(maxNodeOperatorsPerExtraDataItemCount),
+          maxItemsPerExtraDataTransaction: Number(maxItemsPerExtraDataTransaction),
+          maxNodeOperatorsPerExtraDataItem: Number(maxNodeOperatorsPerExtraDataItem),
           requestTimestampMargin: Number(requestTimestampMargin),
           maxPositiveTokenRebase: Number(maxPositiveTokenRebase),
+          initialSlashingAmountPWei: Number(initialSlashingAmountPWei),
+          inactivityPenaltiesAmountPWei: Number(inactivityPenaltiesAmountPWei),
+          clBalanceOraclesErrorUpperBPLimit: Number(clBalanceOraclesErrorUpperBPLimit),
         },
+        secondOpinionOracle,
       ]);
     },
   );

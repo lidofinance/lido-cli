@@ -108,6 +108,31 @@ csm
   });
 
 csm
+  .command('add-keys-from-file-eth')
+  .description('adds signing keys from deposit data file')
+  .argument('<operator-id>', 'node operator id')
+  .argument('<file-path>', 'file path')
+  .action(async (operatorId, filePath) => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const depositData: DepositData[] = require(filePath);
+    await supplementAndVerifyDepositDataArray(depositData);
+
+    const keysCount = depositData.length;
+    const value = await csAccountingContract.getRequiredBondForNextKeys(operatorId, keysCount);
+
+    const publicKeys = joinHex(depositData.map(({ pubkey }) => pubkey));
+    const signatures = joinHex(depositData.map(({ signature }) => signature));
+
+    await contractCallTxWithConfirm(csModuleContract, 'addValidatorKeysETH', [
+      operatorId,
+      keysCount,
+      publicKeys,
+      signatures,
+      { value },
+    ]);
+  });
+
+csm
   .command('change-reward-address')
   .description('change reward address')
   .option('-i, --operator-id <number>', 'node operator id')

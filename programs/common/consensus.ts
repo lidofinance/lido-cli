@@ -60,7 +60,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .option('-q, --quorum <string>', 'quorum')
     .action(async (options) => {
       const { address, quorum } = options;
-      const { confirm } = await confirmOracleMemberTx();
+      const confirm = await confirmOracleMemberTx();
 
       if (!confirm) {
         logger.error('Aborted');
@@ -77,7 +77,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .option('-q, --quorum <string>', 'quorum')
     .action(async (options) => {
       const { address, quorum } = options;
-      const { confirm } = await confirmOracleMemberTx();
+      const confirm = await confirmOracleMemberTx();
 
       if (!confirm) {
         logger.error('Aborted');
