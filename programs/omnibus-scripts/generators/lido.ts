@@ -24,7 +24,23 @@ export const promptScriptsLidoResume = async (initialStakingLimit: number) => {
     message: 'Enter daily Lido staking limit',
   });
 
-  const parsedLimit = parseEther(String(limit));
+  return await encodeScriptsLidoResume(limit);
+};
+
+export const encodeScriptsLidoResumeIfStopped = async (stakingLimit: number) => {
+  const isLidoStopped = await lidoContract.isStopped();
+
+  if (isLidoStopped) {
+    logger.log('Contract is stopped. Preparing scripts to resume and set staking limit');
+    return await encodeScriptsLidoResume(stakingLimit);
+  }
+
+  logger.warn('Contract is already running. Skipping resume and staking limit setting');
+  return [];
+};
+
+export const encodeScriptsLidoResume = async (stakingLimit: number | string) => {
+  const parsedLimit = parseEther(String(stakingLimit));
   const [, resumeProtocolCall, resumeStakingCall, setStakingLimitCall] = resumeLidoAndSetStakingLimit(parsedLimit);
   return [resumeProtocolCall, resumeStakingCall, setStakingLimitCall];
 };

@@ -2,4 +2,4 @@ import * as dotenv from 'dotenv';
 
 const { parsed } = dotenv.config();
 
-export const envs = parsed;
+export const envs = { ...parsed, ...process.env };

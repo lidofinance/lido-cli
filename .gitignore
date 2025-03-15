@@ -7,3 +7,8 @@ node_modules
 
 reports/*
 wallets/*
+
+/configs/deployed-local-devnet.json
+/configs/extra-deployed-local-devnet.json
+
+generated-keys

@@ -32,7 +32,7 @@ omnibus
 
 omnibus
   .command('script')
-  .argument('<script>', ' script to run')
+  .argument('<script>', 'script to run')
   .action(async (script) => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const scripts = require(`./omnibus-scripts`);

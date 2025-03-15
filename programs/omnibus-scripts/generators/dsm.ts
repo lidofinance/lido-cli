@@ -3,6 +3,41 @@ import { encodeFromAgent } from '@scripts';
 import { CallScriptActionWithDescription, logger } from '@utils';
 import { isAddress } from 'ethers';
 import prompts from 'prompts';
+import { DEFAULT_DEVNET_CONFIG } from './devnet';
+
+export const encodeScriptsDSM = async (guardians: string[], quorum: number) => {
+  const guardiansScripts = await encodeScriptsAddingGuardiansFromAgent(guardians, quorum);
+  return [...guardiansScripts];
+};
+
+export const encodeScriptsAddingGuardiansFromAgent = async (guardians: string[], quorum: number) => {
+  const total = guardians.length;
+
+  if (total === 0) {
+    logger.warn('No guardians to add. Skipping adding guardians');
+    return [];
+  }
+
+  logger.log('Preparing scripts to add guardians');
+
+  const calls: CallScriptActionWithDescription[] = [];
+
+  for (let i = 0; i < total; i++) {
+    const quorumForIteration = Math.min(i + 1, quorum);
+    const [, addGuardianCall] = encodeFromAgentAddGuardian(guardians[i], quorumForIteration);
+
+    calls.push(addGuardianCall);
+  }
+
+  return calls;
+};
+
+export const promptScriptsDSM = async () => {
+  const guardiansScripts = await promptScriptsAddingGuardiansFromAgentIfEmpty(
+    DEFAULT_DEVNET_CONFIG.DSM_GUARDIANS_MEMBERS,
+  );
+  return [...guardiansScripts];
+};
 
 export const promptScriptsAddingGuardiansFromAgentIfEmpty = async (initialTotal: number) => {
   const guardians = await dsmContract.getGuardians();

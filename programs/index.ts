@@ -9,6 +9,7 @@ export * from './csm-oracle';
 export * from './csm';
 export * from './deposit-contract';
 export * from './deposit-data';
+export * from './devnet';
 export * from './dsm';
 export * from './el-requests';
 export * from './eth';

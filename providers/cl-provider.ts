@@ -78,7 +78,7 @@ export const postToAttestationPool = async (consensusVersion: string, body: unkn
 };
 
 export const postToVoluntaryExitsPool = async (body: unknown) => {
-  return await fetchCL(`eth/v1/beacon/pool/voluntary_exits`, {
+  return await fetchCLResponse(`eth/v1/beacon/pool/voluntary_exits`, {
     body: stringify(body),
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
