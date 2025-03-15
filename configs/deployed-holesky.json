@@ -681,7 +681,7 @@
       "maxPositiveTokenRebase": 5000000
     },
     "contract": "contracts/0.8.9/sanity_checks/OracleReportSanityChecker.sol",
-    "address": "0xd7C870777e08325Ad0A3A85F41E66E7D84B63E4f",
+    "address": "0x80D1B1fF6E84134404abA18A628347960c38ccA7",
     "constructorArgs": [
       "0x28FAB2059C713A7F9D8c86Db49f9bb0e96Af1ef8",
       "0xE92329EC7ddB11D25e25b3c21eeBf11f15eB325d",
