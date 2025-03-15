@@ -1,9 +1,7 @@
 import { JsonRpcSigner, Wallet, isAddress } from 'ethers';
-import * as dotenv from 'dotenv';
 import { provider } from './el-provider';
+import { envs } from '@configs';
 
-const { parsed } = dotenv.config();
-const envs = { ...parsed, ...process.env };
 const privateKey = envs?.PRIVATE_KEY;
 const accountFile = envs?.ACCOUNT_FILE;
 const accountFilePassword = envs?.ACCOUNT_FILE_PASSWORD;
