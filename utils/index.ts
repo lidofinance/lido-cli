@@ -8,7 +8,7 @@ export * from './confirm-tx';
 export * from './consensus-version';
 export * from './contract';
 export * from './csv';
-export * from './deployemnt-tx';
+export * from './deployment-tx';
 export * from './deposit-data';
 export * from './format-date';
 export * from './get-value';
