@@ -119,6 +119,7 @@ export const formatCallResult = (result: string, tx?: TransactionDescription) =>
   const abiCoder = AbiCoder.defaultAbiCoder();
   try {
     return abiCoder.decode(tx.fragment.outputs, result);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_error) {
     return error(`Unparsed ${result}`);
   }

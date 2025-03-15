@@ -90,7 +90,7 @@ export const verifyDepositData = (depositData: DepositData): boolean => {
   if (!depositData.signature) throw new Error('Signature is not defined');
   if (!depositData.forkVersion) throw new Error('Fork version is not defined');
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const blst = require('@chainsafe/blst');
 
   const { pubkey, withdrawalCredentials, amount, signature, forkVersion } = depositData;

@@ -137,7 +137,7 @@ validators
     const masterSK = deriveKeyFromMnemonic(mnemonic);
     const { signing } = deriveEth2ValidatorKeys(masterSK, index);
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { SecretKey } = require('@chainsafe/blst');
     const sk = SecretKey.fromBytes(signing);
     const pkHex = hexlify(sk.toPublicKey().toBytes());
@@ -186,7 +186,7 @@ validators
     const masterSK = deriveKeyFromMnemonic(mnemonic);
     const { signing } = deriveEth2ValidatorKeys(masterSK, index);
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { SecretKey } = require('@chainsafe/blst');
     const sk = SecretKey.fromBytes(signing);
     const pkHex = hexlify(sk.toPublicKey().toBytes());

@@ -34,7 +34,7 @@ omnibus
   .command('script')
   .argument('<script>', 'script to run')
   .action(async (script) => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const scripts = require(`./omnibus-scripts`);
 
     if (typeof scripts[script] === 'function') {
