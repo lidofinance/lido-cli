@@ -1,5 +1,5 @@
 import { program } from '@command';
-import { checkTmCanForward, forwardVoteFromTm, logger, printTx } from '@utils';
+import { checkTmCanForward, forwardVoteFromTm, logger, printTxToContract } from '@utils';
 import { printVoteTxData, promptVoting } from './omnibus/';
 import { tmContract } from '@contracts';
 
@@ -13,7 +13,7 @@ omnibus
     if (!voteTxData) return;
 
     await printVoteTxData(voteTxData);
-    await printTx(tmContract, 'forward', [voteTxData.newVoteCalldata]);
+    await printTxToContract(tmContract, 'forward', [voteTxData.newVoteCalldata]);
   });
 
 omnibus
@@ -32,9 +32,9 @@ omnibus
 
 omnibus
   .command('script')
-  .argument('<script>', ' script to run')
+  .argument('<script>', 'script to run')
   .action(async (script) => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const scripts = require(`./omnibus-scripts`);
 
     if (typeof scripts[script] === 'function') {

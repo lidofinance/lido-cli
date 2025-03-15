@@ -9,7 +9,7 @@ keys
   .description('verify deposit data')
   .argument('<file-path>', 'path to the deposit data file')
   .action(async (filePath) => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const depositDataArray = require(filePath);
     await supplementAndVerifyDepositDataArray(depositDataArray);
     logger.log('Deposit data is valid, keys checked', depositDataArray.length);

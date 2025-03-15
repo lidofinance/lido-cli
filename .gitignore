@@ -1,8 +1,14 @@
 node_modules
 .env
+.env.*
 
 .vscode
 .DS_Store
 
 reports/*
 wallets/*
+
+/configs/deployed-local-devnet.json
+/configs/extra-deployed-local-devnet.json
+
+generated-keys

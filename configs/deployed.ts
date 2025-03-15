@@ -2,21 +2,21 @@ import { lstatSync } from 'fs';
 import { resolve } from 'path';
 import { envs } from './envs';
 import { getValueByPath } from '@utils';
-import { ZeroAddress } from 'ethers';
+import { Contract, ZeroAddress } from 'ethers';
 
 export const importConfigFile = (path?: string) => {
   const fullPath = resolve('configs', path ?? '');
   const json: Record<string, Record<string, string>> = {};
 
   if (lstatSync(fullPath).isFile()) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     Object.assign(json, require(fullPath));
   }
 
   return json;
 };
 
-export const getContracts = () => {
+export const getConfig = () => {
   const deployedFile = envs?.DEPLOYED;
 
   if (!deployedFile) {
@@ -30,7 +30,11 @@ export const getContracts = () => {
 };
 
 export const getContractDeploy = (path: string) => {
-  return getValueByPath(getContracts(), path);
+  return getValueByPath(getConfig(), path);
+};
+
+export const getConfigValue = (path: string) => {
+  return getValueByPath(getConfig(), path);
 };
 
 export const getDeployedAddress = (...contractKeys: string[]) => {
@@ -64,8 +68,16 @@ export const getOptionalDeployedAddress = (...contractKeys: string[]) => {
   }
 };
 
+export const getOptionalMethodAddress = async (contract: Contract, methodName: string) => {
+  try {
+    return await contract[methodName]();
+  } catch {
+    return ZeroAddress;
+  }
+};
+
 export const getAddressMap = () => {
-  const contracts = getContracts();
+  const contracts = getConfig();
 
   return Object.entries(contracts).reduce(
     (acc, [key, value]) => {

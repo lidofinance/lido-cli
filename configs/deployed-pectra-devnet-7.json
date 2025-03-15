@@ -1,0 +1,705 @@
+{
+  "accountingOracle": {
+    "deployParameters": {
+      "consensusVersion": 2
+    },
+    "proxy": {
+      "contract": "contracts/0.8.9/proxy/OssifiableProxy.sol",
+      "address": "0xc36e66b8d0fEd932c1e93C936aA2f14d7c380864",
+      "constructorArgs": [
+        "0x2a763E73868B173985Cf6762F504843357Da4E86",
+        "0x99766fb0f3459f309751883934B1f76F230f7105",
+        "0x"
+      ]
+    },
+    "implementation": {
+      "contract": "contracts/0.8.9/oracle/AccountingOracle.sol",
+      "address": "0x2a763E73868B173985Cf6762F504843357Da4E86",
+      "constructorArgs": [
+        "0x99e1e7c2229e3d81F3f45Cfe24f424B5D6C5a3E2",
+        "0xC0c09778371CAc510E1c16d5B847F22A3b7fA0be",
+        "0x039878acFaff438F0f38D0bb7c7382Ba7D7375b6",
+        12,
+        1740610860
+      ]
+    }
+  },
+  "apmRegistryFactory": {
+    "contract": "@aragon/os/contracts/factory/APMRegistryFactory.sol",
+    "address": "0xc23DFdCAD5cFB55D30E81c77ED422Fb3Bb840BF4",
+    "constructorArgs": [
+      "0x588cea4f7d09D29eF4a91F5Cbc33857d5B1f10Aa",
+      "0x6947fC8A020719cfDfE652971Cab3E678CA4aE03",
+      "0x7D34eee324617F629F05cEf35Ab60cE325c035c3",
+      "0x0120391B5A1ec966a0B1c3a62FaB2c55BBACCCFd",
+      "0x24CFDcee083233773194E38f95B6DdEd69F224a5",
+      "0x0000000000000000000000000000000000000000"
+    ]
+  },
+  "app:aragon-agent": {
+    "implementation": {
+      "contract": "@aragon/apps-agent/contracts/Agent.sol",
+      "address": "0x52A9F1ef7122f63B6358575Fe291b9a4Ee542780",
+      "constructorArgs": []
+    },
+    "aragonApp": {
+      "name": "aragon-agent",
+      "fullName": "aragon-agent.lidopm.eth",
+      "id": "0x701a4fd1f5174d12a0f1d9ad2c88d0ad11ab6aad0ac72b7d9ce621815f8016a9"
+    },
+    "proxy": {
+      "address": "0x08653FAEf5324797162774FC825DF24A6d33789F",
+      "contract": "@aragon/os/contracts/apps/AppProxyUpgradeable.sol",
+      "constructorArgs": [
+        "0xC496D92f75004700aBb540f365Af8fE57b395C90",
+        "0x701a4fd1f5174d12a0f1d9ad2c88d0ad11ab6aad0ac72b7d9ce621815f8016a9",
+        "0x8129fc1c"
+      ]
+    }
+  },
+  "app:aragon-finance": {
+    "implementation": {
+      "contract": "@aragon/apps-finance/contracts/Finance.sol",
+      "address": "0x8577AE9AD5bA64134BC79B43Bd048ae73E1b5102",
+      "constructorArgs": []
+    },
+    "aragonApp": {
+      "name": "aragon-finance",
+      "fullName": "aragon-finance.lidopm.eth",
+      "id": "0x5c9918c99c4081ca9459c178381be71d9da40e49e151687da55099c49a4237f1"
+    },
+    "proxy": {
+      "address": "0xa3b104F550D3f319de6960446FEE992b0e4785E9",
+      "contract": "@aragon/os/contracts/apps/AppProxyUpgradeable.sol",
+      "constructorArgs": [
+        "0xC496D92f75004700aBb540f365Af8fE57b395C90",
+        "0x5c9918c99c4081ca9459c178381be71d9da40e49e151687da55099c49a4237f1",
+        "0x1798de8100000000000000000000000008653faef5324797162774fc825df24a6d33789f0000000000000000000000000000000000000000000000000000000000278d00"
+      ]
+    }
+  },
+  "app:aragon-token-manager": {
+    "implementation": {
+      "contract": "@aragon/apps-lido/apps/token-manager/contracts/TokenManager.sol",
+      "address": "0x7999245d0ffe11b76106b7a9C813B250Ccc0da16",
+      "constructorArgs": []
+    },
+    "aragonApp": {
+      "name": "aragon-token-manager",
+      "fullName": "aragon-token-manager.lidopm.eth",
+      "id": "0xcd567bdf93dd0f6acc3bc7f2155f83244d56a65abbfbefb763e015420102c67b"
+    },
+    "proxy": {
+      "address": "0x68CcE46f68D68c683a374045a1A5233a8F998d5C",
+      "contract": "@aragon/os/contracts/apps/AppProxyUpgradeable.sol",
+      "constructorArgs": [
+        "0xC496D92f75004700aBb540f365Af8fE57b395C90",
+        "0xcd567bdf93dd0f6acc3bc7f2155f83244d56a65abbfbefb763e015420102c67b",
+        "0x"
+      ]
+    }
+  },
+  "app:aragon-voting": {
+    "implementation": {
+      "contract": "@aragon/apps-lido/apps/voting/contracts/Voting.sol",
+      "address": "0xaF87f4F887FA23Fc6dfd82700Fd4BEF052F3846F",
+      "constructorArgs": []
+    },
+    "aragonApp": {
+      "name": "aragon-voting",
+      "fullName": "aragon-voting.lidopm.eth",
+      "id": "0x0abcd104777321a82b010357f20887d61247493d89d2e987ff57bcecbde00e1e"
+    },
+    "proxy": {
+      "address": "0xb137351Bdb35C3363cd8A5ff3758260e9dB5CC66",
+      "contract": "@aragon/os/contracts/apps/AppProxyUpgradeable.sol",
+      "constructorArgs": [
+        "0xC496D92f75004700aBb540f365Af8fE57b395C90",
+        "0x0abcd104777321a82b010357f20887d61247493d89d2e987ff57bcecbde00e1e",
+        "0x13e094530000000000000000000000003d19d7f082a5e9e7d86a57bbc94cde747e7166f900000000000000000000000000000000000000000000000006f05b59d3b2000000000000000000000000000000000000000000000000000000b1a2bc2ec500000000000000000000000000000000000000000000000000000000000000000384000000000000000000000000000000000000000000000000000000000000012c"
+      ]
+    }
+  },
+  "app:lido": {
+    "implementation": {
+      "contract": "contracts/0.4.24/Lido.sol",
+      "address": "0x651621DB36d604D21235496DcB333FE12cDb3328",
+      "constructorArgs": []
+    },
+    "aragonApp": {
+      "name": "lido",
+      "fullName": "lido.lidopm.eth",
+      "id": "0x3ca7c3e38968823ccb4c78ea688df41356f182ae1d159e4ee608d30d68cef320"
+    },
+    "proxy": {
+      "address": "0xC0c09778371CAc510E1c16d5B847F22A3b7fA0be",
+      "contract": "@aragon/os/contracts/apps/AppProxyUpgradeable.sol",
+      "constructorArgs": [
+        "0xC496D92f75004700aBb540f365Af8fE57b395C90",
+        "0x3ca7c3e38968823ccb4c78ea688df41356f182ae1d159e4ee608d30d68cef320",
+        "0x"
+      ]
+    }
+  },
+  "app:node-operators-registry": {
+    "implementation": {
+      "contract": "contracts/0.4.24/nos/NodeOperatorsRegistry.sol",
+      "address": "0x9Ff36eb4E42943BBfF07b1843fE570A6E0B64756",
+      "constructorArgs": []
+    },
+    "aragonApp": {
+      "name": "node-operators-registry",
+      "fullName": "node-operators-registry.lidopm.eth",
+      "id": "0x7071f283424072341f856ac9e947e7ec0eb68719f757a7e785979b6b8717579d"
+    },
+    "proxy": {
+      "address": "0x7B71611B7D5A9aCfb82116DfD02C14DA92437c02",
+      "contract": "@aragon/os/contracts/apps/AppProxyUpgradeable.sol",
+      "constructorArgs": [
+        "0xC496D92f75004700aBb540f365Af8fE57b395C90",
+        "0x7071f283424072341f856ac9e947e7ec0eb68719f757a7e785979b6b8717579d",
+        "0x"
+      ]
+    }
+  },
+  "app:oracle": {
+    "implementation": {
+      "contract": "contracts/0.4.24/oracle/LegacyOracle.sol",
+      "address": "0x9ef81366bc14E4cB1a4D8fc78d39f2b8F6683bc0",
+      "constructorArgs": []
+    },
+    "aragonApp": {
+      "name": "oracle",
+      "fullName": "oracle.lidopm.eth",
+      "id": "0x8b47ba2a8454ec799cd91646e7ec47168e91fd139b23f017455f3e5898aaba93"
+    },
+    "proxy": {
+      "address": "0x039878acFaff438F0f38D0bb7c7382Ba7D7375b6",
+      "contract": "@aragon/os/contracts/apps/AppProxyUpgradeable.sol",
+      "constructorArgs": [
+        "0xC496D92f75004700aBb540f365Af8fE57b395C90",
+        "0x8b47ba2a8454ec799cd91646e7ec47168e91fd139b23f017455f3e5898aaba93",
+        "0x"
+      ]
+    }
+  },
+  "app:simple-dvt": {
+    "aragonApp": {
+      "name": "simple-dvt",
+      "fullName": "simple-dvt.lidopm.eth",
+      "id": "0xe1635b63b5f7b5e545f2a637558a4029dea7905361a2f0fc28c66e9136cf86a4"
+    },
+    "proxy": {
+      "address": "0xD13Fd3d54598e41B9604BC44985BB62edBD3C320",
+      "contract": "@aragon/os/contracts/apps/AppProxyUpgradeable.sol",
+      "constructorArgs": [
+        "0xC496D92f75004700aBb540f365Af8fE57b395C90",
+        "0xe1635b63b5f7b5e545f2a637558a4029dea7905361a2f0fc28c66e9136cf86a4",
+        "0x"
+      ]
+    }
+  },
+  "aragon-acl": {
+    "implementation": {
+      "contract": "@aragon/os/contracts/acl/ACL.sol",
+      "address": "0x4a77A0d0957e067Ee857887207CCcd84d3a3DF4a",
+      "constructorArgs": []
+    },
+    "proxy": {
+      "address": "0xBcfd5A13E4a765Bb7146A1C6Ae6E57467fEca5D3",
+      "constructorArgs": [
+        "0xC496D92f75004700aBb540f365Af8fE57b395C90",
+        "0xe3262375f45a6e2026b7e7b18c2b807434f2508fe1a2a3dfb493c7df8f4aad6a",
+        "0x00"
+      ],
+      "contract": "@aragon/os/contracts/apps/AppProxyUpgradeable.sol"
+    },
+    "aragonApp": {
+      "name": "aragon-acl",
+      "id": "0xe3262375f45a6e2026b7e7b18c2b807434f2508fe1a2a3dfb493c7df8f4aad6a"
+    }
+  },
+  "aragon-apm-registry": {
+    "implementation": {
+      "contract": "@aragon/os/contracts/apm/APMRegistry.sol",
+      "address": "0x6947fC8A020719cfDfE652971Cab3E678CA4aE03",
+      "constructorArgs": []
+    },
+    "proxy": {
+      "address": "0xB7587D93325A01F3F36e3Dfdb574CF13AaFeeeA9"
+    }
+  },
+  "aragon-evm-script-registry": {
+    "proxy": {
+      "address": "0x6E3b5cB80eE7DF96C08495cc8C6Ca82dE4117d41",
+      "constructorArgs": [
+        "0xC496D92f75004700aBb540f365Af8fE57b395C90",
+        "0xddbcfd564f642ab5627cf68b9b7d374fb4f8a36e941a75d89c87998cef03bd61",
+        "0x00"
+      ],
+      "contract": "@aragon/os/contracts/apps/AppProxyPinned.sol"
+    },
+    "aragonApp": {
+      "name": "aragon-evm-script-registry",
+      "id": "0xddbcfd564f642ab5627cf68b9b7d374fb4f8a36e941a75d89c87998cef03bd61"
+    },
+    "implementation": {
+      "address": "0x7F61a1A8Dc77B3d84837c4E418F4FF1C21d2224d",
+      "contract": "@aragon/os/contracts/evmscript/EVMScriptRegistry.sol",
+      "constructorArgs": []
+    }
+  },
+  "aragon-kernel": {
+    "implementation": {
+      "contract": "@aragon/os/contracts/kernel/Kernel.sol",
+      "address": "0x918E14239B26e63DfDccf60ae07a3A5975C9B68e",
+      "constructorArgs": [
+        true
+      ]
+    },
+    "proxy": {
+      "address": "0xC496D92f75004700aBb540f365Af8fE57b395C90",
+      "contract": "@aragon/os/contracts/kernel/KernelProxy.sol",
+      "constructorArgs": [
+        "0x918E14239B26e63DfDccf60ae07a3A5975C9B68e"
+      ]
+    }
+  },
+  "aragon-repo-base": {
+    "contract": "@aragon/os/contracts/apm/Repo.sol",
+    "address": "0x7D34eee324617F629F05cEf35Ab60cE325c035c3",
+    "constructorArgs": []
+  },
+  "aragonEnsLabelName": "aragonpm",
+  "aragonID": {
+    "address": "0x39339185EC190a988A718e6caAC0cF7aFC0E3596",
+    "contract": "@aragon/id/contracts/FIFSResolvingRegistrar.sol",
+    "constructorArgs": [
+      "0x24CFDcee083233773194E38f95B6DdEd69F224a5",
+      "0x377325a3e8cc5d0FCc83704f13cf8380136a72E6",
+      "0x7e74a86b6e146964fb965db04dc2590516da77f720bb6759337bf5632415fd86"
+    ]
+  },
+  "burner": {
+    "deployParameters": {
+      "totalCoverSharesBurnt": "0",
+      "totalNonCoverSharesBurnt": "0"
+    },
+    "contract": "contracts/0.8.9/Burner.sol",
+    "address": "0xBD6292647AAE9A491b9E3D8314Ff9B632A838B62",
+    "constructorArgs": [
+      "0x99766fb0f3459f309751883934B1f76F230f7105",
+      "0x08653FAEf5324797162774FC825DF24A6d33789F",
+      "0xC0c09778371CAc510E1c16d5B847F22A3b7fA0be",
+      "0",
+      "0"
+    ]
+  },
+  "callsScript": {
+    "address": "0x4789DEa554D14A92C22AD3cFe655dd3ab571C191",
+    "contract": "@aragon/os/contracts/evmscript/executors/CallsScript.sol",
+    "constructorArgs": []
+  },
+  "chainId": 7032118028,
+  "chainSpec": {
+    "slotsPerEpoch": 32,
+    "secondsPerSlot": 12,
+    "genesisTime": 1740610860,
+    "depositContract": "0x4242424242424242424242424242424242424242"
+  },
+  "createAppReposTx": "0xb1c1fd49bf9a57f69e1bcefe4dd306e7da9726e1dfefc89f31af007af05d936a",
+  "daoAragonId": "lido-dao",
+  "daoFactory": {
+    "address": "0x588cea4f7d09D29eF4a91F5Cbc33857d5B1f10Aa",
+    "contract": "@aragon/os/contracts/factory/DAOFactory.sol",
+    "constructorArgs": [
+      "0x918E14239B26e63DfDccf60ae07a3A5975C9B68e",
+      "0x4a77A0d0957e067Ee857887207CCcd84d3a3DF4a",
+      "0xc241E56Ff7653D3380a4854C9Eb9676493cf9b60"
+    ]
+  },
+  "daoInitialSettings": {
+    "voting": {
+      "minSupportRequired": "500000000000000000",
+      "minAcceptanceQuorum": "50000000000000000",
+      "voteDuration": 900,
+      "objectionPhaseDuration": 300
+    },
+    "fee": {
+      "totalPercent": 10,
+      "treasuryPercent": 50,
+      "nodeOperatorsPercent": 50
+    },
+    "token": {
+      "name": "TEST Lido DAO Token",
+      "symbol": "TLDO"
+    }
+  },
+  "deployer": "0x99766fb0f3459f309751883934B1f76F230f7105",
+  "depositSecurityModule": {
+    "deployParameters": {
+      "maxOperatorsPerUnvetting": 200,
+      "pauseIntentValidityPeriodBlocks": 6646,
+      "usePredefinedAddressInstead": null
+    },
+    "contract": "contracts/0.8.9/DepositSecurityModule.sol",
+    "address": "0x8aC2A1552bD2D291914E4C528B6a608724E4d37A",
+    "constructorArgs": [
+      "0xC0c09778371CAc510E1c16d5B847F22A3b7fA0be",
+      "0x4242424242424242424242424242424242424242",
+      "0x7e2F410e7a63B983220B9D0eef9fc799714F5Cec",
+      6646,
+      200
+    ]
+  },
+  "dummyEmptyContract": {
+    "contract": "contracts/0.8.9/utils/DummyEmptyContract.sol",
+    "address": "0xB16A9aca8159ff82165e675F737edf851Dc32090",
+    "constructorArgs": []
+  },
+  "eip712StETH": {
+    "contract": "contracts/0.8.9/EIP712StETH.sol",
+    "address": "0x13Bd25931516D373398C1F6Faa4AdE382f0Ed384",
+    "constructorArgs": [
+      "0xC0c09778371CAc510E1c16d5B847F22A3b7fA0be"
+    ]
+  },
+  "ens": {
+    "address": "0x24CFDcee083233773194E38f95B6DdEd69F224a5",
+    "constructorArgs": [
+      "0x99766fb0f3459f309751883934B1f76F230f7105"
+    ],
+    "contract": "@aragon/os/contracts/lib/ens/ENS.sol"
+  },
+  "ensFactory": {
+    "contract": "@aragon/os/contracts/factory/ENSFactory.sol",
+    "address": "0x7cf195Df24212e36851F022f9A406a5f502dE450",
+    "constructorArgs": []
+  },
+  "ensNode": {
+    "nodeName": "aragonpm.eth",
+    "nodeIs": "0x9065c3e7f7b7ef1ef4e53d2d0b8e0cef02874ab020c1ece79d5f0d3d0111c0ba"
+  },
+  "ensSubdomainRegistrar": {
+    "implementation": {
+      "contract": "@aragon/os/contracts/ens/ENSSubdomainRegistrar.sol",
+      "address": "0x0120391B5A1ec966a0B1c3a62FaB2c55BBACCCFd",
+      "constructorArgs": []
+    }
+  },
+  "evmScriptRegistryFactory": {
+    "contract": "@aragon/os/contracts/factory/EVMScriptRegistryFactory.sol",
+    "address": "0xc241E56Ff7653D3380a4854C9Eb9676493cf9b60",
+    "constructorArgs": []
+  },
+  "executionLayerRewardsVault": {
+    "contract": "contracts/0.8.9/LidoExecutionLayerRewardsVault.sol",
+    "address": "0x2070cDE87b1ae4bB1B1cc211cE88f9ecE287cECC",
+    "constructorArgs": [
+      "0xC0c09778371CAc510E1c16d5B847F22A3b7fA0be",
+      "0x08653FAEf5324797162774FC825DF24A6d33789F"
+    ]
+  },
+  "gateSeal": {
+    "address": null,
+    "factoryAddress": null,
+    "sealDuration": 518400,
+    "expiryTimestamp": 1714521600,
+    "sealingCommittee": []
+  },
+  "hashConsensusForAccountingOracle": {
+    "deployParameters": {
+      "fastLaneLengthSlots": 10,
+      "epochsPerFrame": 12
+    },
+    "contract": "contracts/0.8.9/oracle/HashConsensus.sol",
+    "address": "0x6F8213B5c0C10fc65B6fd95B22F40afa3456Bb0E",
+    "constructorArgs": [
+      32,
+      12,
+      1740610860,
+      12,
+      10,
+      "0x99766fb0f3459f309751883934B1f76F230f7105",
+      "0xc36e66b8d0fEd932c1e93C936aA2f14d7c380864"
+    ]
+  },
+  "hashConsensusForValidatorsExitBusOracle": {
+    "deployParameters": {
+      "fastLaneLengthSlots": 10,
+      "epochsPerFrame": 4
+    },
+    "contract": "contracts/0.8.9/oracle/HashConsensus.sol",
+    "address": "0xB2f8dc759084655a2C26dab4CfF80d65eB250169",
+    "constructorArgs": [
+      32,
+      12,
+      1740610860,
+      4,
+      10,
+      "0x99766fb0f3459f309751883934B1f76F230f7105",
+      "0x84D9FfEe784F2c7e0050e9E0bb358b5457746251"
+    ]
+  },
+  "ldo": {
+    "address": "0x3D19D7F082A5e9e7d86a57BBC94CDE747e7166f9",
+    "contract": "@aragon/minime/contracts/MiniMeToken.sol",
+    "constructorArgs": [
+      "0xdAcD525F85016A8653dA887717Ee080C9e42D57E",
+      "0x0000000000000000000000000000000000000000",
+      0,
+      "TEST Lido DAO Token",
+      18,
+      "TLDO",
+      true
+    ]
+  },
+  "legacyOracle": {
+    "deployParameters": {
+      "lastCompletedEpochId": 0
+    }
+  },
+  "lidoApm": {
+    "deployArguments": [
+      "0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae",
+      "0x90a9580abeb24937fc658e497221c81ce8553b560304f9525821f32b17dbdaec"
+    ],
+    "deployTx": "0x29b58d55c7c0a1107484d7ef83136a0c1f65258bbf633ef927048734aeba26c5",
+    "address": "0x86B3C3202Ea72F05790FE94528cf833F4C986e94"
+  },
+  "lidoApmEnsName": "lidopm.eth",
+  "lidoApmEnsRegDurationSec": 94608000,
+  "lidoLocator": {
+    "proxy": {
+      "contract": "contracts/0.8.9/proxy/OssifiableProxy.sol",
+      "address": "0x99e1e7c2229e3d81F3f45Cfe24f424B5D6C5a3E2",
+      "constructorArgs": [
+        "0xB16A9aca8159ff82165e675F737edf851Dc32090",
+        "0x99766fb0f3459f309751883934B1f76F230f7105",
+        "0x"
+      ]
+    },
+    "implementation": {
+      "contract": "contracts/0.8.9/LidoLocator.sol",
+      "address": "0x836c292DE854dC472b1B34A4A111c5A8fdAbE7a2",
+      "constructorArgs": [
+        {
+          "accountingOracle": "0xc36e66b8d0fEd932c1e93C936aA2f14d7c380864",
+          "depositSecurityModule": "0x8aC2A1552bD2D291914E4C528B6a608724E4d37A",
+          "elRewardsVault": "0x2070cDE87b1ae4bB1B1cc211cE88f9ecE287cECC",
+          "legacyOracle": "0x039878acFaff438F0f38D0bb7c7382Ba7D7375b6",
+          "lido": "0xC0c09778371CAc510E1c16d5B847F22A3b7fA0be",
+          "oracleReportSanityChecker": "0xD2ba7d041178601f8A822FdE204B9ce73FD8a680",
+          "postTokenRebaseReceiver": "0x039878acFaff438F0f38D0bb7c7382Ba7D7375b6",
+          "burner": "0xBD6292647AAE9A491b9E3D8314Ff9B632A838B62",
+          "stakingRouter": "0x7e2F410e7a63B983220B9D0eef9fc799714F5Cec",
+          "treasury": "0x08653FAEf5324797162774FC825DF24A6d33789F",
+          "validatorsExitBusOracle": "0x84D9FfEe784F2c7e0050e9E0bb358b5457746251",
+          "withdrawalQueue": "0x71C8b2E277A014D19b9d50e2E6B2ae991891C7F0",
+          "withdrawalVault": "0xb35a55a52FF81C5da620B1F5c0B78ee139840Fe6",
+          "oracleDaemonConfig": "0x1bAeeF7AD7B17689399C2FA78A15FaB394D11f45"
+        }
+      ]
+    }
+  },
+  "lidoTemplate": {
+    "contract": "contracts/0.4.24/template/LidoTemplate.sol",
+    "address": "0x3D73F68c14de546215833fC6630bec189d6A784c",
+    "constructorArgs": [
+      "0x99766fb0f3459f309751883934B1f76F230f7105",
+      "0x588cea4f7d09D29eF4a91F5Cbc33857d5B1f10Aa",
+      "0x24CFDcee083233773194E38f95B6DdEd69F224a5",
+      "0xdAcD525F85016A8653dA887717Ee080C9e42D57E",
+      "0x39339185EC190a988A718e6caAC0cF7aFC0E3596",
+      "0xc23DFdCAD5cFB55D30E81c77ED422Fb3Bb840BF4"
+    ],
+    "deployBlock": 2615
+  },
+  "lidoTemplateCreateStdAppReposTx": "0xce0e3d0bd153a23163618c9b0b516cc093fe719faaf1782ceab7d81ea45ec641",
+  "lidoTemplateNewDaoTx": "0xf7b21e2928a8e26f354cfd489d85e0e0f14df93a1c8b32b3a7591287dcc780fb",
+  "minFirstAllocationStrategy": {
+    "contract": "contracts/common/lib/MinFirstAllocationStrategy.sol",
+    "address": "0xdCd99Cb8efCe7f74Bd1E1831024bAAD009f8bcf7",
+    "constructorArgs": []
+  },
+  "miniMeTokenFactory": {
+    "address": "0xdAcD525F85016A8653dA887717Ee080C9e42D57E",
+    "contract": "@aragon/minime/contracts/MiniMeToken.sol",
+    "constructorArgs": []
+  },
+  "networkId": 7032118028,
+  "nodeOperatorsRegistry": {
+    "deployParameters": {
+      "stakingModuleTypeId": "curated-onchain-v1",
+      "stuckPenaltyDelay": 172800
+    }
+  },
+  "oracleDaemonConfig": {
+    "deployParameters": {
+      "NORMALIZED_CL_REWARD_PER_EPOCH": 64,
+      "NORMALIZED_CL_REWARD_MISTAKE_RATE_BP": 1000,
+      "REBASE_CHECK_NEAREST_EPOCH_DISTANCE": 1,
+      "REBASE_CHECK_DISTANT_EPOCH_DISTANCE": 23,
+      "VALIDATOR_DELAYED_TIMEOUT_IN_SLOTS": 7200,
+      "VALIDATOR_DELINQUENT_TIMEOUT_IN_SLOTS": 28800,
+      "NODE_OPERATOR_NETWORK_PENETRATION_THRESHOLD_BP": 100,
+      "PREDICTION_DURATION_IN_SLOTS": 50400,
+      "FINALIZATION_MAX_NEGATIVE_REBASE_EPOCH_SHIFT": 1350
+    },
+    "contract": "contracts/0.8.9/OracleDaemonConfig.sol",
+    "address": "0x1bAeeF7AD7B17689399C2FA78A15FaB394D11f45",
+    "constructorArgs": [
+      "0x99766fb0f3459f309751883934B1f76F230f7105",
+      []
+    ]
+  },
+  "oracleReportSanityChecker": {
+    "deployParameters": {
+      "exitedValidatorsPerDayLimit": 1500,
+      "appearedValidatorsPerDayLimit": 1500,
+      "deprecatedOneOffCLBalanceDecreaseBPLimit": 500,
+      "annualBalanceIncreaseBPLimit": 1000,
+      "simulatedShareRateDeviationBPLimit": 250,
+      "maxValidatorExitRequestsPerReport": 2000,
+      "maxItemsPerExtraDataTransaction": 8,
+      "maxNodeOperatorsPerExtraDataItem": 24,
+      "requestTimestampMargin": 128,
+      "maxPositiveTokenRebase": 5000000,
+      "initialSlashingAmountPWei": 1000,
+      "inactivityPenaltiesAmountPWei": 101,
+      "clBalanceOraclesErrorUpperBPLimit": 50
+    },
+    "contract": "contracts/0.8.9/sanity_checks/OracleReportSanityChecker.sol",
+    "address": "0xD2ba7d041178601f8A822FdE204B9ce73FD8a680",
+    "constructorArgs": [
+      "0x99e1e7c2229e3d81F3f45Cfe24f424B5D6C5a3E2",
+      "0x99766fb0f3459f309751883934B1f76F230f7105",
+      [
+        1500,
+        1500,
+        1000,
+        250,
+        2000,
+        8,
+        24,
+        128,
+        5000000,
+        1000,
+        101,
+        50
+      ]
+    ]
+  },
+  "scratchDeployGasUsed": "122544085",
+  "simpleDvt": {
+    "deployParameters": {
+      "stakingModuleTypeId": "curated-onchain-v1",
+      "stuckPenaltyDelay": 432000
+    }
+  },
+  "stakingRouter": {
+    "proxy": {
+      "contract": "contracts/0.8.9/proxy/OssifiableProxy.sol",
+      "address": "0x7e2F410e7a63B983220B9D0eef9fc799714F5Cec",
+      "constructorArgs": [
+        "0x977AcA2aad3F429ab01E9F6f321447e8e21bda33",
+        "0x99766fb0f3459f309751883934B1f76F230f7105",
+        "0x"
+      ]
+    },
+    "implementation": {
+      "contract": "contracts/0.8.9/StakingRouter.sol",
+      "address": "0x977AcA2aad3F429ab01E9F6f321447e8e21bda33",
+      "constructorArgs": [
+        "0x4242424242424242424242424242424242424242"
+      ]
+    }
+  },
+  "validatorsExitBusOracle": {
+    "deployParameters": {
+      "consensusVersion": 2
+    },
+    "proxy": {
+      "contract": "contracts/0.8.9/proxy/OssifiableProxy.sol",
+      "address": "0x84D9FfEe784F2c7e0050e9E0bb358b5457746251",
+      "constructorArgs": [
+        "0x0FCAea36AB3eDb9F4C8392637c158FdC2b374439",
+        "0x99766fb0f3459f309751883934B1f76F230f7105",
+        "0x"
+      ]
+    },
+    "implementation": {
+      "contract": "contracts/0.8.9/oracle/ValidatorsExitBusOracle.sol",
+      "address": "0x0FCAea36AB3eDb9F4C8392637c158FdC2b374439",
+      "constructorArgs": [
+        12,
+        1740610860,
+        "0x99e1e7c2229e3d81F3f45Cfe24f424B5D6C5a3E2"
+      ]
+    }
+  },
+  "vestingParams": {
+    "unvestedTokensAmount": "0",
+    "holders": {
+      "0xCD1f9954330AF39a74Fd6e7B25781B4c24ee373f": "820000000000000000000000",
+      "0xaa6bfBCD634EE744CB8FE522b29ADD23124593D3": "60000000000000000000000",
+      "0xBA59A84C6440E8cccfdb5448877E26F1A431Fc8B": "60000000000000000000000",
+      "0x08653FAEf5324797162774FC825DF24A6d33789F": "60000000000000000000000"
+    },
+    "start": 0,
+    "cliff": 0,
+    "end": 0,
+    "revokable": false
+  },
+  "withdrawalQueueERC721": {
+    "deployParameters": {
+      "name": "Lido: stETH Withdrawal NFT",
+      "symbol": "unstETH",
+      "baseUri": null
+    },
+    "proxy": {
+      "contract": "contracts/0.8.9/proxy/OssifiableProxy.sol",
+      "address": "0x71C8b2E277A014D19b9d50e2E6B2ae991891C7F0",
+      "constructorArgs": [
+        "0xa5EC8EB51D9cc5081785eE5c8afCdF3634080f0E",
+        "0x99766fb0f3459f309751883934B1f76F230f7105",
+        "0x"
+      ]
+    },
+    "implementation": {
+      "contract": "contracts/0.8.9/WithdrawalQueueERC721.sol",
+      "address": "0xa5EC8EB51D9cc5081785eE5c8afCdF3634080f0E",
+      "constructorArgs": [
+        "0xA6590888aB6D2bEdd13F98345deF31E6189E8eA0",
+        "Lido: stETH Withdrawal NFT",
+        "unstETH"
+      ]
+    }
+  },
+  "withdrawalVault": {
+    "implementation": {
+      "contract": "contracts/0.8.9/WithdrawalVault.sol",
+      "address": "0x5B62B387f5D921d246248F5b64065Dbd2c6f05db",
+      "constructorArgs": [
+        "0xC0c09778371CAc510E1c16d5B847F22A3b7fA0be",
+        "0x08653FAEf5324797162774FC825DF24A6d33789F"
+      ]
+    },
+    "proxy": {
+      "contract": "contracts/0.8.4/WithdrawalsManagerProxy.sol",
+      "address": "0xb35a55a52FF81C5da620B1F5c0B78ee139840Fe6",
+      "constructorArgs": [
+        "0xb137351Bdb35C3363cd8A5ff3758260e9dB5CC66",
+        "0x5B62B387f5D921d246248F5b64065Dbd2c6f05db"
+      ]
+    },
+    "address": "0xb35a55a52FF81C5da620B1F5c0B78ee139840Fe6"
+  },
+  "wstETH": {
+    "contract": "contracts/0.6.12/WstETH.sol",
+    "address": "0xA6590888aB6D2bEdd13F98345deF31E6189E8eA0",
+    "constructorArgs": [
+      "0xC0c09778371CAc510E1c16d5B847F22A3b7fA0be"
+    ]
+  }
+}

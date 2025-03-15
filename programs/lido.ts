@@ -77,6 +77,22 @@ lido
   });
 
 lido
+  .command('eth-by-shares')
+  .argument('<shares>', 'shares amount')
+  .action(async (shares) => {
+    const eth = await lidoContract.getPooledEthByShares(parseEther(shares));
+    logger.log('Eth by shares', formatEther(eth));
+  });
+
+lido
+  .command('shares-by-eth')
+  .argument('<eth>', 'eth amount')
+  .action(async (eth) => {
+    const shares = await lidoContract.getSharesByPooledEth(parseEther(eth));
+    logger.log('Shares by eth', formatEther(shares));
+  });
+
+lido
   .command('submit')
   .description('submits ether amount')
   .argument('<amount>', 'ether amount')

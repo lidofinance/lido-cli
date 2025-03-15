@@ -5,6 +5,10 @@ export interface CallScriptAction {
   data: string;
 }
 
+export interface CallScriptActionWithDescription extends CallScriptAction {
+  desc: string;
+}
+
 export const CALLSCRIPT_ID = '0x00000001';
 
 export function encodeCallScript(actions: CallScriptAction[]): string {

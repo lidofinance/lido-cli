@@ -6,20 +6,43 @@ export type NodeOperator = {
   name: string;
 };
 
-export const getNodeOperatorIds = async (moduleAddress: string) => {
+export const getNodeOperatorIds = async (moduleAddress: string, limit = 500) => {
   const stakingModuleContract = getStakingModuleContract(moduleAddress);
   const nodeOperatorsCount = await stakingModuleContract.getNodeOperatorsCount();
-  const operatorIds: Promise<bigint[]> = stakingModuleContract.getNodeOperatorIds(0, nodeOperatorsCount);
+  const operatorIds: bigint[] = [];
+
+  let offset = 0;
+
+  while (offset < nodeOperatorsCount) {
+    const result = await stakingModuleContract.getNodeOperatorIds(offset, limit);
+    operatorIds.push(...result);
+    offset += limit;
+  }
 
   return operatorIds;
+};
+
+export const isOperatorNamesSupported = async (moduleAddress: string) => {
+  try {
+    const moduleContract = norContract.attach(moduleAddress) as typeof norContract;
+    await moduleContract.getNodeOperator(0, true);
+    return true;
+  } catch (error) {
+    if (error != null && typeof error === 'object' && 'code' in error && error?.code === 'CALL_EXCEPTION') {
+      return false;
+    }
+
+    throw error;
+  }
 };
 
 export const getNodeOperators = async (moduleAddress: string): Promise<NodeOperator[]> => {
   const operatorIdsBigInt: bigint[] = await getNodeOperatorIds(moduleAddress);
   const operatorIds = operatorIdsBigInt.map((operatorId) => Number(operatorId));
+  const isNamesSupported = await isOperatorNamesSupported(moduleAddress);
 
   // try to detect name if it's a curated module implementation
-  try {
+  if (isNamesSupported) {
     const moduleContract = norContract.attach(moduleAddress) as typeof norContract;
 
     return await Promise.all(
@@ -28,10 +51,8 @@ export const getNodeOperators = async (moduleAddress: string): Promise<NodeOpera
         return { operatorId, name: result.name };
       }),
     );
-  } catch {
-    return operatorIds.map((operatorId) => {
-      return { operatorId, name: 'unknown' };
-    });
+  } else {
+    return operatorIds.map((operatorId) => ({ operatorId, name: 'unknown' }));
   }
 };
 

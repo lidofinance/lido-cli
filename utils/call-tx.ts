@@ -1,11 +1,12 @@
 import { Contract, ContractTransactionResponse } from 'ethers';
 import { confirmTx } from './confirm-tx';
-import { printTx } from './print-tx';
+import { printTxToContract } from './print-tx';
 import { logger } from './logger';
 import { splitArgsAndOverrides } from './split-args-and-overrides';
+import { throwIfCanNotForward } from './token-manager';
 
 export const contractCallTxWithConfirm = async (contract: Contract, method: string, args: unknown[]) => {
-  await printTx(contract, method, args);
+  await printTxToContract(contract, method, args);
   await contractStaticCallTx(contract, method, args);
 
   const confirmed = await confirmTx();
@@ -21,7 +22,9 @@ export const contractStaticCallTx = async (contract: Contract, method: string, a
     const result = await contract[method].staticCall(...args);
     logger.success(`Successfully called ${method} on ${contractAddress}. Result:`, result);
   } catch (error) {
-    logger.error(`Failed to call ${method} on ${contractAddress}. Error:`, error);
+    logger.error(`Failed to call ${method} on ${contractAddress}`);
+    throwIfCanNotForward(error);
+    throw error;
   }
 };
 

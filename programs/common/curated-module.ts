@@ -11,7 +11,7 @@ import {
 } from '@utils';
 import { getPenalizedOperators } from '../staking-module';
 import { aclContract } from '@contracts';
-import { DepositData, supplementAndVerifyDepositDataArray } from 'utils/deposit-data';
+import { DepositData, supplementAndVerifyDepositDataArray } from '@utils';
 
 export const addCuratedModuleSubCommands = (command: Command, contract: Contract) => {
   command
@@ -78,6 +78,15 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
     });
 
   command
+    .command('rename-operator')
+    .description('renames node operator')
+    .argument('<operator-id>', 'operator id')
+    .argument('<name>', 'operator name')
+    .action(async (operatorId, name) => {
+      await authorizedCall(contract, 'setNodeOperatorName', [Number(operatorId), name]);
+    });
+
+  command
     .command('key')
     .description('returns signing key')
     .argument('<operator-id>', 'operator id')
@@ -137,7 +146,7 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
     .argument('<operator-id>', 'node operator id')
     .argument('<file-path>', 'file path')
     .action(async (operatorId, filePath) => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const depositData: DepositData[] = require(filePath);
       await supplementAndVerifyDepositDataArray(depositData);
 
@@ -174,9 +183,10 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
     .description('sets target validators limit')
     .option('-o, --operator-id <number>', 'node operator id')
     .option('-l, --limit <number>', 'target limit')
+    .option('-h, --hard-limit', 'hard limit', false)
     .action(async (options) => {
-      const { operatorId, limit } = options;
-      await authorizedCall(contract, 'updateTargetValidatorsLimits', [operatorId, true, limit]);
+      const { operatorId, limit, hardLimit } = options;
+      await authorizedCall(contract, 'updateTargetValidatorsLimits', [operatorId, hardLimit ? 2 : 1, limit]);
     });
 
   command
@@ -185,7 +195,7 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
     .option('-o, --operator-id <number>', 'node operator id')
     .action(async (options) => {
       const { operatorId } = options;
-      await authorizedCall(contract, 'updateTargetValidatorsLimits', [operatorId, false, 0]);
+      await authorizedCall(contract, 'updateTargetValidatorsLimits', [operatorId, 0, 0]);
     });
 
   command

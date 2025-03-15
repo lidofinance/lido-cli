@@ -1,4 +1,4 @@
-import { encodeCallScript, logger, parseMethodCallToContract } from '@utils';
+import { encodeCallScript, isNonInteractive, logger, parseMethodCallToContract } from '@utils';
 import { promptAmountOfCalls } from './prompt-amount';
 import { printCallExample, printCallsSuccess, promptMethodCall } from './prompt-call';
 import { OmnibusScript, promptOmnibusDescription } from './prompt-description';
@@ -11,6 +11,10 @@ export interface VoteTxData {
 }
 
 export const promptVoting = async (): Promise<VoteTxData | void> => {
+  if (isNonInteractive()) {
+    throw new Error('Non-interactive mode is not supported for voting');
+  }
+
   const amountOfCalls = await promptAmountOfCalls();
   const omnibusScripts: OmnibusScript[] = [];
 

@@ -1,8 +1,6 @@
-import { authorizedCall, getLatestBlock, getProvider, logger } from '@utils';
-import chalk from 'chalk';
+import { authorizedCall, getLatestBlock, getProvider, logger, confirmOracleMemberTx } from '@utils';
 import { Command } from 'commander';
 import { Contract, EventLog, formatEther } from 'ethers';
-import prompts from 'prompts';
 
 export const addConsensusCommands = (command: Command, contract: Contract) => {
   command
@@ -62,14 +60,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .option('-q, --quorum <string>', 'quorum')
     .action(async (options) => {
       const { address, quorum } = options;
-      const { confirm } = await prompts({
-        type: 'confirm',
-        name: 'confirm',
-        message: chalk.red(
-          'This change will affect the operation of Ejector. Are all operators ready for this change?',
-        ),
-        initial: false,
-      });
+      const confirm = await confirmOracleMemberTx();
 
       if (!confirm) {
         logger.error('Aborted');
@@ -86,14 +77,7 @@ export const addConsensusCommands = (command: Command, contract: Contract) => {
     .option('-q, --quorum <string>', 'quorum')
     .action(async (options) => {
       const { address, quorum } = options;
-      const { confirm } = await prompts({
-        type: 'confirm',
-        name: 'confirm',
-        message: chalk.red(
-          'This change will affect the operation of Ejector. Are all operators ready for this change?',
-        ),
-        initial: false,
-      });
+      const confirm = await confirmOracleMemberTx();
 
       if (!confirm) {
         logger.error('Aborted');

@@ -11,6 +11,11 @@ etherscan
   .action(async (address) => {
     const signedMessages = await fetchEtherscanSignatureDetailsForAddress(address);
 
+    if (!signedMessages.length) {
+      logger.warn('No verified signatures found');
+      return;
+    }
+
     signedMessages.map(({ message, signature }) => {
       logger.log('');
       logger.log('Message:  ', message);

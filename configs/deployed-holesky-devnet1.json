@@ -328,7 +328,7 @@
       "usePredefinedAddressInstead": null
     },
     "contract": "contracts/0.8.9/DepositSecurityModule.sol",
-    "address": "0xE9c9FFcC3E837815C99bb661f147B337A8E0C79D",
+    "address": "0x9078C4e99A3b29f77164Da4892f68abA498cF5D9",
     "constructorArgs": [
       "0x4e97Cc8B850f3CE6E06899A09141e9C5EC5eFD3F",
       "0x4242424242424242424242424242424242424242",
@@ -547,7 +547,7 @@
       "maxPositiveTokenRebase": 5000000
     },
     "contract": "contracts/0.8.9/sanity_checks/OracleReportSanityChecker.sol",
-    "address": "0xa256cd21d18ebf6099c2B97ddC0Dfc36D7650fAE",
+    "address": "0xd86F9fA1899233A09C0d8B80D40c1732E0f14cFB",
     "constructorArgs": [
       "0x3F8ae3A6452DC4F7df1E391df39618a9aCF715A6",
       "0x214bA7BE329267fBF53c40768c5a9E77E3a9d6Ae",

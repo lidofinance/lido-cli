@@ -1,4 +1,5 @@
 export * from './allowed-list';
+export * from './apm-registry';
 export * from './app-proxy';
 export * from './aragon';
 export * from './burner';
@@ -26,4 +27,5 @@ export * from './token-manager';
 export * from './unlimited-stake';
 export * from './voting';
 export * from './withdrawal-request';
+export * from './withdrawal-vault';
 export * from './wsteth';
