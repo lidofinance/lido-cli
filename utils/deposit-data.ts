@@ -26,11 +26,11 @@ export type DepositData = {
 };
 
 export const supplementAndVerifyDepositDataArray = async (depositDataArray: DepositData[]): Promise<boolean> => {
-  const suplplementedDepositDataArray = await supplementDepositDataArray(depositDataArray.map(normilizeDepositDta));
-  return suplplementedDepositDataArray.every(verifyDepositData);
+  const supplementedDepositDataArray = await supplementDepositDataArray(depositDataArray.map(normilizeDepositData));
+  return supplementedDepositDataArray.every(verifyDepositData);
 };
 
-export const normilizeDepositDta = (depositData: DepositData & Record<string, unknown>): DepositData => {
+export const normilizeDepositData = (depositData: DepositData & Record<string, unknown>): DepositData => {
   const {
     withdrawal_credentials,
     deposit_message_root,
