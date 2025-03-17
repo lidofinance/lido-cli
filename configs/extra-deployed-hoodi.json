@@ -1,0 +1,20 @@
+{
+  "unlimitedStake": {
+    "address": "0x064A4D64040bFD52D0d1dC7f42eA799cb0a8AC40"
+  },
+  "allowedRelayList": {},
+  "obolLidoSplit": {
+    "factory": {
+      "obol": {},
+      "ssv": {}
+    }
+  },
+  "0xSplit": {
+    "splitMain": {}
+  },
+  "gnosis": {
+    "factory": {},
+    "singleton": {}
+  },
+  "csm": {}
+}
