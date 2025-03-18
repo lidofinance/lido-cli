@@ -1,5 +1,5 @@
 import prompts from 'prompts';
-import { isAddress } from 'ethers';
+import { Contract, isAddress } from 'ethers';
 import { logger } from '@utils';
 import chalk from 'chalk';
 import {
@@ -76,6 +76,31 @@ export const promptScriptsRolesWithConfirm = async (beneficiary: string) => {
   return [...srScripts, ...norScripts, ...aoScripts, ...veboScripts, ...oracleConfigScripts, ...sanityCheckerScripts];
 };
 
+export const promptCuratedModulesScriptsRoles = async () => {
+  const beneficiary = await promptRolesBeneficiary(DEFAULT_DEVNET_CONFIG.ROLES_BENEFICIARY);
+  const moduleIds = await promptModuleIds(DEFAULT_DEVNET_CONFIG.CURATED_MODULE_IDS);
+  return promptScriptsCurateModulesRolesWithConfirm(moduleIds, beneficiary);
+};
+
+export const promptScriptsCurateModulesRolesWithConfirm = async (moduleIds: number[], beneficiary: string) => {
+  const result = [];
+
+  for (const moduleId of moduleIds) {
+    const { stakingModuleAddress } = await stakingRouterContract.getStakingModule(moduleId);
+    const moduleContract = norContract.attach(stakingModuleAddress) as Contract;
+    const moduleScripts = await encodeFromVotingGrantRolesAragonWithConfirm(
+      `Module ${moduleId}`,
+      NOR_ROLES,
+      moduleContract,
+      beneficiary,
+    );
+
+    result.push(...moduleScripts);
+  }
+
+  return result;
+};
+
 export const encodeScriptsRoles = async (beneficiary: string) => {
   const srScripts = await encodeFromAgentGrantRolesAccessControl(
     'SR',
@@ -121,6 +146,21 @@ export const promptRolesBeneficiary = async (initialAddress: string) => {
   });
 
   return address;
+};
+
+export const promptModuleIds = async (initialIds: number[]) => {
+  const { ids } = await prompts({
+    type: 'text',
+    name: 'ids',
+    validate: (value) => {
+      const ids: number[] = value.split(',').map((id: string) => parseInt(id, 10));
+      return ids.every((id) => !isNaN(id) && id >= 0);
+    },
+    initial: initialIds.join(','),
+    message: 'Enter module ids separated by comma',
+  });
+
+  return ids.split(',').map((id: string) => parseInt(id.trim(), 10)) as number[];
 };
 
 export const confirmRoleGranting = async () => {
