@@ -15,7 +15,7 @@ export const devnetCSMStart = async () => {
   const CS_ACCOUNTING_ADDRESS = process.env.CS_ACCOUNTING_ADDRESS as string;
   const CS_ORACLE_HASH_CONSENSUS_ADDRESS = process.env.CS_ORACLE_HASH_CONSENSUS_ADDRESS as string;
 
-  const CS_MODULE_NAME = process.env.CS_MODULE_NAME ?? 'CommunityStaking';
+  const CS_MODULE_NAME = process.env.CS_MODULE_NAME ?? 'Community Staking';
   const CS_STAKE_SHARE_LIMIT = process.env.CS_STAKE_SHARE_LIMIT ?? 2000; // 20%
   const CS_PRIORITY_EXIT_SHARE_THRESHOLD = process.env.CS_PRIORITY_EXIT_SHARE_THRESHOLD ?? 2500; // 25%
   const CS_STAKING_MODULE_FEE = process.env.CS_STAKING_MODULE_FEE ?? 800; // 8%
