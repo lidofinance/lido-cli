@@ -1,7 +1,7 @@
 import { program } from '@command';
 import { getConfigValue } from '@configs';
-import { kernelContract } from '@contracts';
-import { contractCallTxWithConfirm } from '@utils';
+import { ensContract, getAppProxyContract, getPublicResolverContract, kernelContract } from '@contracts';
+import { contractCallTxWithConfirm, logger } from '@utils';
 import { namehash } from 'ethers';
 
 const aragon = program.command('aragon').description('interact with aragon contracts');
@@ -18,4 +18,21 @@ aragon
     const kernelAddress = await kernelContract.getAddress();
 
     await contractCallTxWithConfirm(kernelContract, 'newAppProxy(address,bytes32)', [kernelAddress, appId]);
+  });
+
+aragon
+  .command('repo')
+  .description('returns the repo address')
+  .argument('<address>', 'address')
+  .action(async (address) => {
+    const proxyContract = getAppProxyContract(async () => address);
+    const appId = await proxyContract.appId();
+
+    const getResolverAddress = () => ensContract.resolver(appId);
+    const resolverContract = getPublicResolverContract(getResolverAddress);
+
+    const getRepoAddress = () => resolverContract.addr(appId);
+    const repoAddress = await getRepoAddress();
+
+    logger.log('Repo address', repoAddress);
   });

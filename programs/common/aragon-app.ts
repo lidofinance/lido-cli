@@ -143,6 +143,21 @@ export const addAragonAppSubCommands = (command: Command, contract: Contract) =>
     });
 
   command
+    .command('repo')
+    .description('returns latest version of the app')
+    .action(async () => {
+      const appId = await proxyContract.appId();
+
+      const getResolverAddress = () => ensContract.resolver(appId);
+      const resolverContract = getPublicResolverContract(getResolverAddress);
+
+      const getRepoAddress = () => resolverContract.addr(appId);
+      const repoAddress = await getRepoAddress();
+
+      logger.log('Repo address', repoAddress);
+    });
+
+  command
     .command('implementation-upgrade-to')
     .description('replace app')
     .argument('<new-version>', 'new version')
