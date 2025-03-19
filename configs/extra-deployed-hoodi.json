@@ -2,7 +2,9 @@
   "unlimitedStake": {
     "address": "0x064A4D64040bFD52D0d1dC7f42eA799cb0a8AC40"
   },
-  "allowedRelayList": {},
+  "allowedRelayList": {
+    "address": "0x279d3A456212a1294DaEd0faEE98675a52E8A4Bf"
+  },
   "obolLidoSplit": {
     "factory": {
       "obol": {},
