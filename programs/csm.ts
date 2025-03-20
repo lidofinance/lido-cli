@@ -154,7 +154,7 @@ csm
       const total = await csModuleContract.getNodeOperator(operatorId);
 
       fromIndex = 0;
-      count = total.totalAddedValidators;
+      count = total.totalAddedKeys;
     }
 
     const [pubkeys, signatures] = await csModuleContract.getSigningKeysWithSignatures(
