@@ -9,6 +9,7 @@ import {
 import { encodeFromVotingGrantRolesAragon, encodeFromVotingGrantRolesAragonWithConfirm } from './aragon';
 import {
   consensusForAccountingContract,
+  consensusForCSMContract,
   consensusForExitBusContract,
   norContract,
   oracleConfigContract,
@@ -99,6 +100,34 @@ export const promptScriptsCurateModulesRolesWithConfirm = async (moduleIds: numb
   }
 
   return result;
+};
+
+export const promptOraclesScriptsRoles = async () => {
+  const beneficiary = await promptRolesBeneficiary(DEFAULT_DEVNET_CONFIG.ROLES_BENEFICIARY);
+  return promptScriptsOraclesRolesWithConfirm(beneficiary);
+};
+
+export const promptScriptsOraclesRolesWithConfirm = async (beneficiary: string) => {
+  const aoScripts = await encodeFromAgentGrantRolesAccessControlWithConfirm(
+    'AO consensus',
+    HASH_CONSENSUS_ROLES,
+    consensusForAccountingContract,
+    beneficiary,
+  );
+  const veboScripts = await encodeFromAgentGrantRolesAccessControlWithConfirm(
+    'VEBO consensus',
+    HASH_CONSENSUS_ROLES,
+    consensusForExitBusContract,
+    beneficiary,
+  );
+  const csmScripts = await encodeFromAgentGrantRolesAccessControlWithConfirm(
+    'CS consensus',
+    HASH_CONSENSUS_ROLES,
+    consensusForCSMContract,
+    beneficiary,
+  );
+
+  return [...aoScripts, ...veboScripts, ...csmScripts];
 };
 
 export const encodeScriptsRoles = async (beneficiary: string) => {
