@@ -1,3 +1,3 @@
 #!/bin/bash
 
-yarn --silent ts-node ./index "$@"
+yarn --silent tsx ./index "$@"

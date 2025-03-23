@@ -14,7 +14,7 @@ export const fetchCLResponse = async (url: string, init?: RequestInit) => {
 
 export const fetchCL = async (url: string, init?: RequestInit) => {
   const response = await fetchCLResponse(url, init);
-  return await response.json();
+  return (await response.json()) as { data?: unknown };
 };
 
 export const fetchAllValidators = async (stateId: string | number = 'head') => {
@@ -23,7 +23,11 @@ export const fetchAllValidators = async (stateId: string | number = 'head') => {
   return await new Promise<ValidatorContainer[]>((resolve, reject) => {
     try {
       (async () => {
-        const stream = response.body.pipe(JSONStream.parse('data.*'));
+        const stream = response.body?.pipe(JSONStream.parse('data.*'));
+
+        if (!stream) {
+          throw new Error('Failed to parse response');
+        }
 
         const validators: ValidatorContainer[] = [];
         stream.on('data', (validator: ValidatorContainer) => validators.push(validator));
