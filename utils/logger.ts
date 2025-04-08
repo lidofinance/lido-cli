@@ -1,5 +1,7 @@
-import { green, yellow, red } from 'chalk';
+import chalk from 'chalk';
 import { stringify } from './stringify';
+
+const { green, yellow, red } = chalk;
 
 class Logger {
   dir = console.dir;

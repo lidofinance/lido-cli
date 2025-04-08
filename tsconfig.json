@@ -1,15 +1,17 @@
 {
   "compilerOptions": {
-    "lib": ["DOM", "ES2021"],
+    "lib": ["ES2021"],
     "target": "ES2020",
-    "types": ["node"],
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
+		"moduleDetection": "force",
+		"module": "Preserve",
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"isolatedModules": true,
     "strict": true,
     "strictNullChecks": true,
     "skipLibCheck": true,
     "noEmit": true,
+    "forceConsistentCasingInFileNames": false,
     "baseUrl": ".",
     "paths": {
       "@command": ["command"],
@@ -22,7 +24,6 @@
     }
   },
   "ts-node": {
-    "swc": true,
     "require": ["tsconfig-paths/register"]
   }
 }
