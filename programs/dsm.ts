@@ -173,8 +173,7 @@ dsm
   .description('removes the guardian and sets the quorum')
   .argument('<address>', 'guardian address')
   .argument('<quorum>', 'new quorum')
-  .action(async (options) => {
-    const { address, quorum } = options;
+  .action(async (address, quorum) => {
     await authorizedCall(dsmContract, 'removeGuardian', [address, quorum]);
   });
 
