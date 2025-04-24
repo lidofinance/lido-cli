@@ -31,6 +31,7 @@ export * from './staking-router';
 export * from './tx';
 export * from './unlimited-stake';
 export * from './validators';
+export * from './validator-exit-verifier';
 export * from './voting';
 export * from './withdrawal-request';
 export * from './withdrawal-vault';
