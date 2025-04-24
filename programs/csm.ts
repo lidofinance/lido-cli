@@ -1,5 +1,5 @@
 import { program } from '@command';
-import { csAccountingContract, csModuleContract } from '@contracts';
+import { csAccountingContract, csModuleContract, getCSMVersion, permissionlessGateContract } from '@contracts';
 import { addAccessControlSubCommands, addLogsCommands, addParsingCommands, addPauseUntilSubCommands } from './common';
 import {
   contractCallTxWithConfirm,
@@ -60,18 +60,32 @@ csm
   .action(async (options) => {
     const { keysCount, publicKeys, signatures, managerAddress, rewardAddress, extendedManagerPermissions, referrer } =
       options;
+
+    const csmVersion = await getCSMVersion(wallet.provider);
+
     const curveId = await csAccountingContract.DEFAULT_BOND_CURVE_ID();
     const value = await csAccountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
 
-    await contractCallTxWithConfirm(csModuleContract, 'addNodeOperatorETH', [
-      keysCount,
-      publicKeys,
-      signatures,
-      [managerAddress, rewardAddress, !!extendedManagerPermissions],
-      [], // early adoption proof
-      referrer,
-      { value },
-    ]);
+    if (csmVersion < 2) {
+      await contractCallTxWithConfirm(csModuleContract, 'addNodeOperatorETH', [
+        keysCount,
+        publicKeys,
+        signatures,
+        [managerAddress, rewardAddress, !!extendedManagerPermissions],
+        [], // early adoption proof
+        referrer,
+        { value },
+      ]);
+    } else {
+      await contractCallTxWithConfirm(permissionlessGateContract, 'addNodeOperatorETH', [
+        keysCount,
+        publicKeys,
+        signatures,
+        [managerAddress, rewardAddress, !!extendedManagerPermissions],
+        referrer,
+        { value },
+      ]);
+    }
   });
 
 csm
@@ -89,22 +103,35 @@ csm
     const depositData: DepositData[] = require(filePath);
     await supplementAndVerifyDepositDataArray(depositData);
 
-    const keysCount = depositData.length;
+    const csmVersion = await getCSMVersion(wallet.provider);
+
     const curveId = await csAccountingContract.DEFAULT_BOND_CURVE_ID();
+    const keysCount = depositData.length;
     const value = await csAccountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
 
     const publicKeys = joinHex(depositData.map(({ pubkey }) => pubkey));
     const signatures = joinHex(depositData.map(({ signature }) => signature));
 
-    await contractCallTxWithConfirm(csModuleContract, 'addNodeOperatorETH', [
-      keysCount,
-      publicKeys,
-      signatures,
-      [managerAddress, rewardAddress, !!extendedManagerPermissions],
-      [], // early adoption proof
-      referrer,
-      { value },
-    ]);
+    if (csmVersion < 2) {
+      await contractCallTxWithConfirm(csModuleContract, 'addNodeOperatorETH', [
+        keysCount,
+        publicKeys,
+        signatures,
+        [managerAddress, rewardAddress, !!extendedManagerPermissions],
+        [], // early adoption proof
+        referrer,
+        { value },
+      ]);
+    } else {
+      await contractCallTxWithConfirm(permissionlessGateContract, 'addNodeOperatorETH', [
+        keysCount,
+        publicKeys,
+        signatures,
+        [managerAddress, rewardAddress, !!extendedManagerPermissions],
+        referrer,
+        { value },
+      ]);
+    }
   });
 
 csm

@@ -8,6 +8,7 @@ export * from './deposit-contract';
 export * from './dsm';
 export * from './ens';
 export * from './gnosis';
+export * from './initializable';
 export * from './ldo';
 export * from './lido';
 export * from './locator';
