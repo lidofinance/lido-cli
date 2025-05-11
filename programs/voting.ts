@@ -100,3 +100,20 @@ voting
     await executeVote(voteId);
     logger.log('Executed');
   });
+
+voting
+  .command('assign-delegate')
+  .description('assigns delegate')
+  .argument('<delegate>', 'delegate address')
+  .action(async (delegate) => {
+    const tx = await contractCallTxWithConfirm(votingContract, 'assignDelegate', [delegate]);
+    logger.log('Assigned delegate', tx);
+  });
+
+voting
+  .command('unassign-delegate')
+  .description('unassigns delegate')
+  .action(async () => {
+    const tx = await contractCallTxWithConfirm(votingContract, 'unassignDelegate', []);
+    logger.log('Unassigned delegate', tx);
+  });
