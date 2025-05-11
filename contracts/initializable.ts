@@ -1,4 +1,4 @@
-import { Provider } from "ethers";
+import { Provider } from 'ethers';
 
 export async function getVersion(provider: Provider, contract: string): Promise<bigint> {
   //  See Initializable.sol
