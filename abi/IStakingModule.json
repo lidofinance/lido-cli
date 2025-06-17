@@ -64,12 +64,12 @@
       }
     ],
     "name": "decreaseVettedSigningKeysCount",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getActiveNodeOperatorsCount",
     "outputs": [
       {
@@ -179,7 +179,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getNodeOperatorsCount",
     "outputs": [
       {
@@ -192,7 +192,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getNonce",
     "outputs": [
       {
@@ -205,7 +205,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getStakingModuleSummary",
     "outputs": [
       {
@@ -228,7 +228,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getType",
     "outputs": [
       {
@@ -270,9 +270,9 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "onExitedAndStuckValidatorsCountsUpdated",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -285,14 +285,14 @@
       }
     ],
     "name": "onRewardsMinted",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "onWithdrawalCredentialsChanged",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -315,7 +315,7 @@
       }
     ],
     "name": "unsafeUpdateValidatorsCount",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -333,7 +333,7 @@
       }
     ],
     "name": "updateExitedValidatorsCount",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -351,7 +351,7 @@
       }
     ],
     "name": "updateRefundedValidatorsCount",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -369,7 +369,7 @@
       }
     ],
     "name": "updateStuckValidatorsCount",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -392,7 +392,7 @@
       }
     ],
     "name": "updateTargetValidatorsLimits",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   }

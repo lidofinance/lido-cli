@@ -1,16 +1,16 @@
 [
   {
-    "inputs": [ ],
+    "inputs": [],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InvalidContractVersionIncrement",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NonZeroContractVersionOnInit",
     "type": "error"
   },
@@ -44,7 +44,7 @@
     "type": "event"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getContractVersion",
     "outputs": [
       {

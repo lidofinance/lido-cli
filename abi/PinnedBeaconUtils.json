@@ -1,0 +1,20 @@
+[
+  {
+    "inputs": [],
+    "name": "AlreadyOssified",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "PinnedImplementationUpdated",
+    "type": "event"
+  }
+]

@@ -155,14 +155,24 @@
             "type": "uint256[]"
           },
           {
-            "internalType": "uint256[]",
-            "name": "vaultValues",
-            "type": "uint256[]"
+            "internalType": "uint256",
+            "name": "vaultsTotalTreasuryFeesShares",
+            "type": "uint256"
           },
           {
-            "internalType": "int256[]",
-            "name": "inOutDeltas",
-            "type": "int256[]"
+            "internalType": "uint256",
+            "name": "vaultsTotalDeficit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "vaultsDataTreeRoot",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "vaultsDataTreeCid",
+            "type": "string"
           }
         ],
         "internalType": "struct ReportValues",
@@ -220,14 +230,24 @@
             "type": "uint256[]"
           },
           {
-            "internalType": "uint256[]",
-            "name": "vaultValues",
-            "type": "uint256[]"
+            "internalType": "uint256",
+            "name": "vaultsTotalTreasuryFeesShares",
+            "type": "uint256"
           },
           {
-            "internalType": "int256[]",
-            "name": "inOutDeltas",
-            "type": "int256[]"
+            "internalType": "uint256",
+            "name": "vaultsTotalDeficit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "vaultsDataTreeRoot",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "vaultsDataTreeCid",
+            "type": "string"
           }
         ],
         "internalType": "struct ReportValues",
@@ -334,21 +354,6 @@
           {
             "internalType": "uint256",
             "name": "postTotalPooledEther",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "vaultsLockedEther",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "vaultsTreasuryFeeShares",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalVaultsTreasuryFeeShares",
             "type": "uint256"
           }
         ],

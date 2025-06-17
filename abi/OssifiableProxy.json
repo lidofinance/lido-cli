@@ -21,12 +21,12 @@
     "type": "constructor"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NotAdmin",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ProxyIsOssified",
     "type": "error"
   },
@@ -64,7 +64,7 @@
   },
   {
     "anonymous": false,
-    "inputs": [ ],
+    "inputs": [],
     "name": "ProxyOssified",
     "type": "event"
   },
@@ -94,12 +94,12 @@
       }
     ],
     "name": "proxy__changeAdmin",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "proxy__getAdmin",
     "outputs": [
       {
@@ -112,7 +112,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "proxy__getImplementation",
     "outputs": [
       {
@@ -125,7 +125,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "proxy__getIsOssified",
     "outputs": [
       {
@@ -138,9 +138,9 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "proxy__ossify",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -153,7 +153,7 @@
       }
     ],
     "name": "proxy__upgradeTo",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -176,7 +176,7 @@
       }
     ],
     "name": "proxy__upgradeToAndCall",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },

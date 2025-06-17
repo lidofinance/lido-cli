@@ -1,0 +1,41 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "refSlot",
+        "type": "uint256"
+      }
+    ],
+    "name": "getReport",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "success",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "clBalanceGwei",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "withdrawalVaultBalanceWei",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalDepositedValidators",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalExitedValidators",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

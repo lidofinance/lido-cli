@@ -65,7 +65,7 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ZeroAddress",
     "type": "error"
   },
@@ -196,7 +196,7 @@
     "type": "event"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "CONFIG_MANAGER_ROLE",
     "outputs": [
       {
@@ -209,7 +209,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
@@ -335,7 +335,7 @@
       }
     ],
     "name": "grantRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -377,7 +377,7 @@
       }
     ],
     "name": "renounceRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -395,7 +395,7 @@
       }
     ],
     "name": "revokeRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -413,7 +413,7 @@
       }
     ],
     "name": "set",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -445,7 +445,7 @@
       }
     ],
     "name": "unset",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -463,7 +463,7 @@
       }
     ],
     "name": "update",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   }

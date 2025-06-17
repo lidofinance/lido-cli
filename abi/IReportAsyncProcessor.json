@@ -8,12 +8,12 @@
       }
     ],
     "name": "discardConsensusReport",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getConsensusVersion",
     "outputs": [
       {
@@ -26,7 +26,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getLastProcessingRefSlot",
     "outputs": [
       {
@@ -57,7 +57,7 @@
       }
     ],
     "name": "submitConsensusReport",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   }

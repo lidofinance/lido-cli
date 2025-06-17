@@ -1,0 +1,43 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "gate_seal",
+        "type": "address"
+      }
+    ],
+    "name": "GateSealCreated",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_sealing_committee",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_seal_duration_seconds",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_sealables",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_expiry_timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "create_gate_seal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

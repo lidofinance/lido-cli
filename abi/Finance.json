@@ -1,7 +1,7 @@
 [
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "hasInitialized",
     "outputs": [
       {
@@ -15,7 +15,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "CREATE_PAYMENTS_ROLE",
     "outputs": [
       {
@@ -79,7 +79,7 @@
       }
     ],
     "name": "executePayment",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -97,7 +97,7 @@
       }
     ],
     "name": "initialize",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -111,7 +111,7 @@
       }
     ],
     "name": "removeBudget",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -171,7 +171,7 @@
       }
     ],
     "name": "setPaymentStatus",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -229,7 +229,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getRecoveryVault",
     "outputs": [
       {
@@ -290,7 +290,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "CHANGE_PERIOD_ROLE",
     "outputs": [
       {
@@ -304,7 +304,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "CHANGE_BUDGETS_ROLE",
     "outputs": [
       {
@@ -325,7 +325,7 @@
       }
     ],
     "name": "receiverExecutePayment",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -374,14 +374,14 @@
       }
     ],
     "name": "setPeriodDuration",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "periodsLength",
     "outputs": [
       {
@@ -406,7 +406,7 @@
       }
     ],
     "name": "setBudget",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -432,7 +432,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "appId",
     "outputs": [
       {
@@ -446,7 +446,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getInitializationBlock",
     "outputs": [
       {
@@ -467,14 +467,14 @@
       }
     ],
     "name": "recoverToVault",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "EXECUTE_PAYMENTS_ROLE",
     "outputs": [
       {
@@ -488,7 +488,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "currentPeriodId",
     "outputs": [
       {
@@ -509,7 +509,7 @@
       }
     ],
     "name": "transferToVault",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -543,7 +543,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getEVMScriptRegistry",
     "outputs": [
       {
@@ -576,7 +576,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getPeriodDuration",
     "outputs": [
       {
@@ -605,7 +605,7 @@
       }
     ],
     "name": "deposit",
-    "outputs": [ ],
+    "outputs": [],
     "payable": true,
     "stateMutability": "payable",
     "type": "function"
@@ -658,7 +658,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "kernel",
     "outputs": [
       {
@@ -672,7 +672,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "paymentsNextIndex",
     "outputs": [
       {
@@ -686,7 +686,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "isPetrified",
     "outputs": [
       {
@@ -723,7 +723,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "MANAGE_PAYMENTS_ROLE",
     "outputs": [
       {
@@ -737,7 +737,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "transactionsNextIndex",
     "outputs": [
       {
@@ -789,14 +789,14 @@
       }
     ],
     "name": "newImmediatePayment",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "vault",
     "outputs": [
       {

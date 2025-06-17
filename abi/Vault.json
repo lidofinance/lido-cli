@@ -1,7 +1,7 @@
 [
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "hasInitialized",
     "outputs": [
       {
@@ -15,7 +15,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "TRANSFER_ROLE",
     "outputs": [
       {
@@ -48,7 +48,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getRecoveryVault",
     "outputs": [
       {
@@ -73,14 +73,14 @@
       }
     ],
     "name": "deposit",
-    "outputs": [ ],
+    "outputs": [],
     "payable": true,
     "stateMutability": "payable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "isDepositable",
     "outputs": [
       {
@@ -113,7 +113,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "appId",
     "outputs": [
       {
@@ -127,16 +127,16 @@
   },
   {
     "constant": false,
-    "inputs": [ ],
+    "inputs": [],
     "name": "initialize",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getInitializationBlock",
     "outputs": [
       {
@@ -157,7 +157,7 @@
       }
     ],
     "name": "transferToVault",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -191,7 +191,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getEVMScriptRegistry",
     "outputs": [
       {
@@ -220,14 +220,14 @@
       }
     ],
     "name": "transfer",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "kernel",
     "outputs": [
       {
@@ -241,7 +241,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "isPetrified",
     "outputs": [
       {

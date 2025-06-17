@@ -1,7 +1,7 @@
 [
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "hasInitialized",
     "outputs": [
       {
@@ -15,7 +15,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "MAX_VESTINGS_PER_ADDRESS",
     "outputs": [
       {
@@ -106,7 +106,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getRecoveryVault",
     "outputs": [
       {
@@ -170,7 +170,7 @@
       }
     ],
     "name": "mint",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -246,7 +246,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "appId",
     "outputs": [
       {
@@ -260,7 +260,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "ISSUE_ROLE",
     "outputs": [
       {
@@ -274,7 +274,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getInitializationBlock",
     "outputs": [
       {
@@ -314,7 +314,7 @@
       }
     ],
     "name": "transferToVault",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -332,7 +332,7 @@
       }
     ],
     "name": "burn",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -366,7 +366,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getEVMScriptRegistry",
     "outputs": [
       {
@@ -380,7 +380,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "ASSIGN_ROLE",
     "outputs": [
       {
@@ -394,7 +394,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "BURN_ROLE",
     "outputs": [
       {
@@ -419,7 +419,7 @@
       }
     ],
     "name": "assign",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -456,14 +456,14 @@
       }
     ],
     "name": "issue",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "kernel",
     "outputs": [
       {
@@ -484,7 +484,7 @@
       }
     ],
     "name": "forward",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -518,7 +518,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "isPetrified",
     "outputs": [
       {
@@ -547,14 +547,14 @@
       }
     ],
     "name": "initialize",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "MINT_ROLE",
     "outputs": [
       {
@@ -568,7 +568,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "maxAccountTokens",
     "outputs": [
       {
@@ -582,7 +582,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "REVOKE_VESTINGS_ROLE",
     "outputs": [
       {
@@ -626,14 +626,14 @@
       }
     ],
     "name": "revokeVesting",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "token",
     "outputs": [
       {
@@ -647,7 +647,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "isForwarder",
     "outputs": [
       {

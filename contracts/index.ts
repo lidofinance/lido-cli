@@ -14,6 +14,7 @@ export * from './lido';
 export * from './locator';
 export * from './nor';
 export * from './obol-lido-split';
+export * from './operator-grid';
 export * from './oracles';
 export * from './proxy';
 export * from './public-resolver';

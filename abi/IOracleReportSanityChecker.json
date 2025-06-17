@@ -8,7 +8,7 @@
       }
     ],
     "name": "checkExitBusOracleReport",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "view",
     "type": "function"
   }

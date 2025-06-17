@@ -1,0 +1,60 @@
+[
+  {
+    "inputs": [],
+    "name": "MalformedPubkeysArray",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "keysCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountsCount",
+        "type": "uint256"
+      }
+    ],
+    "name": "MismatchedArrayLengths",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoWithdrawalRequests",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "PartialWithdrawalRequired",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "WithdrawalFeeInvalidData",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "WithdrawalFeeReadFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "callData",
+        "type": "bytes"
+      }
+    ],
+    "name": "WithdrawalRequestAdditionFailed",
+    "type": "error"
+  }
+]

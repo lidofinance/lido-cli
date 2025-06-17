@@ -21,27 +21,27 @@
     "type": "constructor"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "AddressCannotBeSame",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "AddressCannotBeZero",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "AdminCannotBeZero",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ArgumentOutOfBounds",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "HashCannotBeZero",
     "type": "error"
   },
@@ -62,27 +62,27 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InvalidContractVersionIncrement",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InvalidRequestsData",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InvalidRequestsDataLength",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InvalidRequestsDataSortOrder",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NoConsensusReportToProcess",
     "type": "error"
   },
@@ -113,17 +113,17 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NonZeroContractVersionOnInit",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "PauseUntilMustBeInFuture",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "PausedExpected",
     "type": "error"
   },
@@ -139,7 +139,7 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "RefSlotAlreadyProcessing",
     "type": "error"
   },
@@ -176,27 +176,27 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ResumedExpected",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "SecondsPerSlotCannotBeZero",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "SenderIsNotTheConsensusContract",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "SenderNotAllowed",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "UnexpectedChainConfig",
     "type": "error"
   },
@@ -265,7 +265,7 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "UnexpectedRequestsDataLength",
     "type": "error"
   },
@@ -281,12 +281,12 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "VersionCannotBeSame",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ZeroPauseDuration",
     "type": "error"
   },
@@ -419,7 +419,7 @@
   },
   {
     "anonymous": false,
-    "inputs": [ ],
+    "inputs": [],
     "name": "Resumed",
     "type": "event"
   },
@@ -574,7 +574,7 @@
     "type": "event"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DATA_FORMAT_LIST",
     "outputs": [
       {
@@ -587,7 +587,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
@@ -600,7 +600,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "GENESIS_TIME",
     "outputs": [
       {
@@ -613,7 +613,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "MANAGE_CONSENSUS_CONTRACT_ROLE",
     "outputs": [
       {
@@ -626,7 +626,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "MANAGE_CONSENSUS_VERSION_ROLE",
     "outputs": [
       {
@@ -639,7 +639,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "PAUSE_INFINITELY",
     "outputs": [
       {
@@ -652,7 +652,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "PAUSE_ROLE",
     "outputs": [
       {
@@ -665,7 +665,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "RESUME_ROLE",
     "outputs": [
       {
@@ -678,7 +678,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "SECONDS_PER_SLOT",
     "outputs": [
       {
@@ -691,7 +691,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "SUBMIT_DATA_ROLE",
     "outputs": [
       {
@@ -712,12 +712,12 @@
       }
     ],
     "name": "discardConsensusReport",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getConsensusContract",
     "outputs": [
       {
@@ -730,7 +730,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getConsensusReport",
     "outputs": [
       {
@@ -758,7 +758,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getConsensusVersion",
     "outputs": [
       {
@@ -771,7 +771,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getContractVersion",
     "outputs": [
       {
@@ -784,7 +784,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getLastProcessingRefSlot",
     "outputs": [
       {
@@ -821,7 +821,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getProcessingState",
     "outputs": [
       {
@@ -871,7 +871,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getResumeSinceTimestamp",
     "outputs": [
       {
@@ -946,7 +946,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getTotalRequestsProcessed",
     "outputs": [
       {
@@ -972,7 +972,7 @@
       }
     ],
     "name": "grantRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1024,12 +1024,12 @@
       }
     ],
     "name": "initialize",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "isPaused",
     "outputs": [
       {
@@ -1050,7 +1050,7 @@
       }
     ],
     "name": "pauseFor",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1063,7 +1063,7 @@
       }
     ],
     "name": "pauseUntil",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1081,14 +1081,14 @@
       }
     ],
     "name": "renounceRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "resume",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1106,7 +1106,7 @@
       }
     ],
     "name": "revokeRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1119,7 +1119,7 @@
       }
     ],
     "name": "setConsensusContract",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1132,7 +1132,7 @@
       }
     ],
     "name": "setConsensusVersion",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1155,7 +1155,7 @@
       }
     ],
     "name": "submitConsensusReport",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1200,7 +1200,7 @@
       }
     ],
     "name": "submitReportData",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },

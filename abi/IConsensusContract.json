@@ -1,6 +1,6 @@
 [
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getChainConfig",
     "outputs": [
       {
@@ -23,7 +23,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getCurrentFrame",
     "outputs": [
       {
@@ -41,7 +41,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getFrameConfig",
     "outputs": [
       {
@@ -59,7 +59,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getInitialRefSlot",
     "outputs": [
       {

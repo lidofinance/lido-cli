@@ -782,20 +782,6 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "getOracle",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
     "name": "eip712Domain",
     "outputs": [
       {
@@ -1496,7 +1482,7 @@
       },
       {
         "indexed": false,
-        "name": "preClBalance",
+        "name": "preCLBalance",
         "type": "uint256"
       },
       {

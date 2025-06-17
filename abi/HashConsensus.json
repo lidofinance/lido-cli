@@ -41,87 +41,87 @@
     "type": "constructor"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "AddressCannotBeZero",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "AdminCannotBeZero",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ConsensusReportAlreadyProcessing",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DuplicateMember",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DuplicateReport",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "EmptyReport",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "EpochsPerFrameCannotBeZero",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "FastLanePeriodCannotBeLongerThanFrame",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InitialEpochAlreadyArrived",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InitialEpochIsYetToArrive",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InitialEpochRefSlotCannotBeEarlierThanProcessingSlot",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InvalidChainConfig",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InvalidSlot",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NewProcessorCannotBeTheSame",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NonFastLaneMemberCannotReportWithinFastLaneInterval",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NonMember",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NumericOverflow",
     "type": "error"
   },
@@ -142,12 +142,12 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ReportProcessorCannotBeZero",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "StaleReport",
     "type": "error"
   },
@@ -432,7 +432,7 @@
     "type": "event"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
@@ -445,7 +445,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DISABLE_CONSENSUS_ROLE",
     "outputs": [
       {
@@ -458,7 +458,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "MANAGE_FAST_LANE_CONFIG_ROLE",
     "outputs": [
       {
@@ -471,7 +471,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "MANAGE_FRAME_CONFIG_ROLE",
     "outputs": [
       {
@@ -484,7 +484,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "MANAGE_MEMBERS_AND_QUORUM_ROLE",
     "outputs": [
       {
@@ -497,7 +497,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "MANAGE_REPORT_PROCESSOR_ROLE",
     "outputs": [
       {
@@ -523,19 +523,19 @@
       }
     ],
     "name": "addMember",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "disableConsensus",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getChainConfig",
     "outputs": [
       {
@@ -558,7 +558,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getConsensusState",
     "outputs": [
       {
@@ -637,7 +637,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getCurrentFrame",
     "outputs": [
       {
@@ -655,7 +655,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getFastLaneMembers",
     "outputs": [
       {
@@ -673,7 +673,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getFrameConfig",
     "outputs": [
       {
@@ -696,7 +696,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getInitialRefSlot",
     "outputs": [
       {
@@ -747,7 +747,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getMembers",
     "outputs": [
       {
@@ -765,7 +765,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getQuorum",
     "outputs": [
       {
@@ -778,7 +778,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getReportProcessor",
     "outputs": [
       {
@@ -791,7 +791,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getReportVariants",
     "outputs": [
       {
@@ -884,7 +884,7 @@
       }
     ],
     "name": "grantRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -926,7 +926,7 @@
       }
     ],
     "name": "removeMember",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -944,7 +944,7 @@
       }
     ],
     "name": "renounceRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -962,7 +962,7 @@
       }
     ],
     "name": "revokeRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -975,7 +975,7 @@
       }
     ],
     "name": "setFastLaneLengthSlots",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -993,7 +993,7 @@
       }
     ],
     "name": "setFrameConfig",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1006,7 +1006,7 @@
       }
     ],
     "name": "setQuorum",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1019,7 +1019,7 @@
       }
     ],
     "name": "setReportProcessor",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1042,7 +1042,7 @@
       }
     ],
     "name": "submitReport",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1074,7 +1074,7 @@
       }
     ],
     "name": "updateInitialEpoch",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   }

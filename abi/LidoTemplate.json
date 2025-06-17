@@ -39,6 +39,36 @@
     "constant": false,
     "inputs": [
       {
+        "name": "_initialSemanticVersion",
+        "type": "uint16[3]"
+      },
+      {
+        "name": "_lidoImplAddress",
+        "type": "address"
+      },
+      {
+        "name": "_lidoContentURI",
+        "type": "bytes"
+      },
+      {
+        "name": "_nodeOperatorsRegistryImplAddress",
+        "type": "address"
+      },
+      {
+        "name": "_nodeOperatorsRegistryContentURI",
+        "type": "bytes"
+      }
+    ],
+    "name": "createRepos",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
         "name": "_tld",
         "type": "bytes32"
       },
@@ -126,44 +156,6 @@
       }
     ],
     "name": "newDAO",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_initialSemanticVersion",
-        "type": "uint16[3]"
-      },
-      {
-        "name": "_lidoImplAddress",
-        "type": "address"
-      },
-      {
-        "name": "_lidoContentURI",
-        "type": "bytes"
-      },
-      {
-        "name": "_nodeOperatorsRegistryImplAddress",
-        "type": "address"
-      },
-      {
-        "name": "_nodeOperatorsRegistryContentURI",
-        "type": "bytes"
-      },
-      {
-        "name": "_oracleImplAddress",
-        "type": "address"
-      },
-      {
-        "name": "_oracleContentURI",
-        "type": "bytes"
-      }
-    ],
-    "name": "createRepos",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",

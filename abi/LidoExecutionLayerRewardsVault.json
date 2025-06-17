@@ -79,7 +79,7 @@
     "type": "event"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "LIDO",
     "outputs": [
       {
@@ -92,7 +92,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "TREASURY",
     "outputs": [
       {
@@ -118,7 +118,7 @@
       }
     ],
     "name": "recoverERC20",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -136,7 +136,7 @@
       }
     ],
     "name": "recoverERC721",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },

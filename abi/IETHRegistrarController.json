@@ -43,14 +43,14 @@
       }
     ],
     "name": "register",
-    "outputs": [ ],
+    "outputs": [],
     "payable": true,
     "stateMutability": "payable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "MIN_REGISTRATION_DURATION",
     "outputs": [
       {
@@ -64,7 +64,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "minCommitmentAge",
     "outputs": [
       {
@@ -116,7 +116,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "maxCommitmentAge",
     "outputs": [
       {
@@ -137,7 +137,7 @@
       }
     ],
     "name": "commit",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"

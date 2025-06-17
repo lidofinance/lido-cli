@@ -1,0 +1,77 @@
+[
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timeElapsed",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "clValidators",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "clBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "withdrawalVaultBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "elRewardsVaultBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "sharesRequestedToBurn",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "withdrawalFinalizationBatches",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "vaultsTotalTreasuryFeesShares",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "vaultsTotalDeficit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "vaultsDataTreeRoot",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "vaultsDataTreeCid",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct ReportValues",
+        "name": "values",
+        "type": "tuple"
+      }
+    ],
+    "name": "handleOracleReport",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

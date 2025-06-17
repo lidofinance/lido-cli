@@ -1,21 +1,21 @@
 [
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NegativeTotalPooledEther",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "TooHighTokenRebaseLimit",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "TooLowTokenRebaseLimit",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "LIMITER_PRECISION_BASE",
     "outputs": [
       {
@@ -28,7 +28,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "UNLIMITED_REBASE",
     "outputs": [
       {

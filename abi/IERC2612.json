@@ -1,7 +1,7 @@
 [
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "DOMAIN_SEPARATOR",
     "outputs": [
       {
@@ -65,7 +65,7 @@
       }
     ],
     "name": "permit",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"

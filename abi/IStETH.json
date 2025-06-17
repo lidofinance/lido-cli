@@ -50,7 +50,7 @@
     "type": "event"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DOMAIN_SEPARATOR",
     "outputs": [
       {
@@ -206,12 +206,12 @@
       }
     ],
     "name": "permit",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "totalSupply",
     "outputs": [
       {

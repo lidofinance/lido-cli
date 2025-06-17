@@ -21,17 +21,17 @@
     "type": "constructor"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "AdminZeroAddress",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ApprovalToOwner",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ApproveToCaller",
     "type": "error"
   },
@@ -52,22 +52,22 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "BatchesAreNotSorted",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "CantSendValueRecipientMayHaveReverted",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "EmptyBatches",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InvalidContractVersionIncrement",
     "type": "error"
   },
@@ -94,7 +94,7 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InvalidReportTimestamp",
     "type": "error"
   },
@@ -126,17 +126,17 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InvalidState",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NonZeroContractVersionOnInit",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NotEnoughEther",
     "type": "error"
   },
@@ -179,12 +179,12 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "PauseUntilMustBeInFuture",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "PausedExpected",
     "type": "error"
   },
@@ -222,7 +222,7 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "RequestIdsNotSorted",
     "type": "error"
   },
@@ -238,7 +238,7 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ResumedExpected",
     "type": "error"
   },
@@ -286,7 +286,7 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "TransferFromZeroAddress",
     "type": "error"
   },
@@ -302,12 +302,12 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "TransferToThemselves",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "TransferToZeroAddress",
     "type": "error"
   },
@@ -328,32 +328,32 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ZeroAmountOfETH",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ZeroMetadata",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ZeroPauseDuration",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ZeroRecipient",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ZeroShareRate",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ZeroTimestamp",
     "type": "error"
   },
@@ -441,7 +441,7 @@
   },
   {
     "anonymous": false,
-    "inputs": [ ],
+    "inputs": [],
     "name": "BunkerModeDisabled",
     "type": "event"
   },
@@ -525,7 +525,7 @@
   },
   {
     "anonymous": false,
-    "inputs": [ ],
+    "inputs": [],
     "name": "Resumed",
     "type": "event"
   },
@@ -735,7 +735,7 @@
     "type": "event"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "BUNKER_MODE_DISABLED_TIMESTAMP",
     "outputs": [
       {
@@ -748,7 +748,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
@@ -761,7 +761,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "FINALIZE_ROLE",
     "outputs": [
       {
@@ -774,7 +774,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "MANAGE_TOKEN_URI_ROLE",
     "outputs": [
       {
@@ -787,7 +787,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "MAX_BATCHES_LENGTH",
     "outputs": [
       {
@@ -800,7 +800,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "MAX_STETH_WITHDRAWAL_AMOUNT",
     "outputs": [
       {
@@ -813,7 +813,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "MIN_STETH_WITHDRAWAL_AMOUNT",
     "outputs": [
       {
@@ -826,7 +826,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ORACLE_ROLE",
     "outputs": [
       {
@@ -839,7 +839,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "PAUSE_INFINITELY",
     "outputs": [
       {
@@ -852,7 +852,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "PAUSE_ROLE",
     "outputs": [
       {
@@ -865,7 +865,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "RESUME_ROLE",
     "outputs": [
       {
@@ -878,7 +878,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "STETH",
     "outputs": [
       {
@@ -891,7 +891,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "WSTETH",
     "outputs": [
       {
@@ -917,7 +917,7 @@
       }
     ],
     "name": "approve",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -941,7 +941,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "bunkerModeSinceTimestamp",
     "outputs": [
       {
@@ -1040,7 +1040,7 @@
       }
     ],
     "name": "claimWithdrawal",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1058,7 +1058,7 @@
       }
     ],
     "name": "claimWithdrawals",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1081,7 +1081,7 @@
       }
     ],
     "name": "claimWithdrawalsTo",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1099,7 +1099,7 @@
       }
     ],
     "name": "finalize",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "payable",
     "type": "function"
   },
@@ -1152,7 +1152,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getBaseURI",
     "outputs": [
       {
@@ -1189,7 +1189,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getContractVersion",
     "outputs": [
       {
@@ -1202,7 +1202,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getLastCheckpointIndex",
     "outputs": [
       {
@@ -1215,7 +1215,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getLastFinalizedRequestId",
     "outputs": [
       {
@@ -1228,7 +1228,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getLastRequestId",
     "outputs": [
       {
@@ -1241,7 +1241,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getLockedEtherAmount",
     "outputs": [
       {
@@ -1254,7 +1254,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getNFTDescriptorAddress",
     "outputs": [
       {
@@ -1267,7 +1267,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getResumeSinceTimestamp",
     "outputs": [
       {
@@ -1425,7 +1425,7 @@
       }
     ],
     "name": "grantRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1462,7 +1462,7 @@
       }
     ],
     "name": "initialize",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1491,7 +1491,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "isBunkerModeActive",
     "outputs": [
       {
@@ -1504,7 +1504,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "isPaused",
     "outputs": [
       {
@@ -1517,7 +1517,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "name",
     "outputs": [
       {
@@ -1548,7 +1548,7 @@
       }
     ],
     "name": "onOracleReport",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1580,7 +1580,7 @@
       }
     ],
     "name": "pauseFor",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1593,7 +1593,7 @@
       }
     ],
     "name": "pauseUntil",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1640,7 +1640,7 @@
       }
     ],
     "name": "renounceRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1805,9 +1805,9 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "resume",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1825,7 +1825,7 @@
       }
     ],
     "name": "revokeRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1848,7 +1848,7 @@
       }
     ],
     "name": "safeTransferFrom",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1876,7 +1876,7 @@
       }
     ],
     "name": "safeTransferFrom",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1894,7 +1894,7 @@
       }
     ],
     "name": "setApprovalForAll",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1907,7 +1907,7 @@
       }
     ],
     "name": "setBaseURI",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1920,7 +1920,7 @@
       }
     ],
     "name": "setNFTDescriptorAddress",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1944,7 +1944,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "symbol",
     "outputs": [
       {
@@ -1994,12 +1994,12 @@
       }
     ],
     "name": "transferFrom",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "unfinalizedRequestNumber",
     "outputs": [
       {
@@ -2012,7 +2012,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "unfinalizedStETH",
     "outputs": [
       {

@@ -1,16 +1,16 @@
 [
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "BatchesAreNotSorted",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "CantSendValueRecipientMayHaveReverted",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "EmptyBatches",
     "type": "error"
   },
@@ -53,12 +53,12 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InvalidState",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NotEnoughEther",
     "type": "error"
   },
@@ -117,17 +117,17 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ZeroAmountOfETH",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ZeroShareRate",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ZeroTimestamp",
     "type": "error"
   },
@@ -237,7 +237,7 @@
     "type": "event"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "MAX_BATCHES_LENGTH",
     "outputs": [
       {
@@ -328,7 +328,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getLastCheckpointIndex",
     "outputs": [
       {
@@ -341,7 +341,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getLastFinalizedRequestId",
     "outputs": [
       {
@@ -354,7 +354,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getLastRequestId",
     "outputs": [
       {
@@ -367,7 +367,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getLockedEtherAmount",
     "outputs": [
       {
@@ -409,7 +409,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "unfinalizedRequestNumber",
     "outputs": [
       {
@@ -422,7 +422,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "unfinalizedStETH",
     "outputs": [
       {

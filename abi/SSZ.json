@@ -1,0 +1,59 @@
+[
+  {
+    "inputs": [],
+    "name": "BranchHasExtraItem",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BranchHasMissingItem",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidBlockHeader",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidProof",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidPubkeyLength",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DEPOSIT_DOMAIN",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "v",
+        "type": "uint256"
+      }
+    ],
+    "name": "toLittleEndian",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  }
+]

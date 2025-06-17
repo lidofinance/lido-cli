@@ -6,6 +6,7 @@ import {
   sanityCheckerContract,
   stakingRouterContract,
   vaultHubContract,
+  operatorGridContract,
 } from '@contracts';
 import { wallet } from '@providers';
 import { votingNewVote } from '@scripts';
@@ -50,6 +51,7 @@ const ORACLE_CONFIG_ROLES = ['CONFIG_MANAGER_ROLE'];
 const STAKING_ROUTER_ROLES = ['STAKING_MODULE_MANAGE_ROLE'];
 const SANITY_CHECKER_ROLES = ['ALL_LIMITS_MANAGER_ROLE'];
 const VAULT_MANAGER_ROLES = ['VAULT_MASTER_ROLE', 'VAULT_REGISTRY_ROLE'];
+const OPERATOR_GRID_ROLES = ['REGISTRY_ROLE'];
 
 const head = chalk.blue.bold;
 const bold = chalk.white.bold;
@@ -153,6 +155,12 @@ const promptScriptsRoles = async () => {
     vaultHubContract,
     beneficiary,
   );
+  const operatorGridScripts = await encodeFromAgentGrantRolesAccessControlWithConfirmed(
+    'Operator grid',
+    OPERATOR_GRID_ROLES,
+    operatorGridContract,
+    beneficiary,
+  );
   const oracleConfigScripts = await encodeFromAgentGrantRolesAccessControlWithConfirmed(
     'Oracle daemon config',
     ORACLE_CONFIG_ROLES,
@@ -172,6 +180,7 @@ const promptScriptsRoles = async () => {
     ...aoScripts,
     ...veboScripts,
     ...vaultHubScripts,
+    ...operatorGridScripts,
     ...oracleConfigScripts,
     ...sanityCheckerScripts,
   ];

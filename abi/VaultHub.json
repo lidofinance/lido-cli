@@ -13,11 +13,6 @@
       },
       {
         "internalType": "uint256",
-        "name": "_connectedVaultsLimit",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "_relativeShareLimitBP",
         "type": "uint256"
       }
@@ -87,38 +82,22 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "connectedVaultsLimit",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "currentVaultsCount",
-        "type": "uint256"
-      }
-    ],
-    "name": "ConnectedVaultsLimitTooLow",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "vault",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "capShares",
+        "name": "forcedRebalanceThresholdBP",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "maxMintableExternalShares",
+        "name": "maxForcedRebalanceThresholdBP",
         "type": "uint256"
       }
     ],
-    "name": "ExternalSharesCapReached",
+    "name": "ForcedRebalanceThresholdTooHigh",
     "type": "error"
   },
   {
@@ -146,16 +125,42 @@
       },
       {
         "internalType": "uint256",
-        "name": "valuation",
+        "name": "totalValue",
         "type": "uint256"
       }
     ],
-    "name": "InsufficientValuationToMint",
+    "name": "InsufficientTotalValueToMint",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "newFees",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "oldFees",
+        "type": "uint256"
+      }
+    ],
+    "name": "InvalidFees",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "InvalidInitialization",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidProof",
     "type": "error"
   },
   {
@@ -172,11 +177,11 @@
       },
       {
         "internalType": "uint256",
-        "name": "sharesMinted",
+        "name": "liabilityShares",
         "type": "uint256"
       }
     ],
-    "name": "NoMintedSharesShouldBeLeft",
+    "name": "NoLiabilitySharesShouldBeLeft",
     "type": "error"
   },
   {
@@ -207,27 +212,6 @@
     "type": "error"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "vault",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "balance",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "shouldBe",
-        "type": "uint256"
-      }
-    ],
-    "name": "NotEnoughBalance",
-    "type": "error"
-  },
-  {
     "inputs": [],
     "name": "NotInitializing",
     "type": "error"
@@ -240,38 +224,6 @@
   {
     "inputs": [],
     "name": "PausedExpected",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "vault",
-        "type": "address"
-      }
-    ],
-    "name": "RebalanceFailed",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "vault",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "rebalanceThresholdBP",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "maxRebalanceThresholdBP",
-        "type": "uint256"
-      }
-    ],
-    "name": "RebalanceThresholdTooHigh",
     "type": "error"
   },
   {
@@ -325,7 +277,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "capShares",
+        "name": "shareLimit",
         "type": "uint256"
       }
     ],
@@ -341,32 +293,16 @@
       },
       {
         "internalType": "uint256",
-        "name": "capShares",
+        "name": "shareLimit",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "maxCapShares",
+        "name": "maxShareLimit",
         "type": "uint256"
       }
     ],
     "name": "ShareLimitTooHigh",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "vault",
-        "type": "address"
-      }
-    ],
-    "name": "StETHMintFailed",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "TooManyVaults",
     "type": "error"
   },
   {
@@ -394,6 +330,17 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "name": "VaultDeauthorized",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "depositor",
         "type": "address"
       }
@@ -405,11 +352,101 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "currentBalance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "expectedBalance",
+        "type": "uint256"
+      }
+    ],
+    "name": "VaultInsufficientBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "currentLocked",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "expectedLocked",
+        "type": "uint256"
+      }
+    ],
+    "name": "VaultInsufficientLocked",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalValue",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liabilityShares",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "newRebalanceThresholdBP",
+        "type": "uint256"
+      }
+    ],
+    "name": "VaultMintingCapacityExceeded",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "name": "VaultOssified",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "beacon",
         "type": "address"
       }
     ],
     "name": "VaultProxyNotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "name": "VaultReportStaled",
     "type": "error"
   },
   {
@@ -469,7 +506,7 @@
         "type": "address"
       }
     ],
-    "name": "ForceValidatorExitTriggered",
+    "name": "ForcedValidatorExitTriggered",
     "type": "event"
   },
   {
@@ -629,19 +666,19 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "capShares",
+        "name": "shareLimit",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "minReserveRatio",
+        "name": "reserveRatioBP",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "rebalanceThreshold",
+        "name": "forcedRebalanceThresholdBP",
         "type": "uint256"
       },
       {
@@ -651,7 +688,7 @@
         "type": "uint256"
       }
     ],
-    "name": "VaultConnected",
+    "name": "VaultConnectionSet",
     "type": "event"
   },
   {
@@ -698,6 +735,44 @@
     ],
     "name": "VaultRebalanced",
     "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "timestamp",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "root",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "cid",
+        "type": "string"
+      }
+    ],
+    "name": "VaultsReportDataUpdated",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "CONNECT_DEPOSIT",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -766,6 +841,19 @@
   },
   {
     "inputs": [],
+    "name": "REPORT_FRESHNESS_DELTA",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "RESUME_ROLE",
     "outputs": [
       {
@@ -819,6 +907,57 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "_offset",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_limit",
+        "type": "uint256"
+      }
+    ],
+    "name": "batchVaultsInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "vault",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "int256",
+            "name": "inOutDelta",
+            "type": "int256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "withdrawalCredentials",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liabilityShares",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct VaultHub.VaultInfo[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_vault",
         "type": "address"
@@ -837,169 +976,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_reportValuation",
-        "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "vault",
-            "type": "address"
-          },
-          {
-            "internalType": "uint96",
-            "name": "sharesMinted",
-            "type": "uint96"
-          },
-          {
-            "internalType": "uint96",
-            "name": "shareLimit",
-            "type": "uint96"
-          },
-          {
-            "internalType": "uint16",
-            "name": "reserveRatioBP",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "rebalanceThresholdBP",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "treasuryFeeBP",
-            "type": "uint16"
-          },
-          {
-            "internalType": "bool",
-            "name": "pendingDisconnect",
-            "type": "bool"
-          }
-        ],
-        "internalType": "struct VaultHub.VaultSocket",
-        "name": "socket",
-        "type": "tuple"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_preTotalShares",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_preTotalPooledEther",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_postInternalShares",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_postInternalEther",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_sharesToMintAsLidoCoreFees",
-        "type": "uint256"
-      }
-    ],
-    "name": "calculateVaultTreasuryFees",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "treasuryFeeShares",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "vaultsValuations",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_preTotalShares",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_preTotalPooledEther",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_postInternalShares",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_postInternalEther",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_sharesToMintAsLidoCoreFees",
-        "type": "uint256"
-      }
-    ],
-    "name": "calculateVaultsRebase",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "lockedEther",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "treasuryFeeShares",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "totalTreasuryFeeShares",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "_vault",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_shareLimit",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_reserveRatioBP",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_rebalanceThresholdBP",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_treasuryFeeBP",
-        "type": "uint256"
       }
     ],
     "name": "connectVault",
@@ -1226,12 +1205,35 @@
         "type": "address"
       }
     ],
-    "name": "isVaultHealthy",
+    "name": "isVaultHealthyAsOfLatestReport",
     "outputs": [
       {
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "latestReportData",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "timestamp",
+        "type": "uint64"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "treeRoot",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "reportCid",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -1274,6 +1276,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "operatorGrid",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -1304,6 +1319,25 @@
     "name": "rebalance",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vault",
+        "type": "address"
+      }
+    ],
+    "name": "rebalanceShortfall",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1397,6 +1431,62 @@
         "internalType": "uint256",
         "name": "_shareLimit",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_reserveRatioBP",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_forcedRebalanceThresholdBP",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_treasuryFeeBP",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateConnection",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "_vaultsDataTimestamp",
+        "type": "uint64"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_vaultsDataTreeRoot",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "_vaultsDataReportCid",
+        "type": "string"
+      }
+    ],
+    "name": "updateReportData",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vault",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_shareLimit",
+        "type": "uint256"
       }
     ],
     "name": "updateShareLimit",
@@ -1407,27 +1497,37 @@
   {
     "inputs": [
       {
-        "internalType": "uint256[]",
-        "name": "_valuations",
-        "type": "uint256[]"
+        "internalType": "address",
+        "name": "_vault",
+        "type": "address"
       },
       {
-        "internalType": "int256[]",
-        "name": "_inOutDeltas",
-        "type": "int256[]"
+        "internalType": "uint256",
+        "name": "_totalValue",
+        "type": "uint256"
       },
       {
-        "internalType": "uint256[]",
-        "name": "_locked",
-        "type": "uint256[]"
+        "internalType": "int256",
+        "name": "_inOutDelta",
+        "type": "int256"
       },
       {
-        "internalType": "uint256[]",
-        "name": "_treasureFeeShares",
-        "type": "uint256[]"
+        "internalType": "uint256",
+        "name": "_feeSharesCharged",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_liabilityShares",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "_proof",
+        "type": "bytes32[]"
       }
     ],
-    "name": "updateVaults",
+    "name": "updateVaultData",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1470,7 +1570,7 @@
           },
           {
             "internalType": "uint96",
-            "name": "sharesMinted",
+            "name": "liabilityShares",
             "type": "uint96"
           },
           {
@@ -1485,7 +1585,7 @@
           },
           {
             "internalType": "uint16",
-            "name": "rebalanceThresholdBP",
+            "name": "forcedRebalanceThresholdBP",
             "type": "uint16"
           },
           {
@@ -1497,6 +1597,11 @@
             "internalType": "bool",
             "name": "pendingDisconnect",
             "type": "bool"
+          },
+          {
+            "internalType": "uint96",
+            "name": "feeSharesCharged",
+            "type": "uint96"
           }
         ],
         "internalType": "struct VaultHub.VaultSocket",
@@ -1526,7 +1631,7 @@
           },
           {
             "internalType": "uint96",
-            "name": "sharesMinted",
+            "name": "liabilityShares",
             "type": "uint96"
           },
           {
@@ -1541,7 +1646,7 @@
           },
           {
             "internalType": "uint16",
-            "name": "rebalanceThresholdBP",
+            "name": "forcedRebalanceThresholdBP",
             "type": "uint16"
           },
           {
@@ -1553,6 +1658,11 @@
             "internalType": "bool",
             "name": "pendingDisconnect",
             "type": "bool"
+          },
+          {
+            "internalType": "uint96",
+            "name": "feeSharesCharged",
+            "type": "uint96"
           }
         ],
         "internalType": "struct VaultHub.VaultSocket",

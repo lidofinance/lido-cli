@@ -1,7 +1,7 @@
 [
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "hasInitialized",
     "outputs": [
       {
@@ -22,7 +22,7 @@
       }
     ],
     "name": "unsafelyChangeObjectionPhaseTime",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -52,14 +52,14 @@
       }
     ],
     "name": "initialize",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "UNSAFELY_MODIFY_VOTE_TIME_ROLE",
     "outputs": [
       {
@@ -80,7 +80,7 @@
       }
     ],
     "name": "unsafelyChangeVoteTime",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -106,7 +106,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getRecoveryVault",
     "outputs": [
       {
@@ -120,7 +120,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "MODIFY_QUORUM_ROLE",
     "outputs": [
       {
@@ -134,7 +134,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "objectionPhaseTime",
     "outputs": [
       {
@@ -237,14 +237,14 @@
       }
     ],
     "name": "changeMinAcceptQuorumPct",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "MODIFY_SUPPORT_ROLE",
     "outputs": [
       {
@@ -265,7 +265,7 @@
       }
     ],
     "name": "changeSupportRequiredPct",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -291,7 +291,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "appId",
     "outputs": [
       {
@@ -305,7 +305,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getInitializationBlock",
     "outputs": [
       {
@@ -326,7 +326,7 @@
       }
     ],
     "name": "transferToVault",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -360,7 +360,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "getEVMScriptRegistry",
     "outputs": [
       {
@@ -374,7 +374,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "voteTime",
     "outputs": [
       {
@@ -388,7 +388,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "CREATE_VOTES_ROLE",
     "outputs": [
       {
@@ -467,7 +467,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "kernel",
     "outputs": [
       {
@@ -511,14 +511,14 @@
       }
     ],
     "name": "forward",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "minAcceptQuorumPct",
     "outputs": [
       {
@@ -532,7 +532,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "isPetrified",
     "outputs": [
       {
@@ -546,7 +546,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "votesLength",
     "outputs": [
       {
@@ -575,7 +575,7 @@
       }
     ],
     "name": "vote",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -639,14 +639,14 @@
       }
     ],
     "name": "executeVote",
-    "outputs": [ ],
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "supportRequiredPct",
     "outputs": [
       {
@@ -660,7 +660,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "token",
     "outputs": [
       {
@@ -674,7 +674,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "PCT_BASE",
     "outputs": [
       {
@@ -688,7 +688,7 @@
   },
   {
     "constant": true,
-    "inputs": [ ],
+    "inputs": [],
     "name": "isForwarder",
     "outputs": [
       {
