@@ -1,15 +1,8 @@
 [
   {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "withdrawWithdrawals",
+    "inputs": [],
+    "name": "finalizeUpgrade_v2",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   }

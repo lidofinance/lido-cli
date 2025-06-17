@@ -31,37 +31,37 @@
     "type": "constructor"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DepositInactiveModule",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DepositNoQuorum",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DepositRootChanged",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DepositTooFrequent",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DepositUnexpectedBlockHash",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DepositsArePaused",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DepositsNotPaused",
     "type": "error"
   },
@@ -77,12 +77,12 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InvalidSignature",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ModuleNonceChanged",
     "type": "error"
   },
@@ -109,22 +109,22 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "PauseIntentExpired",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "SignaturesNotSorted",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "UnvetPayloadInvalid",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "UnvetUnexpectedBlockHash",
     "type": "error"
   },
@@ -165,7 +165,7 @@
   },
   {
     "anonymous": false,
-    "inputs": [ ],
+    "inputs": [],
     "name": "DepositsUnpaused",
     "type": "event"
   },
@@ -261,7 +261,7 @@
     "type": "event"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ATTEST_MESSAGE_PREFIX",
     "outputs": [
       {
@@ -274,7 +274,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DEPOSIT_CONTRACT",
     "outputs": [
       {
@@ -287,7 +287,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "LIDO",
     "outputs": [
       {
@@ -300,7 +300,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "PAUSE_MESSAGE_PREFIX",
     "outputs": [
       {
@@ -313,7 +313,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "STAKING_ROUTER",
     "outputs": [
       {
@@ -326,7 +326,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "UNVET_MESSAGE_PREFIX",
     "outputs": [
       {
@@ -339,7 +339,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "VERSION",
     "outputs": [
       {
@@ -365,7 +365,7 @@
       }
     ],
     "name": "addGuardian",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -383,7 +383,7 @@
       }
     ],
     "name": "addGuardians",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -457,7 +457,7 @@
       }
     ],
     "name": "depositBufferedEther",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -481,7 +481,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getGuardianQuorum",
     "outputs": [
       {
@@ -494,7 +494,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getGuardians",
     "outputs": [
       {
@@ -507,7 +507,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getLastDepositBlock",
     "outputs": [
       {
@@ -520,7 +520,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getMaxOperatorsPerUnvetting",
     "outputs": [
       {
@@ -533,7 +533,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getOwner",
     "outputs": [
       {
@@ -546,7 +546,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getPauseIntentValidityPeriodBlocks",
     "outputs": [
       {
@@ -559,7 +559,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "isDepositsPaused",
     "outputs": [
       {
@@ -635,7 +635,7 @@
       }
     ],
     "name": "pauseDeposits",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -653,7 +653,7 @@
       }
     ],
     "name": "removeGuardian",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -666,7 +666,7 @@
       }
     ],
     "name": "setGuardianQuorum",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -679,7 +679,7 @@
       }
     ],
     "name": "setMaxOperatorsPerUnvetting",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -692,7 +692,7 @@
       }
     ],
     "name": "setOwner",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -705,14 +705,14 @@
       }
     ],
     "name": "setPauseIntentValidityPeriodBlocks",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "unpauseDeposits",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -767,7 +767,7 @@
       }
     ],
     "name": "unvetSigningKeys",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   }

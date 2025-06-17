@@ -8,6 +8,16 @@
       },
       {
         "internalType": "address",
+        "name": "_accountingOracle",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_accounting",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "_admin",
         "type": "address"
       },

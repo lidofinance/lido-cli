@@ -1,0 +1,38 @@
+[
+  {
+    "inputs": [],
+    "name": "APP_BASES_NAMESPACE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_namespace",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_appId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "_app",
+        "type": "address"
+      }
+    ],
+    "name": "setApp",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

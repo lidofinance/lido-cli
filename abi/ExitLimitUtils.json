@@ -1,0 +1,27 @@
+[
+  {
+    "inputs": [],
+    "name": "LimitExceeded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooLargeExitsPerFrame",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooLargeFrameDuration",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooLargeMaxExitRequestsLimit",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroFrameDuration",
+    "type": "error"
+  }
+]

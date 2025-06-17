@@ -36,6 +36,44 @@
     "type": "function"
   },
   {
+    "constant": true,
+    "inputs": [],
+    "name": "apmRepos",
+    "outputs": [
+      {
+        "name": "lido",
+        "type": "address"
+      },
+      {
+        "name": "nodeOperatorsRegistry",
+        "type": "address"
+      },
+      {
+        "name": "simpleDVT",
+        "type": "address"
+      },
+      {
+        "name": "aragonAgent",
+        "type": "address"
+      },
+      {
+        "name": "aragonFinance",
+        "type": "address"
+      },
+      {
+        "name": "aragonTokenManager",
+        "type": "address"
+      },
+      {
+        "name": "aragonVoting",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "constant": false,
     "inputs": [
       {

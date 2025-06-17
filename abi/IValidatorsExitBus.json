@@ -1,0 +1,65 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "exitRequestsHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getDeliveryTimestamp",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "exitRequests",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint256",
+        "name": "dataFormat",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "unpackExitRequest",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "pubkey",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint256",
+        "name": "nodeOpId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "moduleId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "valIndex",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

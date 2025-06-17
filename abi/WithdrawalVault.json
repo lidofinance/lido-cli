@@ -2,7 +2,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract ILido",
+        "internalType": "address",
         "name": "_lido",
         "type": "address"
       },
@@ -10,19 +10,61 @@
         "internalType": "address",
         "name": "_treasury",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_triggerableWithdrawalsGateway",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
   {
-    "inputs": [],
-    "name": "InvalidContractVersionIncrement",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "firstArrayLength",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "secondArrayLength",
+        "type": "uint256"
+      }
+    ],
+    "name": "ArraysLengthMismatch",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "LidoZeroAddress",
+    "name": "FeeInvalidData",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FeeReadFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "requiredFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "providedFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "IncorrectFee",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidContractVersionIncrement",
     "type": "error"
   },
   {
@@ -53,7 +95,18 @@
   },
   {
     "inputs": [],
-    "name": "TreasuryZeroAddress",
+    "name": "NotTriggerableWithdrawalsGateway",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "callData",
+        "type": "bytes"
+      }
+    ],
+    "name": "RequestAdditionFailed",
     "type": "error"
   },
   {
@@ -74,7 +127,23 @@
   },
   {
     "inputs": [],
+    "name": "ZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "ZeroAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "name": "ZeroArgument",
     "type": "error"
   },
   {
@@ -141,6 +210,19 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "request",
+        "type": "bytes"
+      }
+    ],
+    "name": "WithdrawalRequestAdded",
+    "type": "event"
+  },
+  {
     "inputs": [],
     "name": "LIDO",
     "outputs": [
@@ -168,7 +250,71 @@
   },
   {
     "inputs": [],
+    "name": "TRIGGERABLE_WITHDRAWALS_GATEWAY",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "WITHDRAWAL_REQUEST",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes[]",
+        "name": "pubkeys",
+        "type": "bytes[]"
+      },
+      {
+        "internalType": "uint64[]",
+        "name": "amounts",
+        "type": "uint64[]"
+      }
+    ],
+    "name": "addWithdrawalRequests",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "finalizeUpgrade_v2",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "getContractVersion",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getWithdrawalRequestFee",
     "outputs": [
       {
         "internalType": "uint256",

@@ -3,11 +3,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_admin",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "_locator",
         "type": "address"
       },
@@ -15,16 +10,6 @@
         "internalType": "address",
         "name": "_stETH",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_totalCoverSharesBurnt",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_totalNonCoverSharesBurnt",
-        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
@@ -58,7 +43,48 @@
   },
   {
     "inputs": [],
+    "name": "InvalidContractVersionIncrement",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MigrationNotAllowedOrAlreadyMigrated",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NonZeroContractVersionOnInit",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotInitialized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OnlyLidoCanMigrate",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "StETHRecoveryWrongFunc",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "received",
+        "type": "uint256"
+      }
+    ],
+    "name": "UnexpectedContractVersion",
     "type": "error"
   },
   {
@@ -81,6 +107,19 @@
     "inputs": [],
     "name": "ZeroRecoveryAmount",
     "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "version",
+        "type": "uint256"
+      }
+    ],
+    "name": "ContractVersionSet",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -368,6 +407,19 @@
   },
   {
     "inputs": [],
+    "name": "getContractVersion",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "getCoverSharesBurnt",
     "outputs": [
       {
@@ -531,6 +583,50 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_admin",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "_isMigrationAllowed",
+        "type": "bool"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "isMigrationAllowed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_oldBurner",
+        "type": "address"
+      }
+    ],
+    "name": "migrate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_token",
         "type": "address"
       },
@@ -584,6 +680,19 @@
       }
     ],
     "name": "renounceRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_sharesAmountToBurn",
+        "type": "uint256"
+      }
+    ],
+    "name": "requestBurnMyShares",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

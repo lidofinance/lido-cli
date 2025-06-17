@@ -70,6 +70,16 @@
           },
           {
             "internalType": "address",
+            "name": "validatorExitDelayVerifier",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "triggerableWithdrawalsGateway",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
             "name": "accounting",
             "type": "address"
           },
@@ -86,6 +96,16 @@
           {
             "internalType": "address",
             "name": "vaultHub",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "vaultFactory",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "lazyOracle",
             "type": "address"
           },
           {
@@ -200,6 +220,19 @@
   {
     "inputs": [],
     "name": "elRewardsVault",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "lazyOracle",
     "outputs": [
       {
         "internalType": "address",
@@ -359,7 +392,46 @@
   },
   {
     "inputs": [],
+    "name": "triggerableWithdrawalsGateway",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "validatorExitDelayVerifier",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "validatorsExitBusOracle",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "vaultFactory",
     "outputs": [
       {
         "internalType": "address",

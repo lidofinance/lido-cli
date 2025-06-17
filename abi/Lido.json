@@ -553,6 +553,20 @@
     "type": "function"
   },
   {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_amountOfShares",
+        "type": "uint256"
+      }
+    ],
+    "name": "internalizeExternalBadDebt",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "constant": true,
     "inputs": [],
     "name": "getStakeLimitFullInfo",
@@ -588,15 +602,6 @@
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "finalizeUpgrade_v3",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -952,6 +957,24 @@
     ],
     "payable": false,
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_oldBurner",
+        "type": "address"
+      },
+      {
+        "name": "_contractsWithBurnerAllowances",
+        "type": "address[]"
+      }
+    ],
+    "name": "finalizeUpgrade_v3",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1714,6 +1737,18 @@
       }
     ],
     "name": "ExternalEtherTransferredToBuffer",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "amountOfShares",
+        "type": "uint256"
+      }
+    ],
+    "name": "ExternalBadDebtInternalized",
     "type": "event"
   },
   {

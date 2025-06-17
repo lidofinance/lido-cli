@@ -218,11 +218,6 @@
         "internalType": "uint256",
         "name": "currentNodeOpExitedValidatorsCount",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "currentNodeOpStuckValidatorsCount",
-        "type": "uint256"
       }
     ],
     "name": "UnexpectedCurrentValidatorsCount",
@@ -419,6 +414,31 @@
       }
     ],
     "name": "StakingModuleAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "stakingModuleId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "nodeOperatorId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "_publicKey",
+        "type": "bytes"
+      }
+    ],
+    "name": "StakingModuleExitNotificationFailed",
     "type": "event"
   },
   {
@@ -740,6 +760,32 @@
   },
   {
     "inputs": [],
+    "name": "REPORT_VALIDATOR_EXITING_STATUS_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "REPORT_VALIDATOR_EXIT_TRIGGERED_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "STAKING_MODULE_MANAGE_ROLE",
     "outputs": [
       {
@@ -885,24 +931,8 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "_priorityExitShareThresholds",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_maxDepositsPerBlock",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_minDepositBlockDistances",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "finalizeUpgrade_v2",
+    "inputs": [],
+    "name": "finalizeUpgrade_v3",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -2186,6 +2216,46 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "stakingModuleId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nodeOperatorId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "pubkey",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct StakingRouter.ValidatorExitData[]",
+        "name": "validatorExitData",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_withdrawalRequestPaidFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_exitType",
+        "type": "uint256"
+      }
+    ],
+    "name": "onValidatorExitTriggered",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "onValidatorsCountsByNodeOperatorReportingFinished",
     "outputs": [],
@@ -2259,17 +2329,27 @@
         "type": "uint256"
       },
       {
-        "internalType": "bytes",
-        "name": "_nodeOperatorIds",
-        "type": "bytes"
+        "internalType": "uint256",
+        "name": "_nodeOperatorId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_proofSlotTimestamp",
+        "type": "uint256"
       },
       {
         "internalType": "bytes",
-        "name": "_stuckValidatorsCounts",
+        "name": "_publicKey",
         "type": "bytes"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_eligibleToExitInSec",
+        "type": "uint256"
       }
     ],
-    "name": "reportStakingModuleStuckValidatorsCountByNodeOperator",
+    "name": "reportValidatorExitDelay",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -2373,22 +2453,12 @@
           },
           {
             "internalType": "uint256",
-            "name": "currentNodeOperatorStuckValidatorsCount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
             "name": "newModuleExitedValidatorsCount",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
             "name": "newNodeOperatorExitedValidatorsCount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "newNodeOperatorStuckValidatorsCount",
             "type": "uint256"
           }
         ],

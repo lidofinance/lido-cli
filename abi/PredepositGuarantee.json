@@ -2,6 +2,11 @@
   {
     "inputs": [
       {
+        "internalType": "bytes4",
+        "name": "_genesisForkVersion",
+        "type": "bytes4"
+      },
+      {
         "internalType": "GIndex",
         "name": "_gIFirstValidator",
         "type": "bytes32"
@@ -114,6 +119,16 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "InvalidSlot",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidTimestamp",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -122,6 +137,11 @@
       }
     ],
     "name": "LockedIsNotZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotDepositor",
     "type": "error"
   },
   {
@@ -148,11 +168,6 @@
   {
     "inputs": [],
     "name": "NotInitializing",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NotNodeOperator",
     "type": "error"
   },
   {
@@ -204,6 +219,11 @@
   {
     "inputs": [],
     "name": "RootNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SameDepositor",
     "type": "error"
   },
   {
@@ -477,6 +497,31 @@
       }
     ],
     "name": "BalanceWithdrawn",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "nodeOperator",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newDepositor",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "prevDepositor",
+        "type": "address"
+      }
+    ],
+    "name": "DepositorSet",
     "type": "event"
   },
   {
@@ -813,7 +858,20 @@
   },
   {
     "inputs": [],
-    "name": "GI_FIRST_VALIDATOR",
+    "name": "DEPOSIT_DOMAIN",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "GI_FIRST_VALIDATOR_CURR",
     "outputs": [
       {
         "internalType": "GIndex",
@@ -826,7 +884,7 @@
   },
   {
     "inputs": [],
-    "name": "GI_FIRST_VALIDATOR_AFTER_CHANGE",
+    "name": "GI_FIRST_VALIDATOR_PREV",
     "outputs": [
       {
         "internalType": "GIndex",
@@ -917,6 +975,19 @@
   },
   {
     "inputs": [],
+    "name": "PIVOT_SLOT",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "PREDEPOSIT_AMOUNT",
     "outputs": [
       {
@@ -936,71 +1007,6 @@
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "SLOT_CHANGE_GI_FIRST_VALIDATOR",
-    "outputs": [
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "STATE_ROOT_DEPTH",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "STATE_ROOT_POSITION",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "WC_PUBKEY_PARENT_DEPTH",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "WC_PUBKEY_PARENT_POSITION",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -1098,7 +1104,7 @@
             "type": "bytes32"
           }
         ],
-        "internalType": "struct StakingVaultDeposit[]",
+        "internalType": "struct IStakingVault.Deposit[]",
         "name": "_deposits",
         "type": "tuple[]"
       }
@@ -1309,6 +1315,25 @@
         "type": "address"
       }
     ],
+    "name": "nodeOperatorDepositor",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_nodeOperator",
+        "type": "address"
+      }
+    ],
     "name": "nodeOperatorGuarantor",
     "outputs": [
       {
@@ -1376,7 +1401,7 @@
             "type": "bytes32"
           }
         ],
-        "internalType": "struct StakingVaultDeposit[]",
+        "internalType": "struct IStakingVault.Deposit[]",
         "name": "_deposits",
         "type": "tuple[]"
       },
@@ -1460,6 +1485,16 @@
             "internalType": "uint64",
             "name": "childBlockTimestamp",
             "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "slot",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "proposerIndex",
+            "type": "uint64"
           }
         ],
         "internalType": "struct IPredepositGuarantee.ValidatorWitness[]",
@@ -1489,7 +1524,7 @@
             "type": "bytes32"
           }
         ],
-        "internalType": "struct StakingVaultDeposit[]",
+        "internalType": "struct IStakingVault.Deposit[]",
         "name": "_deposits",
         "type": "tuple[]"
       },
@@ -1526,6 +1561,16 @@
           {
             "internalType": "uint64",
             "name": "childBlockTimestamp",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "slot",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "proposerIndex",
             "type": "uint64"
           }
         ],
@@ -1567,6 +1612,16 @@
             "internalType": "uint64",
             "name": "childBlockTimestamp",
             "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "slot",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "proposerIndex",
+            "type": "uint64"
           }
         ],
         "internalType": "struct IPredepositGuarantee.ValidatorWitness",
@@ -1606,6 +1661,16 @@
           {
             "internalType": "uint64",
             "name": "childBlockTimestamp",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "slot",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "proposerIndex",
             "type": "uint64"
           }
         ],
@@ -1658,6 +1723,19 @@
       }
     ],
     "name": "revokeRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_newDepositor",
+        "type": "address"
+      }
+    ],
+    "name": "setNodeOperatorDepositor",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1729,6 +1807,56 @@
   {
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "bytes32[]",
+            "name": "proof",
+            "type": "bytes32[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "pubkey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "validatorIndex",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint64",
+            "name": "childBlockTimestamp",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "slot",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "proposerIndex",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct IPredepositGuarantee.ValidatorWitness",
+        "name": "_witness",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_withdrawalCredentials",
+        "type": "bytes32"
+      }
+    ],
+    "name": "validatePubKeyWCProof",
+    "outputs": [],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes",
         "name": "_validatorPubkey",
         "type": "bytes"
@@ -1759,6 +1887,97 @@
         "type": "tuple"
       }
     ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes",
+            "name": "pubkey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "depositDataRoot",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct IStakingVault.Deposit",
+        "name": "_deposit",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "a",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "b",
+                "type": "bytes32"
+              }
+            ],
+            "internalType": "struct BLS12_381.Fp",
+            "name": "pubkeyY",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "c0_a",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "c0_b",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "c1_a",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "c1_b",
+                "type": "bytes32"
+              }
+            ],
+            "internalType": "struct BLS12_381.Fp2",
+            "name": "signatureY",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct BLS12_381.DepositY",
+        "name": "_depositsY",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_withdrawalCredentials",
+        "type": "bytes32"
+      }
+    ],
+    "name": "verifyDepositMessage",
+    "outputs": [],
     "stateMutability": "view",
     "type": "function"
   },

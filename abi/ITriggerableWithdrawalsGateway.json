@@ -1,0 +1,42 @@
+[
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "stakingModuleId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nodeOperatorId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "pubkey",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct ITriggerableWithdrawalsGateway.ValidatorData[]",
+        "name": "triggerableExitData",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "address",
+        "name": "refundRecipient",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "exitType",
+        "type": "uint256"
+      }
+    ],
+    "name": "triggerFullWithdrawals",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
+]

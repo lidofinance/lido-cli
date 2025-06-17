@@ -41,6 +41,22 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "itemIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "dataType",
+        "type": "uint256"
+      }
+    ],
+    "name": "DeprecatedExtraDataType",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "ExtraDataAlreadyProcessed",
     "type": "error"
@@ -1203,16 +1219,6 @@
             "internalType": "bool",
             "name": "isBunkerMode",
             "type": "bool"
-          },
-          {
-            "internalType": "uint256",
-            "name": "vaultsTotalTreasuryFeesShares",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "vaultsTotalDeficit",
-            "type": "uint256"
           },
           {
             "internalType": "bytes32",

@@ -1,50 +1,41 @@
 [
   {
+    "inputs": [],
+    "name": "isPaused",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256[]",
-        "name": "_requestIds",
+        "name": "_batches",
         "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_maxShareRate",
+        "type": "uint256"
       }
     ],
-    "name": "getWithdrawalStatus",
+    "name": "prefinalize",
     "outputs": [
       {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "amountOfStETH",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amountOfShares",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestamp",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "isFinalized",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
-            "name": "isClaimed",
-            "type": "bool"
-          }
-        ],
-        "internalType": "struct IWithdrawalQueue.WithdrawalRequestStatus[]",
-        "name": "statuses",
-        "type": "tuple[]"
+        "internalType": "uint256",
+        "name": "ethToLock",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "sharesToBurn",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",

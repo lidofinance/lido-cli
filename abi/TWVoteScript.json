@@ -1,0 +1,397 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_voting",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "agent",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "lido_locator",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "lido_locator_impl",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "validators_exit_bus_oracle",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "validators_exit_bus_oracle_impl",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "triggerable_withdrawals_gateway",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "withdrawal_vault",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "withdrawal_vault_impl",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "accounting_oracle",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "accounting_oracle_impl",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "staking_router",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "staking_router_impl",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "validator_exit_verifier",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "node_operators_registry",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "node_operators_registry_impl",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "oracle_daemon_config",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "nor_app_repo",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "node_operators_registry_app_id",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint16[3]",
+            "name": "nor_version",
+            "type": "uint16[3]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "vebo_consensus_version",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ao_consensus_version",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nor_exit_deadline_in_sec",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "exit_events_lookback_window_in_slots",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "nor_content_uri",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct TWVoteScript.ScriptParams",
+        "name": "_params",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "VOTE_ITEMS_COUNT",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getDebugParams",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "agent",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "lido_locator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "validators_exit_bus_oracle",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "withdrawal_vault",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "node_operators_registry_app_id",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getEVMScript",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "description",
+        "type": "string"
+      }
+    ],
+    "name": "getNewVoteCallBytecode",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "newVoteBytecode",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getVoteItems",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct OmnibusBase.ScriptCall",
+            "name": "call",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct OmnibusBase.VoteItem[]",
+        "name": "voteItems",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "voteId",
+        "type": "uint256"
+      }
+    ],
+    "name": "isValidVoteScript",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "params",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "agent",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "lido_locator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "lido_locator_impl",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "validators_exit_bus_oracle",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "validators_exit_bus_oracle_impl",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "triggerable_withdrawals_gateway",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "withdrawal_vault",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "withdrawal_vault_impl",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "accounting_oracle",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "accounting_oracle_impl",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "staking_router",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "staking_router_impl",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "validator_exit_verifier",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "node_operators_registry",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "node_operators_registry_impl",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "oracle_daemon_config",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "nor_app_repo",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "node_operators_registry_app_id",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "vebo_consensus_version",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ao_consensus_version",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "nor_exit_deadline_in_sec",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "exit_events_lookback_window_in_slots",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "nor_content_uri",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

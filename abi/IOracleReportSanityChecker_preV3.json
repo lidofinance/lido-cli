@@ -1,0 +1,77 @@
+[
+  {
+    "inputs": [],
+    "name": "getOracleReportLimits",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "exitedValidatorsPerDayLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "appearedValidatorsPerDayLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "annualBalanceIncreaseBPLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "simulatedShareRateDeviationBPLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxValidatorExitRequestsPerReport",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxItemsPerExtraDataTransaction",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxNodeOperatorsPerExtraDataItem",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "requestTimestampMargin",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxPositiveTokenRebase",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "initialSlashingAmountPWei",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "inactivityPenaltiesAmountPWei",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "clBalanceOraclesErrorUpperBPLimit",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct LimitsList",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

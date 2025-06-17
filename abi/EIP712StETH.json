@@ -11,7 +11,7 @@
     "type": "constructor"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "ZeroStETHAddress",
     "type": "error"
   },

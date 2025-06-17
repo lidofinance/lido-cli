@@ -11,7 +11,7 @@
     "type": "constructor"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DepositContractZeroAddress",
     "type": "error"
   },
@@ -48,7 +48,7 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DEPOSIT_CONTRACT",
     "outputs": [
       {

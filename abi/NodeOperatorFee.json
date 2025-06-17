@@ -5,6 +5,11 @@
         "internalType": "address",
         "name": "_vaultHub",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_lidoLocator",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -29,6 +34,16 @@
       }
     ],
     "name": "AccessControlUnauthorizedAccount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AdjustmentNotReported",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AdjustmentNotSettled",
     "type": "error"
   },
   {
@@ -69,17 +84,12 @@
   },
   {
     "inputs": [],
-    "name": "NoUnclaimedFee",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NodeOperatorFeeUnclaimed",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "NonProxyCallsForbidden",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ReportStale",
     "type": "error"
   },
   {
@@ -89,17 +99,26 @@
   },
   {
     "inputs": [],
+    "name": "SameRecipient",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "SenderNotMember",
     "type": "error"
   },
   {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "argument",
-        "type": "string"
-      }
-    ],
+    "inputs": [],
+    "name": "VaultQuarantined",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "ZeroArgument",
     "type": "error"
   },
@@ -107,25 +126,6 @@
     "inputs": [],
     "name": "ZeroConfirmingRoles",
     "type": "error"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "newAdjustment",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "oldAdjustment",
-        "type": "uint256"
-      }
-    ],
-    "name": "AccruedRewardsAdjustmentSet",
-    "type": "event"
   },
   {
     "anonymous": false,
@@ -170,17 +170,80 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "oldNodeOperatorFeeBP",
+        "name": "fee",
+        "type": "uint256"
+      }
+    ],
+    "name": "NodeOperatorFeeDisbursed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "oldNodeOperatorFeeRate",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "newNodeOperatorFeeBP",
+        "name": "newNodeOperatorFeeRate",
         "type": "uint256"
       }
     ],
-    "name": "NodeOperatorFeeBPSet",
+    "name": "NodeOperatorFeeRateSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "oldNodeOperatorFeeRecipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newNodeOperatorFeeRecipient",
+        "type": "address"
+      }
+    ],
+    "name": "NodeOperatorFeeRecipientSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newAdjustment",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "oldAdjustment",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardsAdjustmentSet",
     "type": "event"
   },
   {
@@ -251,6 +314,12 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "confirmTimestamp",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "expiryTimestamp",
         "type": "uint256"
       },
@@ -304,6 +373,19 @@
   },
   {
     "inputs": [],
+    "name": "CHANGE_TIER_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
@@ -330,12 +412,12 @@
   },
   {
     "inputs": [],
-    "name": "LIDO_VAULTHUB_AUTHORIZATION_ROLE",
+    "name": "LIDO_LOCATOR",
     "outputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "contract ILidoLocator",
         "name": "",
-        "type": "bytes32"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -343,33 +425,7 @@
   },
   {
     "inputs": [],
-    "name": "LIDO_VAULTHUB_DEAUTHORIZATION_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "LOCK_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "MANUAL_ACCRUED_REWARDS_ADJUSTMENT_LIMIT",
+    "name": "MANUAL_REWARDS_ADJUSTMENT_LIMIT",
     "outputs": [
       {
         "internalType": "uint256",
@@ -421,19 +477,6 @@
   },
   {
     "inputs": [],
-    "name": "NODE_OPERATOR_FEE_CLAIM_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "NODE_OPERATOR_MANAGER_ROLE",
     "outputs": [
       {
@@ -448,19 +491,6 @@
   {
     "inputs": [],
     "name": "NODE_OPERATOR_REWARDS_ADJUST_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "OSSIFY_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -525,19 +555,6 @@
   },
   {
     "inputs": [],
-    "name": "REQUEST_TIER_CHANGE_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "REQUEST_VALIDATOR_EXIT_ROLE",
     "outputs": [
       {
@@ -551,33 +568,7 @@
   },
   {
     "inputs": [],
-    "name": "RESET_LOCKED_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "RESUME_BEACON_CHAIN_DEPOSITS_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "SET_DEPOSITOR_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -654,49 +645,23 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "accruedRewardsAdjustment",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_recipient",
-        "type": "address"
-      }
-    ],
-    "name": "claimNodeOperatorFee",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "bytes",
-        "name": "callData",
+        "name": "_callData",
         "type": "bytes"
       },
       {
         "internalType": "bytes32",
-        "name": "role",
+        "name": "_role",
         "type": "bytes32"
       }
     ],
-    "name": "confirmations",
+    "name": "confirmation",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "expiryTimestamp",
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -714,6 +679,36 @@
       }
     ],
     "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "disburseNodeOperatorFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "feePeriodStartReport",
+    "outputs": [
+      {
+        "internalType": "uint112",
+        "name": "totalValue",
+        "type": "uint112"
+      },
+      {
+        "internalType": "int112",
+        "name": "inOutDelta",
+        "type": "int112"
+      },
+      {
+        "internalType": "uint32",
+        "name": "timestamp",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -885,7 +880,7 @@
         "type": "uint256"
       }
     ],
-    "name": "increaseAccruedRewardsAdjustment",
+    "name": "increaseRewardsAdjustment",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -905,7 +900,37 @@
   },
   {
     "inputs": [],
-    "name": "nodeOperatorFeeBP",
+    "name": "latestReport",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint112",
+            "name": "totalValue",
+            "type": "uint112"
+          },
+          {
+            "internalType": "int112",
+            "name": "inOutDelta",
+            "type": "int112"
+          },
+          {
+            "internalType": "uint32",
+            "name": "timestamp",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct VaultHub.Report",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nodeOperatorDisbursableFee",
     "outputs": [
       {
         "internalType": "uint256",
@@ -918,22 +943,12 @@
   },
   {
     "inputs": [],
-    "name": "nodeOperatorFeeClaimedReport",
+    "name": "nodeOperatorFeeRate",
     "outputs": [
       {
-        "internalType": "uint128",
-        "name": "totalValue",
-        "type": "uint128"
-      },
-      {
-        "internalType": "int128",
-        "name": "inOutDelta",
-        "type": "int128"
-      },
-      {
-        "internalType": "uint64",
-        "name": "timestamp",
-        "type": "uint64"
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -941,12 +956,12 @@
   },
   {
     "inputs": [],
-    "name": "nodeOperatorUnclaimedFee",
+    "name": "nodeOperatorFeeRecipient",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "address",
         "name": "",
-        "type": "uint256"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -1014,21 +1029,21 @@
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "rewardsAdjustment",
+    "outputs": [
       {
-        "internalType": "uint256",
-        "name": "_newAdjustment",
-        "type": "uint256"
+        "internalType": "uint128",
+        "name": "amount",
+        "type": "uint128"
       },
       {
-        "internalType": "uint256",
-        "name": "_currentAdjustment",
-        "type": "uint256"
+        "internalType": "uint64",
+        "name": "latestTimestamp",
+        "type": "uint64"
       }
     ],
-    "name": "setAccruedRewardsAdjustment",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1040,6 +1055,44 @@
       }
     ],
     "name": "setConfirmExpiry",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_newNodeOperatorFeeRate",
+        "type": "uint256"
+      }
+    ],
+    "name": "setNodeOperatorFeeRate",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_newNodeOperatorFeeRecipient",
+        "type": "address"
+      }
+    ],
+    "name": "setNodeOperatorFeeRecipient",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1048,12 +1101,23 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_newNodeOperatorFeeBP",
+        "name": "_proposedAdjustment",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_expectedAdjustment",
         "type": "uint256"
       }
     ],
-    "name": "setNodeOperatorFeeBP",
-    "outputs": [],
+    "name": "setRewardsAdjustment",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },

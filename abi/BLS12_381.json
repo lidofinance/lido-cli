@@ -1,0 +1,37 @@
+[
+  {
+    "inputs": [],
+    "name": "G2AddFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InputHasInfinityPoints",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidBlockHeader",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidPubkeyLength",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MapFp2ToG2Failed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PairingFailed",
+    "type": "error"
+  }
+]

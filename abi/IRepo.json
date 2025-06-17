@@ -1,0 +1,25 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint16[3]",
+        "name": "_newSemanticVersion",
+        "type": "uint16[3]"
+      },
+      {
+        "internalType": "address",
+        "name": "_contractAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_contentURI",
+        "type": "bytes"
+      }
+    ],
+    "name": "newVersion",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

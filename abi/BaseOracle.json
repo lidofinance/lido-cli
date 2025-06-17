@@ -1,16 +1,16 @@
 [
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "AddressCannotBeSame",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "AddressCannotBeZero",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "HashCannotBeZero",
     "type": "error"
   },
@@ -31,17 +31,17 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "InvalidContractVersionIncrement",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NoConsensusReportToProcess",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "NonZeroContractVersionOnInit",
     "type": "error"
   },
@@ -57,7 +57,7 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "RefSlotAlreadyProcessing",
     "type": "error"
   },
@@ -94,17 +94,17 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "SecondsPerSlotCannotBeZero",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "SenderIsNotTheConsensusContract",
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "UnexpectedChainConfig",
     "type": "error"
   },
@@ -173,7 +173,7 @@
     "type": "error"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "VersionCannotBeSame",
     "type": "error"
   },
@@ -380,7 +380,7 @@
     "type": "event"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
@@ -393,7 +393,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "GENESIS_TIME",
     "outputs": [
       {
@@ -406,7 +406,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "MANAGE_CONSENSUS_CONTRACT_ROLE",
     "outputs": [
       {
@@ -419,7 +419,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "MANAGE_CONSENSUS_VERSION_ROLE",
     "outputs": [
       {
@@ -432,7 +432,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "SECONDS_PER_SLOT",
     "outputs": [
       {
@@ -453,12 +453,12 @@
       }
     ],
     "name": "discardConsensusReport",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getConsensusContract",
     "outputs": [
       {
@@ -471,7 +471,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getConsensusReport",
     "outputs": [
       {
@@ -499,7 +499,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getConsensusVersion",
     "outputs": [
       {
@@ -512,7 +512,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getContractVersion",
     "outputs": [
       {
@@ -525,7 +525,7 @@
     "type": "function"
   },
   {
-    "inputs": [ ],
+    "inputs": [],
     "name": "getLastProcessingRefSlot",
     "outputs": [
       {
@@ -613,7 +613,7 @@
       }
     ],
     "name": "grantRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -655,7 +655,7 @@
       }
     ],
     "name": "renounceRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -673,7 +673,7 @@
       }
     ],
     "name": "revokeRole",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -686,7 +686,7 @@
       }
     ],
     "name": "setConsensusContract",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -699,7 +699,7 @@
       }
     ],
     "name": "setConsensusVersion",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -722,7 +722,7 @@
       }
     ],
     "name": "submitConsensusReport",
-    "outputs": [ ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },

@@ -46,6 +46,16 @@
             "internalType": "uint64",
             "name": "childBlockTimestamp",
             "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "slot",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "proposerIndex",
+            "type": "uint64"
           }
         ],
         "internalType": "struct IPredepositGuarantee.ValidatorWitness",

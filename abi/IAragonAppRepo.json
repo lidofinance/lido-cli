@@ -1,0 +1,25 @@
+[
+  {
+    "inputs": [],
+    "name": "getLatest",
+    "outputs": [
+      {
+        "internalType": "uint16[3]",
+        "name": "",
+        "type": "uint16[3]"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
