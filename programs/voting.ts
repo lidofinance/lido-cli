@@ -1,5 +1,5 @@
 import { program } from '@command';
-import { tmContract, votingContract } from '@contracts';
+import { tmContract, votingContract, dualGovernanceContract, dualGovernanceTimeLockContract } from '@contracts';
 import {
   authorizedCall,
   contractCallTxWithConfirm,
@@ -8,6 +8,8 @@ import {
   voteAgainst,
   voteFor,
   waitForEnd,
+  executeVoteAndFindProposalId,
+  waitForDGProposal,
 } from '@utils';
 import { addAragonAppSubCommands, addLogsCommands, addParsingCommands } from './common';
 import { votingNewVote } from '@scripts';
@@ -99,4 +101,27 @@ voting
     // TODO: add check and print
     await executeVote(voteId);
     logger.log('Executed');
+  });
+
+voting
+  .command('execute-dg-vote')
+  .description('executes vote and processes it through dual governance')
+  .argument('<vote-id>', 'vote id')
+  .action(async (voteId) => {
+    // Step 1: Vote and execute
+    await voteFor(voteId);
+    await waitForEnd(voteId);
+    const [, proposalId] = await executeVoteAndFindProposalId(voteId);
+    logger.log(`proposalId = ${proposalId}`);
+    // Step 3: Schedule proposal
+    await waitForDGProposal(proposalId, 'submitted');
+
+    await dualGovernanceContract.scheduleProposal(proposalId);
+    logger.log('Proposal scheduled');
+
+    // // Step 4: Wait for schedule delay and execute
+    await waitForDGProposal(proposalId, 'scheduled');
+
+    await dualGovernanceTimeLockContract.execute(proposalId);
+    logger.log('Dual governance proposal executed successfully');
   });
