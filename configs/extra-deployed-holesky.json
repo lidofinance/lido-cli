@@ -36,5 +36,16 @@
     "module": { "address": "0x4562c3e63c2e586cD1651B958C22F88135aCAd4f" },
     "verifier": { "address": "0xEaBA76fAf7A5473fAC6a2511d8115beAb43Cf8a7" },
     "hashConsensus": { "address": "0xbF38618Ea09B503c1dED867156A0ea276Ca1AE37" }
+  },
+  "dualGovernance": {
+    "dualGovernance": { "address": "0x490bf377734CA134A8E207525E8576745652212e" },
+    "timelock": { "address": "0xe9c5FfEAd0668AFdBB9aac16163840d649DB76DD" },
+    "dualGovernanceAdminExecutor": { "address": "0x8BD0a916faDa88Ba3accb595a3Acd28F467130e8" },
+    "resealManager": { "address": "0x9dE2273f9f1e81145171CcA927EFeE7aCC64c9fb" },
+    "daoEmergencyGovernance": { "address": "0x46c6C7E1Cc438456d658Eed61A764a475abDa0C1" },
+    "agentManager": { "address": "0xc807d4036B400dE8f6cD2aDbd8d9cf9a3a01CC30" },
+    "timeConstraints": { "address": "0x4D36598EA14bd70a1040CF59ABF6f9439afBf5d9" },
+    "rolesValidator": { "address": "0xf532fC0a18D3339A52b3f1152FcA9925De5855AA" },
+    "allowedTokensRegistry": { "address": "0x091C0eC8B4D54a9fcB36269B5D5E5AF43309e666" }
   }
 }
