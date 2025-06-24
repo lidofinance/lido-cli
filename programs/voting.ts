@@ -112,7 +112,7 @@ voting
     await voteFor(voteId);
     await waitForEnd(voteId);
     const [, proposalId] = await executeVoteAndFindProposalId(voteId);
-    logger.log(`proposalId = ${proposalId}`);
+    logger.log(`Vote ${voteId} executed. Proposal ID: ${proposalId}`);
     // Step 3: Schedule proposal
     await waitForDGProposal(proposalId, 'submitted');
 

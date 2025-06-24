@@ -130,8 +130,9 @@ export const waitForDGProposal = async (
   const timeEnd = Number(waitTime);
   const proposalStart = Number(kind === 'submitted' ? proposal.submittedAt : proposal.scheduledAt);
   const proposalEnd = proposalStart + Number(timeEnd);
-  const secondsLeft = Math.max(0, (proposalEnd - block.timestamp) / 1000);
+  const secondsLeft = Math.max(0, proposalEnd - block.timestamp);
   const currentPosition = Math.min(block.timestamp - proposalStart, Number(timeEnd));
+
   if ((kind === 'submitted' ? Number(proposal.status) >= 2 : Number(proposal.status) >= 3) || secondsLeft <= 0) {
     progressBar?.update(currentPosition, { secondsLeft });
     progressBar?.stop();
