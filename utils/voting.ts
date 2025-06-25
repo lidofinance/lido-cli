@@ -79,19 +79,23 @@ export const executeVoteAndFindProposalId = async (voteId: number) => {
 };
 
 export const scheduleAndExecuteProposal = async (proposalId: number) => {
-  const submitDelay = await dualGovernanceTimeLockContract.getAfterSubmitDelay();
-  logger.log(`Waiting for submit delay: ${Number(submitDelay) + 1} seconds`);
-  await sleep((Number(submitDelay) + 1) * 1000);
+  // Step 1: Schedule proposal
+  await waitForDGProposal(proposalId, 'submitted');
 
-  await dualGovernanceContract.scheduleProposal(proposalId);
-  logger.log('Proposal scheduled');
+  const scheduleTx = await dualGovernanceContract.scheduleProposal(proposalId);
+  logger.log(`Scheduling proposal. Transaction: ${scheduleTx.hash}`);
+  logger.log('Waiting for scheduling transaction to be mined...');
+  const scheduleReceipt = await scheduleTx.wait();
+  logger.log(`Proposal scheduled. Transaction mined: ${scheduleReceipt.transactionHash}`);
 
-  // Step 4: Wait for schedule delay and execute
-  const scheduleDelay = await dualGovernanceTimeLockContract.getAfterScheduleDelay();
-  logger.log(`Waiting for schedule delay: ${Number(scheduleDelay) + 1} seconds`);
-  await sleep((Number(scheduleDelay) + 1) * 1000);
+  // Step 2: Wait for schedule delay and execute
+  await waitForDGProposal(proposalId, 'scheduled');
 
-  await dualGovernanceTimeLockContract.execute(proposalId);
+  const execTx = await dualGovernanceTimeLockContract.execute(proposalId);
+  logger.log(`Executing proposal. Transaction: ${execTx.hash}`);
+  logger.log('Waiting for execution transaction to be mined...');
+  const execReceipt = await execTx.wait();
+  logger.log(`Proposal executed. Transaction mined: ${execReceipt.transactionHash}`);
   logger.log('Dual governance proposal executed successfully');
 };
 
