@@ -5,7 +5,7 @@ function Invoke-LidoCli {
     )
     
     # Construct the command with all passed arguments
-    $cmd = "yarn --silent ts-node ./index $($Arguments -join ' ')"
+    $cmd = "yarn --silent tsx ./index $($Arguments -join ' ')"
     
     # Execute in the same directory as the module
     Push-Location $PSScriptRoot
