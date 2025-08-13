@@ -43,6 +43,7 @@ devnet
     // Lido
     logger.log(head('Lido'));
     const stakingLimit = Number(options.stakingLimit);
+    console.log('>>>>>>>>> 1');
     const lidoResumeScripts = await encodeScriptsLidoResumeIfStopped(stakingLimit);
     logger.log();
 
@@ -98,6 +99,7 @@ devnet
     // Voting start
     const voteEvmScript = encodeCallScript(votingCalls);
     const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
+    console.log('>>>> vs2');
     await forwardVoteFromTm(newVoteCalldata);
   });
 

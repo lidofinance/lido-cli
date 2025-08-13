@@ -6,23 +6,25 @@ import progress, { SingleBar } from 'cli-progress';
 import { provider } from '@providers';
 
 export const forwardVoteFromTm = async (votingCalldata: string) => {
+  console.log('>>>>> vfw1');
   const tx = await contractCallTxWithConfirm(tmContract, 'forward', [votingCalldata]);
   if (tx == null) return;
   logger.success('Vote started');
-
+  console.log('>>>>>> vfw2');
   await voteLastVoting();
 };
 
 export const voteLastVoting = async () => {
-  const votesLength = await votingContract.votesLength();
+  console.log('>>>>>> v1');
+  const votesLength = await votingContract.votesLength({gasLimit: 16_000_000});
   const lastVoteId = Number(votesLength) - 1;
 
   if (lastVoteId == -1) {
     logger.warn('No votes');
     return;
   }
-
-  const lastVote = await votingContract.getVote(lastVoteId);
+  console.log('>>>>>> v2');
+  const lastVote = await votingContract.getVote(lastVoteId, {gasLimit: 16_000_000});
 
   if (lastVote.open == false) {
     logger.warn('Vote is not open');
@@ -33,10 +35,13 @@ export const voteLastVoting = async () => {
     logger.warn('Wrong phase');
     return;
   }
-
+  console.log('>>>>>> v3');
   await voteFor(lastVoteId);
+  console.log('>>>>>> v4');
   await waitForEnd(lastVoteId);
+  console.log('>>>>>> v5');
   await executeVote(lastVoteId);
+  console.log('>>>>>> v6');
 };
 
 export const voteFor = async (voteId: number) => {
@@ -56,8 +61,8 @@ export const executeVote = async (voteId: number) => {
 
 export const waitForEnd = async (voteId: number, progressBar?: SingleBar) => {
   const [vote, voteTime, block] = await Promise.all([
-    votingContract.getVote(voteId),
-    votingContract.voteTime(),
+    votingContract.getVote(voteId, {gasLimit: 16_000_000}),
+    votingContract.voteTime({gasLimit: 16_000_000}),
     provider.getBlock('latest'),
   ]);
 

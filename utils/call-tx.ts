@@ -19,7 +19,7 @@ export const contractStaticCallTx = async (contract: Contract, method: string, a
   const contractAddress = await contract.getAddress();
 
   try {
-    const result = await contract[method].staticCall(...args);
+    const result = await contract[method].staticCall(...args, {gasLimit: 16_000_000});
     logger.success(`Successfully called ${method} on ${contractAddress}. Result:`, result);
   } catch (error) {
     logger.error(`Failed to call ${method} on ${contractAddress}`);
@@ -32,8 +32,11 @@ export const populateGasLimit = async (contract: Contract, method: string, argsW
   const { args, overrides } = splitArgsAndOverrides(contract, method, argsWithOverrides);
 
   if (!overrides.gasLimit) {
-    const gasLimit = await contract[method].estimateGas(...args, overrides);
-    overrides.gasLimit = (gasLimit * 120n) / 100n;
+    overrides.gasLimit = 16_000_000;
+    console.log('!!!!! ESTIMATE', { overrides });
+    //const gasLimit = await contract[method].estimateGas(...args, overrides);
+    overrides.gasLimit = 16_000_000; //(gasLimit * 120n) / 100n;
+    console.log('!!!! ESTIMATED', {overrides});
   }
 
   return [...args, overrides];
@@ -41,6 +44,7 @@ export const populateGasLimit = async (contract: Contract, method: string, argsW
 
 export const contractCallTx = async (contract: Contract, method: string, args: unknown[]) => {
   const argsWithGasLimit = await populateGasLimit(contract, method, args);
+  console.log('contractCallTx', {method, argsWithGasLimit});
   const tx: ContractTransactionResponse = await contract[method](...argsWithGasLimit);
   logger.success('Tx sent', tx.hash);
 

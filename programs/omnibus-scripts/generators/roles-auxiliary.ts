@@ -14,6 +14,7 @@ import {
   oracleConfigContract,
   sanityCheckerContract,
   stakingRouterContract,
+  lidoContract,
 } from '@contracts';
 import { DEFAULT_DEVNET_CONFIG } from './devnet';
 
@@ -33,6 +34,7 @@ const HASH_CONSENSUS_ROLES = [
 const ORACLE_CONFIG_ROLES = ['CONFIG_MANAGER_ROLE'];
 const STAKING_ROUTER_ROLES = ['STAKING_MODULE_MANAGE_ROLE'];
 const SANITY_CHECKER_ROLES = ['ALL_LIMITS_MANAGER_ROLE'];
+const LIDO_ROLES = ['RESUME_ROLE'];
 
 const bold = chalk.white.bold;
 
@@ -42,6 +44,7 @@ export const promptScriptsRoles = async () => {
 };
 
 export const promptScriptsRolesWithConfirm = async (beneficiary: string) => {
+  const lidoScripts = await encodeFromVotingGrantRolesAragonWithConfirm('Lido', LIDO_ROLES, lidoContract, beneficiary);
   const srScripts = await encodeFromAgentGrantRolesAccessControlWithConfirm(
     'SR',
     STAKING_ROUTER_ROLES,
@@ -73,10 +76,19 @@ export const promptScriptsRolesWithConfirm = async (beneficiary: string) => {
     sanityCheckerContract,
     beneficiary,
   );
-  return [...srScripts, ...norScripts, ...aoScripts, ...veboScripts, ...oracleConfigScripts, ...sanityCheckerScripts];
+  return [
+    ...lidoScripts,
+    ...srScripts,
+    ...norScripts,
+    ...aoScripts,
+    ...veboScripts,
+    ...oracleConfigScripts,
+    ...sanityCheckerScripts,
+  ];
 };
 
 export const encodeScriptsRoles = async (beneficiary: string) => {
+  const lidoScripts = await encodeFromVotingGrantRolesAragon('Lido', LIDO_ROLES, lidoContract, beneficiary);
   const srScripts = await encodeFromAgentGrantRolesAccessControl(
     'SR',
     STAKING_ROUTER_ROLES,
@@ -108,7 +120,15 @@ export const encodeScriptsRoles = async (beneficiary: string) => {
     sanityCheckerContract,
     beneficiary,
   );
-  return [...srScripts, ...norScripts, ...aoScripts, ...veboScripts, ...oracleConfigScripts, ...sanityCheckerScripts];
+  return [
+    ...lidoScripts,
+    ...srScripts,
+    ...norScripts,
+    ...aoScripts,
+    ...veboScripts,
+    ...oracleConfigScripts,
+    ...sanityCheckerScripts,
+  ];
 };
 
 export const promptRolesBeneficiary = async (initialAddress: string) => {

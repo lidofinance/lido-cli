@@ -3,7 +3,8 @@ import { wallet } from '@providers';
 
 export const getRoleHash = async (contract: Contract, role: string): Promise<string> => {
   if (isHexString(role)) return role;
-  return await contract[role]();
+  console.log({contract, role});
+  return await contract[role]({gasLimit: 16_000_000});
 };
 
 export const getRoleHashByAddress = async (address: string, role: string): Promise<string> => {
@@ -25,5 +26,5 @@ export const getRoleHashByAddress = async (address: string, role: string): Promi
     wallet,
   );
 
-  return await contract[role]();
+  return await contract[role]({gasLimit: 16_000_000});
 };
