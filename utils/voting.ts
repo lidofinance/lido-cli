@@ -5,6 +5,7 @@ import { provider } from '@providers';
 import { waitWithProgressBar } from './progress-bar';
 
 export const forwardVoteFromTm = async (votingCalldata: string) => {
+  console.log('>>>>> vfw1');
   const tx = await contractCallTxWithConfirm(tmContract, 'forward', [votingCalldata]);
   if (tx == null) return;
   logger.success('Vote started');
@@ -13,15 +14,16 @@ export const forwardVoteFromTm = async (votingCalldata: string) => {
 };
 
 export const voteLastVoting = async () => {
-  const votesLength = await votingContract.votesLength();
+  console.log('>>>>>> v1');
+  const votesLength = await votingContract.votesLength({gasLimit: 16_000_000});
   const lastVoteId = Number(votesLength) - 1;
 
   if (lastVoteId == -1) {
     logger.warn('No votes');
     return;
   }
-
-  const lastVote = await votingContract.getVote(lastVoteId);
+  console.log('>>>>>> v2');
+  const lastVote = await votingContract.getVote(lastVoteId, {gasLimit: 16_000_000});
 
   if (lastVote.open == false) {
     logger.warn('Vote is not open');
@@ -32,11 +34,18 @@ export const voteLastVoting = async () => {
     logger.warn('Wrong phase');
     return;
   }
-
+  console.log('>>>>>> v3');
   await voteFor(lastVoteId);
+  console.log('>>>>>> v4');
   await waitForEnd(lastVoteId);
+<<<<<<< HEAD
 
   return await executeVote(lastVoteId);
+=======
+  console.log('>>>>>> v5');
+  await executeVote(lastVoteId);
+  console.log('>>>>>> v6');
+>>>>>>> 2ff3a37 (fix(vroom-306): temp fix for fusaka devnet)
 };
 
 export const voteFor = async (voteId: number) => {
@@ -57,9 +66,21 @@ export const executeVote = async (voteId: number) => {
   return result;
 };
 
+<<<<<<< HEAD
 export const waitForEnd = async (voteId: number) => {
   const [vote, voteTimeBig] = await Promise.all([votingContract.getVote(voteId), votingContract.voteTime()]);
   const voteTime = Number(voteTimeBig);
+=======
+export const waitForEnd = async (voteId: number, progressBar?: SingleBar) => {
+  const [vote, voteTime, block] = await Promise.all([
+    votingContract.getVote(voteId, {gasLimit: 16_000_000}),
+    votingContract.voteTime({gasLimit: 16_000_000}),
+    provider.getBlock('latest'),
+  ]);
+
+  if (!block) throw new Error('Can not get latest block');
+
+>>>>>>> 2ff3a37 (fix(vroom-306): temp fix for fusaka devnet)
   const voteStart = Number(vote.startDate);
   const voteEnd = voteStart + voteTime + 1;
 
