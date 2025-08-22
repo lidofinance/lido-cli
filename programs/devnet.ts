@@ -1,5 +1,5 @@
 import { program } from '@command';
-import { votingNewVote } from '@scripts';
+import { agentForward, encodeFromAgent, votingNewVote } from '@scripts';
 import {
   CallScriptActionWithDescription,
   encodeCallScript,
@@ -81,8 +81,13 @@ devnet
     logger.log();
 
     // Voting calls
+    const forwardedLidoResumeScripts = lidoResumeScripts.map((call) => {
+      const [, agentCall] = encodeFromAgent(call);
+      return agentCall;
+    });
+
     const votingCalls: CallScriptActionWithDescription[] = [
-      ...lidoResumeScripts,
+      ...forwardedLidoResumeScripts,
       ...wqResumeScripts,
       ...veboScripts,
       ...aoScripts,
