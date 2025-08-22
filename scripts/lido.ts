@@ -1,5 +1,5 @@
 import { lidoAddress, lidoContract } from '@contracts';
-import { encodeCallScript, calcStakeLimitIncreasePerBlock } from '@utils';
+import { calcStakeLimitIncreasePerBlock, encodeCallScript } from '@utils';
 import { formatEther } from 'ethers';
 
 export const resumeProtocol = () => {
@@ -19,7 +19,7 @@ export const resumeStaking = () => {
     to: lidoAddress,
     data: lidoContract.interface.encodeFunctionData('resumeStaking'),
     desc: 'Lido: Resume staking',
-gasLimit: 16_000_000,
+    gasLimit: 16_000_000,
   };
 
   const encoded = encodeCallScript([call]);
