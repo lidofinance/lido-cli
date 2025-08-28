@@ -85,12 +85,12 @@ export const devnetCSMStart = async () => {
     data: iface.encodeFunctionData('grantRole', [csmResumeRoleHash, aragonAgentAddress]),
   });
 
-  // 5. Grant csmModuleManager role to agent
-  const csmModuleManagerRoleHash = await getRoleHash(csModuleContract, 'MODULE_MANAGER_ROLE');
-  const [, csmModuleManagerRoleGrantScript] = encodeFromAgent({
-    to: CS_MODULE_ADDRESS,
-    data: iface.encodeFunctionData('grantRole', [csmModuleManagerRoleHash, aragonAgentAddress]),
-  });
+  // // 5. Grant csmModuleManager role to agent
+  // const csmModuleManagerRoleHash = await getRoleHash(csModuleContract, 'MODULE_MANAGER_ROLE');
+  // const [, csmModuleManagerRoleGrantScript] = encodeFromAgent({
+  //   to: CS_MODULE_ADDRESS,
+  //   data: iface.encodeFunctionData('grantRole', [csmModuleManagerRoleHash, aragonAgentAddress]),
+  // });
 
   // 6. Resume staking module
   const [, resumeScript] = encodeFromAgent({
@@ -110,11 +110,11 @@ export const devnetCSMStart = async () => {
     data: iface.encodeFunctionData('revokeRole', [csmResumeRoleHash, aragonAgentAddress]),
   });
 
-  // 9. Revoke csmModuleManager role from agent
-  const [, resumeCsmModuleManagerRoleRevokeScript] = encodeFromAgent({
-    to: CS_MODULE_ADDRESS,
-    data: iface.encodeFunctionData('revokeRole', [csmModuleManagerRoleHash, aragonAgentAddress]),
-  });
+  // // 9. Revoke csmModuleManager role from agent
+  // const [, resumeCsmModuleManagerRoleRevokeScript] = encodeFromAgent({
+  //   to: CS_MODULE_ADDRESS,
+  //   data: iface.encodeFunctionData('revokeRole', [csmModuleManagerRoleHash, aragonAgentAddress]),
+  // });
 
   // 10. Update initial epoch
   const [, updateInitialEpochScript] = encodeFromAgent({
@@ -128,11 +128,11 @@ export const devnetCSMStart = async () => {
     addStakingModuleScript,
     requestBurnRoleGrantScript,
     resumeRoleGrantScript,
-    csmModuleManagerRoleGrantScript,
+    // csmModuleManagerRoleGrantScript,
     resumeScript,
     activatePublicReleaseScript,
     resumeRoleRevokeScript,
-    resumeCsmModuleManagerRoleRevokeScript,
+    // resumeCsmModuleManagerRoleRevokeScript,
     updateInitialEpochScript,
   ];
 
@@ -141,11 +141,11 @@ export const devnetCSMStart = async () => {
     `2. Add staking module ${CS_MODULE_NAME} with address ${CS_MODULE_ADDRESS}`,
     `3. Grant request burn shares role to CSAccounting contract with address ${CS_ACCOUNTING_ADDRESS}`,
     `4. Grant resume role to agent ${aragonAgentAddress}`,
-    `5. Grant csmModuleManager role to agent ${aragonAgentAddress}`,
+    // `5. Grant csmModuleManager role to agent ${aragonAgentAddress}`,
     `6. Resume staking module`,
     `7. Activate public release`,
     `8. Revoke resume role from agent ${aragonAgentAddress}`,
-    `9. Revoke csmModuleManager role from agent ${aragonAgentAddress}`,
+    // `9. Revoke csmModuleManager role from agent ${aragonAgentAddress}`,
     `10. Update initial epoch to ${CS_ORACLE_INITIAL_EPOCH}`,
   ].join('\n');
 

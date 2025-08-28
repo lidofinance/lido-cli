@@ -1,5 +1,5 @@
 import { program } from '@command';
-import { csAccountingContract, csModuleContract } from '@contracts';
+import { csAccountingContract, csModuleContract, csPermissionlessGateContract } from '@contracts';
 import { addAccessControlSubCommands, addLogsCommands, addParsingCommands, addPauseUntilSubCommands } from './common';
 import {
   contractCallTxWithConfirm,
@@ -96,12 +96,11 @@ csm
     const publicKeys = joinHex(depositData.map(({ pubkey }) => pubkey));
     const signatures = joinHex(depositData.map(({ signature }) => signature));
 
-    await contractCallTxWithConfirm(csModuleContract, 'addNodeOperatorETH', [
+    await contractCallTxWithConfirm(csPermissionlessGateContract, 'addNodeOperatorETH', [
       keysCount,
       publicKeys,
       signatures,
       [managerAddress, rewardAddress, !!extendedManagerPermissions],
-      [], // early adoption proof
       referrer,
       { value },
     ]);
