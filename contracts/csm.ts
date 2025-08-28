@@ -11,6 +11,9 @@ import { getVersion } from './initializable';
 export const csModuleAddress = getOptionalDeployedAddress('csm.module.address');
 export const csModuleContract = new Contract(csModuleAddress, moduleAbi, wallet);
 
+export const csPermissionlessGateAddress = getOptionalDeployedAddress('csm.permissionlessGate.address');
+export const csPermissionlessGateContract = new Contract(csPermissionlessGateAddress, permissionlessGateAbi, wallet);
+
 export const csAccountingAddress = getOptionalDeployedAddress('csm.accounting.address');
 export const csAccountingContract = new Contract(csAccountingAddress, accountingAbi, wallet);
 

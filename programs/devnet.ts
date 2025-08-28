@@ -112,11 +112,20 @@ devnet
   .command('replace-dsm-with-eoa')
   .argument('<eoa>', 'EOA address')
   .action(async (eoa) => {
+    console.log('>>>> rdwe 1');
     const getProxyAddress = async () => await locatorContract.getAddress();
+    console.log('>>>> rdwe 2');
     const locatorProxyContract = getProxyContract(getProxyAddress);
-    const curLocatorImplementationAddress = await locatorProxyContract.proxy__getImplementation();
+    console.log('>>>> rdwe 3');
+    const curLocatorImplementationAddress = await locatorProxyContract.proxy__getImplementation({
+      gasLimit: 16_000_000,
+    });
 
-    const currentDSMAddress = await locatorContract.depositSecurityModule();
+    console.log('>>>> rdwe 4');
+    const currentDSMAddress = await locatorContract.depositSecurityModule({
+      gasLimit: 16_000_000,
+    });
+    console.log('>>>> rdwe 5');
     const currentDSMAddressBytes = currentDSMAddress.slice(2).toLowerCase();
     const eoaBytes = eoa.slice(2).toLowerCase();
 
@@ -126,6 +135,7 @@ devnet
     }
 
     const currentLocatorImplementationDeploymentTx = await findDeploymentTransaction(curLocatorImplementationAddress);
+    console.log('>>>> rdwe 7');
     const newLocatorDeploymentData = currentLocatorImplementationDeploymentTx.data.replaceAll(
       currentDSMAddressBytes,
       eoaBytes,
@@ -133,7 +143,7 @@ devnet
 
     const newLocatorDeployTx = {
       data: newLocatorDeploymentData,
-      gasLimit: 5000000,
+      gasLimit: 16_000_000,
     };
 
     const txResponse = await wallet.sendTransaction(newLocatorDeployTx);
@@ -147,7 +157,9 @@ devnet
     logger.log('Locator implementations diff');
 
     const curLocatorImplementationContract = getLocatorContract(curLocatorImplementationAddress);
+    console.log('>>>> rdwe 8');
     const newLocatorImplementationContract = getLocatorContract(newLocatorImplementationAddress);
+    console.log('>>>> rdwe 9');
 
     await compareContractCalls(
       [curLocatorImplementationContract, newLocatorImplementationContract],

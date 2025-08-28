@@ -38,14 +38,8 @@ export const voteLastVoting = async () => {
   await voteFor(lastVoteId);
   console.log('>>>>>> v4');
   await waitForEnd(lastVoteId);
-<<<<<<< HEAD
 
   return await executeVote(lastVoteId);
-=======
-  console.log('>>>>>> v5');
-  await executeVote(lastVoteId);
-  console.log('>>>>>> v6');
->>>>>>> 2ff3a37 (fix(vroom-306): temp fix for fusaka devnet)
 };
 
 export const voteFor = async (voteId: number) => {
@@ -66,21 +60,9 @@ export const executeVote = async (voteId: number) => {
   return result;
 };
 
-<<<<<<< HEAD
 export const waitForEnd = async (voteId: number) => {
   const [vote, voteTimeBig] = await Promise.all([votingContract.getVote(voteId), votingContract.voteTime()]);
   const voteTime = Number(voteTimeBig);
-=======
-export const waitForEnd = async (voteId: number, progressBar?: SingleBar) => {
-  const [vote, voteTime, block] = await Promise.all([
-    votingContract.getVote(voteId, {gasLimit: 16_000_000}),
-    votingContract.voteTime({gasLimit: 16_000_000}),
-    provider.getBlock('latest'),
-  ]);
-
-  if (!block) throw new Error('Can not get latest block');
-
->>>>>>> 2ff3a37 (fix(vroom-306): temp fix for fusaka devnet)
   const voteStart = Number(vote.startDate);
   const voteEnd = voteStart + voteTime + 1;
 
