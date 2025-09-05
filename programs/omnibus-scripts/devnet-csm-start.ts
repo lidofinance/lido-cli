@@ -143,7 +143,7 @@ export const devnetCSMStart = async () => {
     `4. Grant resume role to agent ${aragonAgentAddress}`,
     // `5. Grant csmModuleManager role to agent ${aragonAgentAddress}`,
     `6. Resume staking module`,
-    `7. Activate public release`,
+    // `7. Activate public release`,
     `8. Revoke resume role from agent ${aragonAgentAddress}`,
     // `9. Revoke csmModuleManager role from agent ${aragonAgentAddress}`,
     `10. Update initial epoch to ${CS_ORACLE_INITIAL_EPOCH}`,
