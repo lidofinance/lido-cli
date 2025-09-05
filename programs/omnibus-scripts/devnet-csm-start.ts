@@ -99,10 +99,10 @@ export const devnetCSMStart = async () => {
   });
 
   // 7. Activate public release
-  const [, activatePublicReleaseScript] = encodeFromAgent({
-    to: CS_MODULE_ADDRESS,
-    data: iface.encodeFunctionData('activatePublicRelease', []),
-  });
+  // const [, activatePublicReleaseScript] = encodeFromAgent({
+  //   to: CS_MODULE_ADDRESS,
+  //   data: iface.encodeFunctionData('activatePublicRelease', []),
+  // });
 
   // 8. Revoke resume role from agent
   const [, resumeRoleRevokeScript] = encodeFromAgent({
@@ -130,7 +130,7 @@ export const devnetCSMStart = async () => {
     resumeRoleGrantScript,
     // csmModuleManagerRoleGrantScript,
     resumeScript,
-    activatePublicReleaseScript,
+    // activatePublicReleaseScript,
     resumeRoleRevokeScript,
     // resumeCsmModuleManagerRoleRevokeScript,
     updateInitialEpochScript,
