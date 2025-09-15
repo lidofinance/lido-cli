@@ -1,6 +1,13 @@
 import { program } from '@command';
-import { checkTmCanForward, forwardVoteFromTm, logger, printTxToContract } from '@utils';
-import { printVoteTxData, promptVoting } from './omnibus/';
+import {
+  checkTmCanForward,
+  dgScheduleAndExecuteProposal,
+  extractDgProposalId,
+  forwardVoteFromTm,
+  logger,
+  printTxToContract,
+} from '@utils';
+import { printVoteTxData, promptVoting, promptVotingDG } from './omnibus/';
 import { tmContract } from '@contracts';
 
 const omnibus = program.command('omnibus').description('preparing and launching batches of calls through voting');
@@ -28,6 +35,31 @@ omnibus
 
     await printVoteTxData(voteTxData);
     await forwardVoteFromTm(voteTxData.newVoteCalldata);
+  });
+
+omnibus
+  .command('run-dg')
+  .description('run omnibus script')
+  .action(async () => {
+    const canForward = await checkTmCanForward();
+    if (!canForward) return;
+
+    const voteTxData = await promptVotingDG();
+    if (!voteTxData) return;
+
+    await printVoteTxData(voteTxData);
+    const result = await forwardVoteFromTm(voteTxData.newVoteCalldata);
+
+    if (!result) return;
+
+    const [, receipt] = result;
+    const proposalId = await extractDgProposalId(receipt);
+
+    if (proposalId == null) {
+      logger.warn('DG proposalId not found in logs');
+    } else {
+      await dgScheduleAndExecuteProposal(Number(proposalId));
+    }
   });
 
 omnibus

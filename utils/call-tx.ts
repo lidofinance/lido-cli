@@ -4,6 +4,8 @@ import { printTxToContract } from './print-tx';
 import { logger } from './logger';
 import { splitArgsAndOverrides } from './split-args-and-overrides';
 import { throwIfCanNotForward } from './token-manager';
+import { getAllAbi } from './abi';
+import { formatLog } from './format-log';
 
 export const contractCallTxWithConfirm = async (contract: Contract, method: string, args: unknown[]) => {
   await printTxToContract(contract, method, args);
@@ -52,15 +54,25 @@ export const contractCallTx = async (contract: Contract, method: string, args: u
   }
 
   try {
+    const allABi = getAllAbi();
+    const ifaces = [contract.interface, ...allABi.map(({ iface }) => iface)]; // Include the called contract itself at first position to prioritize its events
+
     logger.log('Tx logs:');
 
     receipt.logs.forEach((log) => {
-      const parsedLog = contract.interface.parseLog({
-        data: log.data,
-        topics: log.topics as string[],
-      });
+      for (let i = 0; i < ifaces.length; i++) {
+        const parsedLog = ifaces[i].parseLog({
+          data: log.data,
+          topics: log.topics as string[],
+        });
 
-      logger.dir(parsedLog, { depth: null });
+        if (parsedLog) {
+          logger.dir(formatLog(parsedLog), { depth: null });
+          return;
+        }
+      }
+
+      logger.log('Unknown log:', log);
     });
   } catch (error) {
     logger.error('Failed to parse logs', error);

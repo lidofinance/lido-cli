@@ -6,6 +6,7 @@ export * from './burner';
 export * from './csm';
 export * from './deposit-contract';
 export * from './dsm';
+export * from './dual-governance';
 export * from './ens';
 export * from './gnosis';
 export * from './initializable';

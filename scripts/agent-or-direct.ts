@@ -15,11 +15,15 @@ const printCallSuccess = (from: string) => {
   logger.success(`Successfully called from: ${chalk.bold(from)}, call added to the script\n`);
 };
 
-export const agentOrDirect = async (contract: Contract, method: string, args: unknown[] = []) => {
-  const call: CallScriptAction = {
+export const getCallScriptAction = async (contract: Contract, method: string, args: unknown[] = []) => {
+  return {
     to: await contract.getAddress(),
     data: contract.interface.encodeFunctionData(method, args),
-  };
+  } as CallScriptAction;
+};
+
+export const agentOrDirect = async (contract: Contract, method: string, args: unknown[] = []) => {
+  const call: CallScriptAction = await getCallScriptAction(contract, method, args);
 
   const errors = [];
 
@@ -65,7 +69,7 @@ export const promptFrom = async () => {
     choices: [
       { title: chalk`Abort and show errors`, value: null },
       {
-        title: chalk`Add as a direct call {red (only choose if you know what you are doing)}`,
+        title: chalk`Add as a direct call from voting {red (only choose if you know what you are doing)}`,
         value: 'voting',
       },
       {

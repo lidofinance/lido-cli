@@ -26,5 +26,10 @@
     "module": { "address": "0x79CEf36D84743222f37765204Bec41E92a93E59d" },
     "verifier": { "address": "0x16D0f6068D211608e3703323314aa976a6492D09" },
     "hashConsensus": { "address": "0x54f74a10e4397dDeF85C4854d9dfcA129D72C637" }
+  },
+  "dg": {
+    "dualGovernance": { "address": "0x9CAaCCc62c66d817CC59c44780D1b722359795bF" },
+    "adminExecutor": { "address": "0x0eCc17597D292271836691358B22340b78F3035B" },
+    "emergencyProtectedTimelock": { "address": "0x0A5E22782C0Bd4AddF10D771f0bF0406B038282d" }
   }
 }

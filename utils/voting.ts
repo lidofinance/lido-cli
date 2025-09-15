@@ -1,16 +1,15 @@
 import { tmContract, votingContract } from '@contracts';
-import { sleep } from './sleep';
 import { contractCallTx, contractCallTxWithConfirm } from './call-tx';
 import { logger } from './logger';
-import progress, { SingleBar } from 'cli-progress';
 import { provider } from '@providers';
+import { waitWithProgressBar } from './progress-bar';
 
 export const forwardVoteFromTm = async (votingCalldata: string) => {
   const tx = await contractCallTxWithConfirm(tmContract, 'forward', [votingCalldata]);
   if (tx == null) return;
   logger.success('Vote started');
 
-  await voteLastVoting();
+  return await voteLastVoting();
 };
 
 export const voteLastVoting = async () => {
@@ -36,56 +35,44 @@ export const voteLastVoting = async () => {
 
   await voteFor(lastVoteId);
   await waitForEnd(lastVoteId);
-  await executeVote(lastVoteId);
+
+  return await executeVote(lastVoteId);
 };
 
 export const voteFor = async (voteId: number) => {
-  await contractCallTx(votingContract, 'vote', [voteId, true, false]);
+  const result = await contractCallTx(votingContract, 'vote', [voteId, true, false]);
   logger.success('Vote voted');
+  return result;
 };
 
 export const voteAgainst = async (voteId: number) => {
-  await contractCallTx(votingContract, 'vote', [voteId, false, false]);
+  const result = await contractCallTx(votingContract, 'vote', [voteId, false, false]);
   logger.success('Vote voted');
+  return result;
 };
 
 export const executeVote = async (voteId: number) => {
-  await contractCallTx(votingContract, 'executeVote', [voteId]);
+  const result = await contractCallTx(votingContract, 'executeVote', [voteId]);
   logger.success('Vote executed');
+  return result;
 };
 
-export const waitForEnd = async (voteId: number, progressBar?: SingleBar) => {
-  const [vote, voteTime, block] = await Promise.all([
-    votingContract.getVote(voteId),
-    votingContract.voteTime(),
-    provider.getBlock('latest'),
-  ]);
-
-  if (!block) throw new Error('Can not get latest block');
-
+export const waitForEnd = async (voteId: number) => {
+  const [vote, voteTimeBig] = await Promise.all([votingContract.getVote(voteId), votingContract.voteTime()]);
+  const voteTime = Number(voteTimeBig);
   const voteStart = Number(vote.startDate);
-  const voteEnd = voteStart + Number(voteTime);
-  const secondsLeft = Math.max(0, voteEnd - block.timestamp);
-  const currentPosition = Math.min(block.timestamp - voteStart, Number(voteTime));
+  const voteEnd = voteStart + voteTime + 1;
 
-  if (!vote.open) {
-    progressBar?.update(currentPosition, { secondsLeft });
-    progressBar?.stop();
-    logger.log('');
+  await waitWithProgressBar(`Vote #${voteId} in progress`, async () => {
+    const latestBlock = await provider.getBlock('latest');
+    const latestTimestamp = Number(latestBlock?.timestamp);
 
-    return;
-  }
+    if (!latestBlock) throw new Error('Can not get latest block');
 
-  if (progressBar) {
-    progressBar.update(currentPosition, { secondsLeft });
-  } else {
-    progressBar = new progress.SingleBar(
-      { format: `Vote #${voteId} in progress |{bar}| {percentage}% | {secondsLeft}s left` },
-      progress.Presets.shades_classic,
-    );
-    progressBar.start(Number(voteTime), currentPosition, { secondsLeft });
-  }
-
-  await sleep(10_000);
-  await waitForEnd(voteId, progressBar);
+    return {
+      total: voteTime,
+      currentPosition: Math.min(latestTimestamp - voteStart, voteTime),
+      secondsLeft: Math.max(0, voteEnd - latestTimestamp),
+    };
+  });
 };

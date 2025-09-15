@@ -11,7 +11,7 @@ import {
 } from './staking-module';
 import Table from 'cli-table3';
 import chalk from 'chalk';
-import { fetchLidoModuleKeys, fetchLidoModuleOperators, fetchLidoModuleOperator, KAPIOperator } from '@providers';
+import { fetchLidoModuleKeys, fetchLidoModuleOperator, KAPIOperator } from '@providers';
 
 const ok = chalk.green.bold;
 const warn = chalk.yellow.bold;
