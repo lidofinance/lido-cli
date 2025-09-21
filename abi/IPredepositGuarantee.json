@@ -2,25 +2,20 @@
   {
     "inputs": [
       {
-        "internalType": "bytes",
-        "name": "_validatorPubkey",
-        "type": "bytes"
-      },
-      {
-        "internalType": "address",
-        "name": "_recipient",
+        "internalType": "contract IStakingVault",
+        "name": "_vault",
         "type": "address"
       }
     ],
-    "name": "compensateDisprovenPredeposit",
+    "name": "pendingPredeposits",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "compensatedEther",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {

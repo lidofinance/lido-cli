@@ -40,6 +40,11 @@
           },
           {
             "internalType": "uint256",
+            "name": "simulatedShareRateDeviationBPLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "maxValidatorExitRequestsPerReport",
             "type": "uint256"
           },
@@ -86,11 +91,6 @@
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
-  },
-  {
-    "inputs": [],
-    "name": "ActualShareRateIsZero",
-    "type": "error"
   },
   {
     "inputs": [],
@@ -246,6 +246,22 @@
       }
     ],
     "name": "IncorrectSharesRequestedToBurn",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "simulatedShareRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "actualShareRate",
+        "type": "uint256"
+      }
+    ],
+    "name": "IncorrectSimulatedShareRate",
     "type": "error"
   },
   {
@@ -636,6 +652,19 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "simulatedShareRateDeviationBPLimit",
+        "type": "uint256"
+      }
+    ],
+    "name": "SimulatedShareRateDeviationBPLimitSet",
+    "type": "event"
+  },
+  {
     "inputs": [],
     "name": "ALL_LIMITS_MANAGER_ROLE",
     "outputs": [
@@ -913,6 +942,39 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "_postInternalEther",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_postInternalShares",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_etherToFinalizeWQ",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_sharesToBurnForWithdrawals",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_simulatedShareRate",
+        "type": "uint256"
+      }
+    ],
+    "name": "checkSimulatedShareRate",
+    "outputs": [],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "_lastFinalizableRequestId",
         "type": "uint256"
       },
@@ -972,6 +1034,11 @@
           {
             "internalType": "uint256",
             "name": "annualBalanceIncreaseBPLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "simulatedShareRateDeviationBPLimit",
             "type": "uint256"
           },
           {
@@ -1348,6 +1415,11 @@
           },
           {
             "internalType": "uint256",
+            "name": "simulatedShareRateDeviationBPLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "maxValidatorExitRequestsPerReport",
             "type": "uint256"
           },
@@ -1437,12 +1509,25 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_preTotalPooledEther",
+        "name": "_simulatedShareRateDeviationBPLimit",
+        "type": "uint256"
+      }
+    ],
+    "name": "setSimulatedShareRateDeviationBPLimit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_preInternalEther",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_preTotalShares",
+        "name": "_preInternalShares",
         "type": "uint256"
       },
       {

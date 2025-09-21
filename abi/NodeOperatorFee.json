@@ -373,19 +373,6 @@
   },
   {
     "inputs": [],
-    "name": "CHANGE_TIER_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
@@ -516,19 +503,6 @@
   },
   {
     "inputs": [],
-    "name": "PDG_COMPENSATE_PREDEPOSIT_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "PDG_PROVE_VALIDATOR_ROLE",
     "outputs": [
       {
@@ -595,6 +569,19 @@
   {
     "inputs": [],
     "name": "UNGUARANTEED_BEACON_CHAIN_DEPOSIT_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "VAULT_CONFIGURATION_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -693,19 +680,19 @@
     "name": "feePeriodStartReport",
     "outputs": [
       {
-        "internalType": "uint112",
+        "internalType": "uint104",
         "name": "totalValue",
-        "type": "uint112"
+        "type": "uint104"
       },
       {
-        "internalType": "int112",
+        "internalType": "int104",
         "name": "inOutDelta",
-        "type": "int112"
+        "type": "int104"
       },
       {
-        "internalType": "uint32",
+        "internalType": "uint48",
         "name": "timestamp",
-        "type": "uint32"
+        "type": "uint48"
       }
     ],
     "stateMutability": "view",
@@ -905,19 +892,19 @@
       {
         "components": [
           {
-            "internalType": "uint112",
+            "internalType": "uint104",
             "name": "totalValue",
-            "type": "uint112"
+            "type": "uint104"
           },
           {
-            "internalType": "int112",
+            "internalType": "int104",
             "name": "inOutDelta",
-            "type": "int112"
+            "type": "int104"
           },
           {
-            "internalType": "uint32",
+            "internalType": "uint48",
             "name": "timestamp",
-            "type": "uint32"
+            "type": "uint48"
           }
         ],
         "internalType": "struct VaultHub.Report",

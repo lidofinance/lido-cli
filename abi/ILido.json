@@ -453,7 +453,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_amountOfShares",
+        "type": "uint256"
+      }
+    ],
     "name": "rebalanceExternalEtherToInternal",
     "outputs": [],
     "stateMutability": "payable",

@@ -7,6 +7,11 @@
         "type": "address"
       },
       {
+        "internalType": "address",
+        "name": "_dualGovernance",
+        "type": "address"
+      },
+      {
         "components": [
           {
             "internalType": "address",
@@ -55,11 +60,6 @@
           },
           {
             "internalType": "address",
-            "name": "accounting_oracle_impl",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
             "name": "staking_router",
             "type": "address"
           },
@@ -85,12 +85,12 @@
           },
           {
             "internalType": "address",
-            "name": "oracle_daemon_config",
+            "name": "simple_dvt",
             "type": "address"
           },
           {
             "internalType": "address",
-            "name": "nor_app_repo",
+            "name": "oracle_daemon_config",
             "type": "address"
           },
           {
@@ -99,9 +99,9 @@
             "type": "bytes32"
           },
           {
-            "internalType": "uint16[3]",
-            "name": "nor_version",
-            "type": "uint16[3]"
+            "internalType": "bytes32",
+            "name": "simple_dvt_app_id",
+            "type": "bytes32"
           },
           {
             "internalType": "uint256",
@@ -122,11 +122,6 @@
             "internalType": "uint256",
             "name": "exit_events_lookback_window_in_slots",
             "type": "uint256"
-          },
-          {
-            "internalType": "bytes",
-            "name": "nor_content_uri",
-            "type": "bytes"
           }
         ],
         "internalType": "struct TWVoteScript.ScriptParams",
@@ -136,6 +131,32 @@
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "MAINNET_ACL",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAINNET_KERNEL",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -184,7 +205,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "proposalMetadata",
+        "type": "string"
+      }
+    ],
     "name": "getEVMScript",
     "outputs": [
       {
@@ -201,6 +228,11 @@
       {
         "internalType": "string",
         "name": "description",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "proposalMetadata",
         "type": "string"
       }
     ],
@@ -253,11 +285,53 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getVotingVoteItems",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct OmnibusBase.ScriptCall",
+            "name": "call",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct OmnibusBase.VoteItem[]",
+        "name": "voteItems",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
         "name": "voteId",
         "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "proposalMetadata",
+        "type": "string"
       }
     ],
     "name": "isValidVoteScript",
@@ -322,11 +396,6 @@
       },
       {
         "internalType": "address",
-        "name": "accounting_oracle_impl",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "staking_router",
         "type": "address"
       },
@@ -352,17 +421,22 @@
       },
       {
         "internalType": "address",
-        "name": "oracle_daemon_config",
+        "name": "simple_dvt",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "nor_app_repo",
+        "name": "oracle_daemon_config",
         "type": "address"
       },
       {
         "internalType": "bytes32",
         "name": "node_operators_registry_app_id",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "simple_dvt_app_id",
         "type": "bytes32"
       },
       {
@@ -384,11 +458,6 @@
         "internalType": "uint256",
         "name": "exit_events_lookback_window_in_slots",
         "type": "uint256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "nor_content_uri",
-        "type": "bytes"
       }
     ],
     "stateMutability": "view",

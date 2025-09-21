@@ -10,7 +10,7 @@
     "name": "getPooledEthBySharesRoundUp",
     "outputs": [
       {
-        "name": "etherAmount",
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -724,6 +724,20 @@
     "type": "function"
   },
   {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_amountOfShares",
+        "type": "uint256"
+      }
+    ],
+    "name": "rebalanceExternalEtherToInternal",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
     "constant": true,
     "inputs": [
       {
@@ -759,15 +773,6 @@
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "rebalanceExternalEtherToInternal",
-    "outputs": [],
-    "payable": true,
-    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -1683,11 +1688,6 @@
         "indexed": false,
         "name": "amountOfShares",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "amountOfStETH",
-        "type": "uint256"
       }
     ],
     "name": "ExternalSharesMinted",
@@ -1697,22 +1697,12 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "name": "account",
-        "type": "address"
-      },
-      {
         "indexed": false,
         "name": "amountOfShares",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "stethAmount",
-        "type": "uint256"
       }
     ],
-    "name": "ExternalSharesBurned",
+    "name": "ExternalSharesBurnt",
     "type": "event"
   },
   {

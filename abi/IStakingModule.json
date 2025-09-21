@@ -450,24 +450,6 @@
       },
       {
         "internalType": "uint256",
-        "name": "_refundedValidatorsCount",
-        "type": "uint256"
-      }
-    ],
-    "name": "updateRefundedValidatorsCount",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_nodeOperatorId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "_targetLimitMode",
         "type": "uint256"
       },

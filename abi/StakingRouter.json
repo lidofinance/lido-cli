@@ -2505,29 +2505,6 @@
       },
       {
         "internalType": "uint256",
-        "name": "_nodeOperatorId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_refundedValidatorsCount",
-        "type": "uint256"
-      }
-    ],
-    "name": "updateRefundedValidatorsCount",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_stakingModuleId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "_stakeShareLimit",
         "type": "uint256"
       },

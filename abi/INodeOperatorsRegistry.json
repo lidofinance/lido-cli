@@ -3,7 +3,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_exitDeadlineInSec",
+        "name": "_exitDeadlineThresholdInSeconds",
         "type": "uint256"
       }
     ],

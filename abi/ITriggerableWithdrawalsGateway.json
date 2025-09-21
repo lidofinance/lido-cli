@@ -20,7 +20,7 @@
           }
         ],
         "internalType": "struct ITriggerableWithdrawalsGateway.ValidatorData[]",
-        "name": "triggerableExitData",
+        "name": "validatorsData",
         "type": "tuple[]"
       },
       {

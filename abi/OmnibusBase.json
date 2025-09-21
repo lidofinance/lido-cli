@@ -1,6 +1,12 @@
 [
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "proposalMetadata",
+        "type": "string"
+      }
+    ],
     "name": "getEVMScript",
     "outputs": [
       {
@@ -17,6 +23,11 @@
       {
         "internalType": "string",
         "name": "description",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "proposalMetadata",
         "type": "string"
       }
     ],
@@ -69,11 +80,53 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getVotingVoteItems",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct OmnibusBase.ScriptCall",
+            "name": "call",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct OmnibusBase.VoteItem[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
         "name": "voteId",
         "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "proposalMetadata",
+        "type": "string"
       }
     ],
     "name": "isValidVoteScript",

@@ -53,6 +53,11 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "InternalSharesCantBeZero",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "string",
@@ -66,22 +71,6 @@
       }
     ],
     "name": "NotAuthorized",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "firstArrayLength",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "secondArrayLength",
-        "type": "uint256"
-      }
-    ],
-    "name": "UnequalArrayLengths",
     "type": "error"
   },
   {
@@ -153,6 +142,11 @@
             "internalType": "uint256[]",
             "name": "withdrawalFinalizationBatches",
             "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "simulatedShareRate",
+            "type": "uint256"
           }
         ],
         "internalType": "struct ReportValues",
@@ -208,16 +202,16 @@
             "internalType": "uint256[]",
             "name": "withdrawalFinalizationBatches",
             "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "simulatedShareRate",
+            "type": "uint256"
           }
         ],
         "internalType": "struct ReportValues",
         "name": "_report",
         "type": "tuple"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_withdrawalShareRate",
-        "type": "uint256"
       }
     ],
     "name": "simulateOracleReport",
@@ -226,12 +220,12 @@
         "components": [
           {
             "internalType": "uint256",
-            "name": "withdrawals",
+            "name": "withdrawalsVaultTransfer",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "elRewards",
+            "name": "elRewardsVaultTransfer",
             "type": "uint256"
           },
           {
@@ -263,7 +257,7 @@
             "components": [
               {
                 "internalType": "address[]",
-                "name": "recipients",
+                "name": "moduleFeeRecipients",
                 "type": "address[]"
               },
               {
@@ -272,28 +266,33 @@
                 "type": "uint256[]"
               },
               {
-                "internalType": "uint96[]",
-                "name": "modulesFees",
-                "type": "uint96[]"
-              },
-              {
-                "internalType": "uint96",
-                "name": "totalFee",
-                "type": "uint96"
+                "internalType": "uint256[]",
+                "name": "moduleSharesToMint",
+                "type": "uint256[]"
               },
               {
                 "internalType": "uint256",
-                "name": "precisionPoints",
+                "name": "treasurySharesToMint",
                 "type": "uint256"
               }
             ],
-            "internalType": "struct Accounting.StakingRewardsDistribution",
-            "name": "rewardDistribution",
+            "internalType": "struct Accounting.FeeDistribution",
+            "name": "feeDistribution",
             "type": "tuple"
           },
           {
             "internalType": "uint256",
             "name": "principalClBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "preTotalShares",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "preTotalPooledEther",
             "type": "uint256"
           },
           {

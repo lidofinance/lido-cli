@@ -1216,6 +1216,11 @@
             "type": "uint256[]"
           },
           {
+            "internalType": "uint256",
+            "name": "simulatedShareRate",
+            "type": "uint256"
+          },
+          {
             "internalType": "bool",
             "name": "isBunkerMode",
             "type": "bool"

@@ -213,19 +213,6 @@
   },
   {
     "inputs": [],
-    "name": "CHANGE_TIER_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
@@ -317,19 +304,6 @@
   },
   {
     "inputs": [],
-    "name": "PDG_COMPENSATE_PREDEPOSIT_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "PDG_PROVE_VALIDATOR_ROLE",
     "outputs": [
       {
@@ -396,6 +370,19 @@
   {
     "inputs": [],
     "name": "UNGUARANTEED_BEACON_CHAIN_DEPOSIT_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "VAULT_CONFIGURATION_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",

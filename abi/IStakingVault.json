@@ -21,6 +21,19 @@
   },
   {
     "inputs": [],
+    "name": "availableBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "beaconChainDepositsPaused",
     "outputs": [
       {
@@ -54,6 +67,29 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_recipient",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "collectERC20",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "components": [
           {
             "internalType": "bytes",
@@ -76,9 +112,49 @@
             "type": "bytes32"
           }
         ],
-        "internalType": "struct IStakingVault.Deposit[]",
+        "internalType": "struct IStakingVault.Deposit",
+        "name": "_deposit",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_additionalAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "depositFromStaged",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes",
+            "name": "pubkey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "depositDataRoot",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct IStakingVault.Deposit",
         "name": "_deposits",
-        "type": "tuple[]"
+        "type": "tuple"
       }
     ],
     "name": "depositToBeaconChain",
@@ -158,19 +234,6 @@
     "name": "initialize",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "isOssified",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -262,6 +325,32 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "_ether",
+        "type": "uint256"
+      }
+    ],
+    "name": "stage",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stagedBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_newOwner",
         "type": "address"
@@ -281,7 +370,7 @@
       },
       {
         "internalType": "uint64[]",
-        "name": "_amounts",
+        "name": "_amountsInGwei",
         "type": "uint64[]"
       },
       {
@@ -293,6 +382,19 @@
     "name": "triggerValidatorWithdrawals",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_ether",
+        "type": "uint256"
+      }
+    ],
+    "name": "unstage",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

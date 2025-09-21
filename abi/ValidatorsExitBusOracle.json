@@ -36,11 +36,6 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "ArgumentOutOfBounds",
-    "type": "error"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -630,6 +625,19 @@
       }
     ],
     "name": "RoleRevoked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "maxValidatorsPerReport",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetMaxValidatorsPerReport",
     "type": "event"
   },
   {

@@ -1,0 +1,147 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_agent",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_gateSeal",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "CsmModuleNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SetupAlreadyCompleted",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroEvmScriptExecutor",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroLidoLocator",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroStakingRouter",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroVaultHubAdapter",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AGENT",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "DEFAULT_ADMIN_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "GATE_SEAL",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_lidoLocatorImpl",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_evmScriptExecutor",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_vaultHubAdapter",
+        "type": "address"
+      }
+    ],
+    "name": "completeSetup",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_stakingRouter",
+        "type": "address"
+      }
+    ],
+    "name": "getCsmAccountingAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "isSetupComplete",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

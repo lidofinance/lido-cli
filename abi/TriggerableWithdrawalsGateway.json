@@ -74,11 +74,6 @@
   },
   {
     "inputs": [],
-    "name": "InvalidRequestsDataLength",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "LimitExceeded",
     "type": "error"
   },
@@ -650,7 +645,7 @@
             "type": "bytes"
           }
         ],
-        "internalType": "struct ValidatorData[]",
+        "internalType": "struct IStakingRouter.ValidatorExitData[]",
         "name": "validatorsData",
         "type": "tuple[]"
       },
