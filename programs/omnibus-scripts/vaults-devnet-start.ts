@@ -7,6 +7,7 @@ import {
   stakingRouterContract,
   vaultHubContract,
   operatorGridContract,
+  lazyOracleContract,
 } from '@contracts';
 import { wallet } from '@providers';
 import { votingNewVote } from '@scripts';
@@ -52,11 +53,11 @@ const STAKING_ROUTER_ROLES = ['STAKING_MODULE_MANAGE_ROLE'];
 const SANITY_CHECKER_ROLES = ['ALL_LIMITS_MANAGER_ROLE'];
 const VAULT_MANAGER_ROLES = [
   'VAULT_MASTER_ROLE',
-  'VAULT_CODEHASH_SET_ROLE',
   'REDEMPTION_MASTER_ROLE',
   'VALIDATOR_EXIT_ROLE',
   'BAD_DEBT_MASTER_ROLE',
 ];
+const LAZY_ORACLE_ROLES = ['UPDATE_SANITY_PARAMS_ROLE'];
 const OPERATOR_GRID_ROLES = ['REGISTRY_ROLE'];
 
 const head = chalk.blue.bold;
@@ -161,6 +162,12 @@ const promptScriptsRoles = async () => {
     vaultHubContract,
     beneficiary,
   );
+  const lazyOracleScripts = await encodeFromAgentGrantRolesAccessControlWithConfirmed(
+    'Lazy oracle',
+    LAZY_ORACLE_ROLES,
+    lazyOracleContract,
+    beneficiary,
+  );
   const operatorGridScripts = await encodeFromAgentGrantRolesAccessControlWithConfirmed(
     'Operator grid',
     OPERATOR_GRID_ROLES,
@@ -186,6 +193,7 @@ const promptScriptsRoles = async () => {
     ...aoScripts,
     ...veboScripts,
     ...vaultHubScripts,
+    ...lazyOracleScripts,
     ...operatorGridScripts,
     ...oracleConfigScripts,
     ...sanityCheckerScripts,

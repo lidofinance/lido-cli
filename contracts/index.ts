@@ -12,6 +12,7 @@ export * from './gnosis';
 export * from './ldo';
 export * from './lido';
 export * from './locator';
+export * from './lazy-oracle';
 export * from './nor';
 export * from './obol-lido-split';
 export * from './operator-grid';
