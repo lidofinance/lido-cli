@@ -1,3 +1,3 @@
 #!/bin/bash
 
-yarn --silent tsx ./index "$@"
+yarn --silent tsc ./index "$@"
