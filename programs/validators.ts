@@ -21,7 +21,7 @@ import {
   signVoluntaryExit,
 } from '@consensus';
 import { getBytes, hexlify } from 'ethers';
-import { detectConsensusVersionByEpoch, logger } from '@utils';
+import { detectConsensusVersionByEpoch, logger, writeToFile } from '@utils';
 
 const validators = program.command('validators').description('validators utils');
 
@@ -129,6 +129,48 @@ validators
   });
 
 validators
+  .command('lido-validators-by-statuses')
+  .description('fetches lido validators statuses by statuses')
+  .argument('<module-address>', 'module address')
+  .option('-f, --file-name <string>', 'file name to store result', 'active-keys.json')
+  .option('-s, --status-list <string...>', 'list of validators statuses')
+  .action(async (moduleAddress, options) => {
+    const { fileName, statusList } = options;
+
+    logger.log('Fetching keys from KAPI, it may take a while...');
+    const keys = await fetchAllLidoKeys();
+
+    logger.log('Fetching validators from CL, it may take a few minutes...');
+    const validators = await fetchAllValidators();
+
+    logger.log('All validators on CL', validators.length);
+
+    const keysMap = keys.reduce(
+      (acc, signingKey) => {
+        acc[signingKey.key] = signingKey;
+        return acc;
+      },
+      {} as Record<string, KAPIKey>,
+    );
+
+    const lidoValidators = validators
+      .filter(({ validator, status }) => {
+        const key = keysMap[validator.pubkey];
+        return key && key.moduleAddress === moduleAddress && statusList.includes(status);
+      })
+      .map(({ validator, status, index }) => {
+        const key = keysMap[validator.pubkey];
+        return { key, status, index };
+      });
+
+    logger.log(`Lido validators on CL with statuses [${statusList.join(', ')}]: ${lidoValidators.length}`);
+
+    const jsonData = JSON.stringify(lidoValidators, null, 2);
+
+    await writeToFile(fileName, jsonData);
+  });
+
+validators
   .command('voluntary-exit')
   .description('submit a voluntary exit for a validator')
   .argument('<mnemonic>', 'mnemonic')
@@ -137,7 +179,7 @@ validators
     const masterSK = deriveKeyFromMnemonic(mnemonic);
     const { signing } = deriveEth2ValidatorKeys(masterSK, index);
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { SecretKey } = require('@chainsafe/blst');
     const sk = SecretKey.fromBytes(signing);
     const pkHex = hexlify(sk.toPublicKey().toBytes());
@@ -186,7 +228,7 @@ validators
     const masterSK = deriveKeyFromMnemonic(mnemonic);
     const { signing } = deriveEth2ValidatorKeys(masterSK, index);
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { SecretKey } = require('@chainsafe/blst');
     const sk = SecretKey.fromBytes(signing);
     const pkHex = hexlify(sk.toPublicKey().toBytes());

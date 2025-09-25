@@ -4,6 +4,7 @@ export * from './accounts';
 export * from './allowed-list';
 export * from './aragon';
 export * from './burner';
+export * from './consolidation-gateway';
 export * from './csm-consensus';
 export * from './csm-oracle';
 export * from './csm';

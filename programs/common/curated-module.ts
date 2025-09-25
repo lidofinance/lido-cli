@@ -146,7 +146,7 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
     .argument('<operator-id>', 'node operator id')
     .argument('<file-path>', 'file path')
     .action(async (operatorId, filePath) => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const depositData: DepositData[] = require(filePath);
       await supplementAndVerifyDepositDataArray(depositData);
 

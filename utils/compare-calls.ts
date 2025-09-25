@@ -13,6 +13,7 @@ export const compareContractCalls = async (contracts: Contract[], calls: Contrac
         try {
           const value = await contract[method](...args);
           return [key, value];
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (_error) {
           return [key, 'error'];
         }

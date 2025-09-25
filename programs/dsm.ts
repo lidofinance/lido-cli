@@ -173,8 +173,7 @@ dsm
   .description('removes the guardian and sets the quorum')
   .argument('<address>', 'guardian address')
   .argument('<quorum>', 'new quorum')
-  .action(async (options) => {
-    const { address, quorum } = options;
+  .action(async (address, quorum) => {
     await authorizedCall(dsmContract, 'removeGuardian', [address, quorum]);
   });
 
@@ -195,7 +194,7 @@ dsm
   .option('-r, --signature-r <string>', 'signature r', ZeroHash)
   .option('-v, --signature-vs <string>', 'signature vs', ZeroHash)
   .action(async (blockNumber, options) => {
-    const { r, vs } = options;
+    const { signatureR: r, signatureVs: vs } = options;
     await authorizedCall(dsmContract, 'pauseDeposits', [blockNumber, { r, vs }]);
   });
 

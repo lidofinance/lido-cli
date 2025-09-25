@@ -11,7 +11,7 @@ import {
 } from './staking-module';
 import Table from 'cli-table3';
 import chalk from 'chalk';
-import { fetchLidoModuleKeys, fetchLidoModuleOperators, fetchLidoModuleOperator, KAPIOperator } from '@providers';
+import { fetchLidoModuleKeys, fetchLidoModuleOperator, KAPIOperator } from '@providers';
 
 const ok = chalk.green.bold;
 const warn = chalk.yellow.bold;
@@ -338,32 +338,6 @@ router
       );
     });
     const jsonData = JSON.stringify(operatorActiveKeys, null, 2);
-
-    await writeToFile(fileName, jsonData);
-  });
-
-router
-  .command('active-keys-kapi')
-  .argument('<module-id>', 'module id')
-  .option('-f, --file-name <string>', 'file name to store result', 'active-keys.json')
-  .action(async (moduleId, options) => {
-    const { fileName } = options;
-
-    const keys = await fetchLidoModuleKeys({ used: true, moduleId });
-
-    const operators: KAPIOperator[] = await fetchLidoModuleOperators(moduleId);
-
-    const activeKeys = operators
-      .map(({ moduleAddress, stoppedValidators }) => {
-        const operatorActiveKeys = keys.filter((key) => {
-          return key.index >= stoppedValidators && key.moduleAddress == moduleAddress;
-        });
-
-        return operatorActiveKeys;
-      })
-      .flat();
-
-    const jsonData = JSON.stringify(activeKeys, null, 2);
 
     await writeToFile(fileName, jsonData);
   });

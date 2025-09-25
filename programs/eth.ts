@@ -7,6 +7,7 @@ const eth = program.command('eth').aliases(['ether']).description('transfer ethe
 
 eth
   .command('balance')
+  .alias('balance-of')
   .description('returns balance')
   .argument('[address]', 'address', wallet.address)
   .action(async (address) => {

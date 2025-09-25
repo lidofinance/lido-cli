@@ -22,15 +22,19 @@ import { wallet } from '@providers';
 
 const VERSION = [1, 0, 0];
 const CONTENT_URI = '0x' + '00'.repeat(51);
-const APP_NAME = 'simple-dvt';
+const APP_NAME = 'sandbox';
 
-const MODULE_NAME = 'SimpleDVT';
-const TARGET_SHARE = 10_000; // 100%
-const MODULE_FEE = 800; // 8%
-const TREASURY_FEE = 200; // 2%
+const MODULE_NAME = 'Sandbox';
+const STAKE_SHARE_LIMIT = 100; // 1%
+const PRIORITY_EXIT_SHARE_THRESHOLD = 200; // 2%
+
+const MODULE_FEE = 500; // 5%
+const TREASURY_FEE = 500; // 5%
+const MAX_DEPOSITS_PER_BLOCK = 100;
+const MIN_DEPOSIT_BLOCK_DISTANCE = 25;
 
 // Use `aragon deploy-proxy <APP_NAME>` for deployment
-const APP_PROXY_ADDRESS = '0xD4b2843eAB523a2531b25697A1c74b1acB848619';
+const APP_PROXY_ADDRESS = '0x682E94d2630846a503BDeE8b6810DF71C9806891';
 
 export const cloneNorModule = async () => {
   const aragonProxyIface = new Interface(['function implementation() external view returns (address)']);
@@ -105,15 +109,20 @@ export const cloneNorModule = async () => {
   });
 
   // 7. Add module to router
-  const stakingRouterIface = new Interface(['function addStakingModule(string,address,uint256,uint256,uint256)']);
+  const stakingRouterIface = new Interface([
+    'function addStakingModule(string,address,uint256,uint256,uint256,uint256,uint256,uint256)',
+  ]);
   const [, addModuleScript] = encodeFromAgent({
     to: stakingRouterAddress,
     data: stakingRouterIface.encodeFunctionData('addStakingModule', [
       MODULE_NAME,
       APP_PROXY_ADDRESS,
-      TARGET_SHARE,
+      STAKE_SHARE_LIMIT,
+      PRIORITY_EXIT_SHARE_THRESHOLD,
       MODULE_FEE,
       TREASURY_FEE,
+      MAX_DEPOSITS_PER_BLOCK,
+      MIN_DEPOSIT_BLOCK_DISTANCE,
     ]),
     desc: 'Add the new module to the staking router',
   });

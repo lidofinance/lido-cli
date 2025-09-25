@@ -1,0 +1,35 @@
+{
+  "unlimitedStake": {
+    "address": "0x064A4D64040bFD52D0d1dC7f42eA799cb0a8AC40"
+  },
+  "allowedRelayList": {
+    "address": "0x279d3A456212a1294DaEd0faEE98675a52E8A4Bf"
+  },
+  "obolLidoSplit": {
+    "factory": {
+      "obol": {},
+      "ssv": {}
+    }
+  },
+  "0xSplit": {
+    "splitMain": {}
+  },
+  "gnosis": {
+    "factory": {},
+    "singleton": {}
+  },
+  "csm": {
+    "accounting": { "address": "0xA54b90BA34C5f326BC1485054080994e38FB4C60" },
+    "earlyAdoption": { "address": "0x3281b9E45518F462E594697f8fba1896a8B43939" },
+    "feeDistributor": { "address": "0xaCd9820b0A2229a82dc1A0770307ce5522FF3582" },
+    "feeOracle": { "address": "0xe7314f561B2e72f9543F1004e741bab6Fc51028B" },
+    "module": { "address": "0x79CEf36D84743222f37765204Bec41E92a93E59d" },
+    "verifier": { "address": "0x16D0f6068D211608e3703323314aa976a6492D09" },
+    "hashConsensus": { "address": "0x54f74a10e4397dDeF85C4854d9dfcA129D72C637" }
+  },
+  "dg": {
+    "dualGovernance": { "address": "0x9CAaCCc62c66d817CC59c44780D1b722359795bF" },
+    "adminExecutor": { "address": "0x0eCc17597D292271836691358B22340b78F3035B" },
+    "emergencyProtectedTimelock": { "address": "0x0A5E22782C0Bd4AddF10D771f0bF0406B038282d" }
+  }
+}

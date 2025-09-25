@@ -134,3 +134,11 @@ lido
       { value: parseEther(amount) },
     ]);
   });
+
+lido
+  .command('beacon-stat')
+  .description('returns beacon stat')
+  .action(async () => {
+    const stat = await lidoContract.getBeaconStat();
+    logger.log('Beacon stat', stat.toObject());
+  });

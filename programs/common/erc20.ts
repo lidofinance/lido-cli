@@ -30,6 +30,7 @@ export const addERC20Commands = (command: Command, contract: Contract) => {
 
   command
     .command('total-supply')
+    .alias('supply')
     .description('returns total supply')
     .action(async () => {
       const totalSupply = await contract.totalSupply();
@@ -38,6 +39,7 @@ export const addERC20Commands = (command: Command, contract: Contract) => {
 
   command
     .command('balance-of')
+    .alias('balance')
     .argument('[address]', 'user address', wallet.address)
     .action(async (address) => {
       const balance = await contract.balanceOf(address);

@@ -9,7 +9,7 @@ export const importConfigFile = (path?: string) => {
   const json: Record<string, Record<string, string>> = {};
 
   if (lstatSync(fullPath).isFile()) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     Object.assign(json, require(fullPath));
   }
 

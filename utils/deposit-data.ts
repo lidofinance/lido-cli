@@ -26,11 +26,11 @@ export type DepositData = {
 };
 
 export const supplementAndVerifyDepositDataArray = async (depositDataArray: DepositData[]): Promise<boolean> => {
-  const suplplementedDepositDataArray = await supplementDepositDataArray(depositDataArray.map(normilizeDepositDta));
-  return suplplementedDepositDataArray.every(verifyDepositData);
+  const supplementedDepositDataArray = await supplementDepositDataArray(depositDataArray.map(normilizeDepositData));
+  return supplementedDepositDataArray.every(verifyDepositData);
 };
 
-export const normilizeDepositDta = (depositData: DepositData & Record<string, unknown>): DepositData => {
+export const normilizeDepositData = (depositData: DepositData & Record<string, unknown>): DepositData => {
   const {
     withdrawal_credentials,
     deposit_message_root,
@@ -90,7 +90,7 @@ export const verifyDepositData = (depositData: DepositData): boolean => {
   if (!depositData.signature) throw new Error('Signature is not defined');
   if (!depositData.forkVersion) throw new Error('Fork version is not defined');
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const blst = require('@chainsafe/blst');
 
   const { pubkey, withdrawalCredentials, amount, signature, forkVersion } = depositData;

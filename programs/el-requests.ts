@@ -11,8 +11,8 @@ const requests = program
   .aliases(['el-requests', 'elr'])
   .description('interact with execution layer requests contracts');
 
-const WITHDRAWAL_REQUEST_CONTRACT = '0x0c15F14308530b7CDB8460094BbB9cC28b9AaaAA';
-const CONSOLIDATION_REQUEST_CONTRACT = '0x00431F263cE400f4455c2dCf564e53007Ca4bbBb';
+const WITHDRAWAL_REQUEST_CONTRACT = '0x00000961Ef480Eb55e80D19ad83579A64c007002';
+const CONSOLIDATION_REQUEST_CONTRACT = '0x0000BBdDc7CE488642fb579F8B00f3a590007251';
 
 requests
   .command('withdrawal-request')

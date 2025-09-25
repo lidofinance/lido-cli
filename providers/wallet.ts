@@ -34,7 +34,7 @@ const getWallet = () => {
       throw new Error('Account file password is not provided');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const fileContent = require(accountFile);
     return Wallet.fromEncryptedJsonSync(JSON.stringify(fileContent), accountFilePassword).connect(provider);
   }
