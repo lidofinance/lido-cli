@@ -53,6 +53,15 @@ export const getDeployedAddress = (...contractKeys: string[]) => {
     return contract.proxyAddress as string;
   }
 
+  if (
+    'proxy' in contract &&
+    contract.proxy !== null &&
+    typeof contract.proxy === 'object' &&
+    'address' in contract.proxy
+  ) {
+    return contract.proxy.address as string;
+  }
+
   if ('address' in contract) {
     return contract.address as string;
   }
