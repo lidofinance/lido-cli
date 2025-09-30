@@ -59,13 +59,24 @@ lido
     logger.log('Buffered ether', formatEther(bufferedEther));
   });
 
+// lido
+//   .command('deposit')
+//   .description('deposit buffered ether (works only if DSM is set to EOA)')
+//   .argument('<deposits>', 'max deposits count')
+//   .argument('<module-id>', 'staking module id')
+//   .action(async (maxDepositCount, moduleId) => {
+//     await contractCallTxWithConfirm(lidoContract, 'deposit', [maxDepositCount, moduleId, '0x']);
+//   });
+
 lido
   .command('deposit')
   .description('deposit buffered ether (works only if DSM is set to EOA)')
   .argument('<deposits>', 'max deposits count')
   .argument('<module-id>', 'staking module id')
   .action(async (maxDepositCount, moduleId) => {
-    await contractCallTxWithConfirm(lidoContract, 'deposit', [maxDepositCount, moduleId, '0x']);
+    const deposits = BigInt(maxDepositCount);
+    const value = deposits * parseEther('32'); // wei
+    await contractCallTxWithConfirm(lidoContract, 'deposit', [value, moduleId, '0x']);
   });
 
 lido

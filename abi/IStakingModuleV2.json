@@ -1,0 +1,161 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "depositAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "getAllocation",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "operatorIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "allocations",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "depositAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "operators",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "topUpLimits",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "getAllocation",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "allocations",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "operatorsIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "counts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "getOperatorAvailableKeys",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "publicKeys",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "signatures",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "operatorId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountInWei",
+        "type": "uint256"
+      }
+    ],
+    "name": "onDeposit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "operatorIds",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "effectiveBalances",
+        "type": "bytes"
+      }
+    ],
+    "name": "updateOperatorBalances",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes",
+            "name": "pubkey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "keyIndex",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "operatorIndex",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct KeyData[]",
+        "name": "data",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "verifyKeys",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
