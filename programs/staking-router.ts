@@ -12,6 +12,7 @@ import {
 import Table from 'cli-table3';
 import chalk from 'chalk';
 import { fetchLidoModuleKeys, fetchLidoModuleOperator, KAPIOperator } from '@providers';
+import { addVersionedSubCommands } from './common/versioned';
 
 const ok = chalk.green.bold;
 const warn = chalk.yellow.bold;
@@ -25,6 +26,7 @@ addAccessControlSubCommands(router, stakingRouterContract);
 addOssifiableProxyCommands(router, stakingRouterContract);
 addParsingCommands(router, stakingRouterContract);
 addLogsCommands(router, stakingRouterContract);
+addVersionedSubCommands(router, stakingRouterContract);
 
 router
   .command('modules')
@@ -169,6 +171,32 @@ router
   .action(async () => {
     const withdrawalCredentials = await stakingRouterContract.getWithdrawalCredentials();
     logger.log('Withdrawal credentials', withdrawalCredentials);
+  });
+
+router
+  .command('withdrawal-credentials-by-module')
+  .description('returns withdrawal credentials')
+  .argument('<module-id>', 'module id')
+  .action(async (moduleId) => {
+    const withdrawalCredentials = await stakingRouterContract.getStakingModuleWithdrawalCredentials(moduleId);
+    logger.log('Withdrawal credentials', withdrawalCredentials);
+  });
+
+router
+  .command('staking-module-type')
+  .description('returns staking module type')
+  .argument('<module-id>', 'module id')
+  .action(async (moduleId) => {
+    const stakingModuleType = await stakingRouterContract.getStakingModuleType(moduleId);
+    logger.log('Staking module type', stakingModuleType);
+  });
+
+router
+  .command('lido-address')
+  .description('returns lido contract address')
+  .action(async () => {
+    const lidoAddress = await stakingRouterContract.getLido();
+    logger.log('Lido contract address', lidoAddress);
   });
 
 router
