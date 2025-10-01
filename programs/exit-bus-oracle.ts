@@ -9,6 +9,7 @@ import {
   ValidatorContainer,
 } from '@providers';
 import { exportToCSV, getValidatorsMap, groupByModuleId, logger } from '@utils';
+import { keccak256, AbiCoder } from 'ethers';
 
 import {
   addAccessControlSubCommands,
@@ -216,4 +217,66 @@ oracle
       logger.log('Summary');
       logger.table(operatorsWithUnsettledRequests);
     });
+  });
+
+oracle
+  .command('submit-hash')
+  .description('Submit an Exit Request Hash')
+  .option('--hash <hash>', 'Pre-calculated keccak256 hash to submit directly')
+  .option('--calldata <calldata>', 'Calldata in hex format to calculate hash from')
+  .option('--format <format>', 'Data format specifier', '1')
+  .action(async (options) => {
+    const { hash, calldata, format } = options;
+
+    if (!hash && !calldata) {
+      logger.error('Either --hash or --calldata must be provided');
+      return;
+    }
+
+    if (hash && calldata) {
+      logger.error('Cannot specify both --hash and --calldata');
+      return;
+    }
+
+    let hashToSubmit: string;
+
+    if (hash) {
+      hashToSubmit = hash;
+      logger.log('Using pre-calculated hash:', hashToSubmit);
+    } else {
+      if (!calldata.startsWith('0x')) {
+        logger.error('Calldata must be in hex format starting with 0x');
+        return;
+      }
+
+      const abiCoder = AbiCoder.defaultAbiCoder();
+      const encoded = abiCoder.encode(['bytes', 'uint256'], [calldata, format]);
+      hashToSubmit = keccak256(encoded);
+
+      logger.log('Calculated hash from calldata:', hashToSubmit);
+      logger.log('Calldata:', calldata);
+      logger.log('Format:', format);
+      logger.log('Encoded data:', encoded);
+    }
+
+    try {
+      logger.log('Submitting hash to VEB contract...');
+      logger.log('Hash to submit:', hashToSubmit);
+      logger.log('Contract address:', exitBusOracleContract.target);
+
+      const tx = await exitBusOracleContract.submitExitRequestsHash(hashToSubmit);
+      logger.log('Transaction hash:', tx.hash);
+
+      logger.log('Waiting for transaction confirmation...');
+      const receipt = await tx.wait();
+
+      if (receipt.status === 1) {
+        logger.log('✅ Hash submitted successfully!');
+        logger.log('Transaction confirmed in block:', receipt.blockNumber);
+      } else {
+        logger.error('❌ Transaction failed');
+      }
+    } catch (error) {
+      logger.error('Failed to submit hash:', error);
+    }
   });
