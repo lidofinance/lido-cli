@@ -7,7 +7,7 @@
         "type": "address"
       }
     ],
-    "name": "pendingPredeposits",
+    "name": "pendingActivations",
     "outputs": [
       {
         "internalType": "uint256",
@@ -66,6 +66,42 @@
     "name": "proveUnknownValidator",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "_pubkey",
+        "type": "bytes"
+      }
+    ],
+    "name": "validatorStatus",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "enum IPredepositGuarantee.ValidatorStage",
+            "name": "stage",
+            "type": "uint8"
+          },
+          {
+            "internalType": "contract IStakingVault",
+            "name": "stakingVault",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "nodeOperator",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct IPredepositGuarantee.ValidatorStatus",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ]

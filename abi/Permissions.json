@@ -304,19 +304,6 @@
   },
   {
     "inputs": [],
-    "name": "PDG_PROVE_VALIDATOR_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "REBALANCE_ROLE",
     "outputs": [
       {
@@ -357,19 +344,6 @@
   {
     "inputs": [],
     "name": "TRIGGER_VALIDATOR_WITHDRAWAL_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "UNGUARANTEED_BEACON_CHAIN_DEPOSIT_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",

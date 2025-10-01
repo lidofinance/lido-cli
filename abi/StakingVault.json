@@ -153,7 +153,7 @@
   },
   {
     "inputs": [],
-    "name": "PubkeyLengthDoesNotMatchAmountLength",
+    "name": "RenouncementNotAllowed",
     "type": "error"
   },
   {
