@@ -271,12 +271,120 @@ oracle
       const receipt = await tx.wait();
 
       if (receipt.status === 1) {
-        logger.log('✅ Hash submitted successfully!');
+        logger.log('Hash submitted successfully!');
         logger.log('Transaction confirmed in block:', receipt.blockNumber);
       } else {
-        logger.error('❌ Transaction failed');
+        logger.error('Transaction failed');
       }
     } catch (error) {
       logger.error('Failed to submit hash:', error);
+    }
+  });
+
+oracle
+  .command('submit-data')
+  .description('Submit Exit Request Data')
+  .option(
+    '--data <data>',
+    'Exit requests data in format: moduleId,nodeOpId,valIndex,pubkey;moduleId,nodeOpId,valIndex,pubkey',
+  )
+  .option('--format <format>', 'Data format specifier', '1')
+  .action(async (options) => {
+    const { data, format } = options;
+
+    if (!data) {
+      logger.error('--data parameter is required');
+      logger.log('Expected format: moduleId,nodeOpId,valIndex,pubkey;moduleId,nodeOpId,valIndex,pubkey');
+      logger.log('Example: 1,15,12345,0x...pubkey1;2,22,54321,0x...pubkey2');
+      return;
+    }
+
+    try {
+      const requests = data
+        .split(';')
+        .filter((req: string) => req.trim())
+        .map((request: string) => {
+          const parts = request.trim().split(',');
+          if (parts.length !== 4) {
+            throw new Error(`Invalid request format: ${request}. Expected: moduleId,nodeOpId,valIndex,pubkey`);
+          }
+
+          const [moduleId, nodeOpId, valIndex, pubkey] = parts;
+
+          if (!moduleId || !nodeOpId || !valIndex || !pubkey) {
+            throw new Error(`Invalid request format: ${request}. All fields are required`);
+          }
+
+          if (!pubkey.startsWith('0x') || pubkey.length !== 98) {
+            throw new Error(`Invalid pubkey format: ${pubkey}. Expected 0x-prefixed 48-byte hex string`);
+          }
+
+          return {
+            moduleId: parseInt(moduleId, 10),
+            nodeOpId: parseInt(nodeOpId, 10),
+            valIndex: parseInt(valIndex, 10),
+            pubkey: pubkey.toLowerCase(),
+          };
+        });
+
+      if (requests.length === 0) {
+        logger.error('No valid exit requests found in data');
+        return;
+      }
+
+      logger.log(`Parsed ${requests.length} exit request(s):`);
+      requests.forEach((req: { moduleId: number; nodeOpId: number; valIndex: number; pubkey: string }, i: number) => {
+        logger.log(
+          `  ${i + 1}. Module ${req.moduleId}, Operator ${req.nodeOpId}, Index ${req.valIndex}, Pubkey ${req.pubkey}`,
+        );
+      });
+
+      const encodeExitRequestHex = ({
+        moduleId,
+        nodeOpId,
+        valIndex,
+        pubkey,
+      }: {
+        moduleId: number;
+        nodeOpId: number;
+        valIndex: number;
+        pubkey: string;
+      }) => {
+        const pubkeyHex = pubkey.slice(2);
+
+        const moduleIdHex = moduleId.toString(16).padStart(6, '0'); // 3 bytes
+        const nodeOpIdHex = nodeOpId.toString(16).padStart(10, '0'); // 5 bytes
+        const valIndexHex = valIndex.toString(16).padStart(16, '0'); // 8 bytes
+
+        return moduleIdHex + nodeOpIdHex + valIndexHex + pubkeyHex;
+      };
+
+      const encodedData = '0x' + requests.map(encodeExitRequestHex).join('');
+
+      logger.log('Encoded data:', encodedData);
+      logger.log('Data format:', format);
+
+      const exitRequest = {
+        dataFormat: parseInt(format, 10),
+        data: encodedData,
+      };
+
+      logger.log('Submitting exit requests data to VEB contract...');
+      logger.log('Contract address:', exitBusOracleContract.target);
+
+      const tx = await exitBusOracleContract.submitExitRequestsData(exitRequest);
+      logger.log('Transaction hash:', tx.hash);
+
+      logger.log('Waiting for transaction confirmation...');
+      const receipt = await tx.wait();
+
+      if (receipt.status === 1) {
+        logger.log('Exit requests data submitted successfully!');
+        logger.log('Transaction confirmed in block:', receipt.blockNumber);
+      } else {
+        logger.error('Transaction failed');
+      }
+    } catch (error) {
+      logger.error('Failed to submit exit requests data:', error);
     }
   });
