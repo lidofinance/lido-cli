@@ -14,18 +14,6 @@ export const resumeProtocol = () => {
   return [encoded, call] as const;
 };
 
-export const resumeStaking = () => {
-  const call = {
-    to: lidoAddress,
-    data: lidoContract.interface.encodeFunctionData('resumeStaking'),
-    desc: 'Lido: Resume staking',
-    gasLimit: 16_000_000,
-  };
-
-  const encoded = encodeCallScript([call]);
-  return [encoded, call] as const;
-};
-
 export const setStakingLimit = (dailyStakingLimit: bigint) => {
   const stakeLimitIncreasePerBlock = calcStakeLimitIncreasePerBlock(dailyStakingLimit);
 
@@ -42,9 +30,8 @@ export const setStakingLimit = (dailyStakingLimit: bigint) => {
 
 export const resumeLidoAndSetStakingLimit = (dailyStakingLimit: bigint) => {
   const [, resumeProtocolCall] = resumeProtocol();
-  const [, resumeStakingCall] = resumeStaking();
   const [, setStakingLimitCall] = setStakingLimit(dailyStakingLimit);
-  const calls = [resumeProtocolCall, resumeStakingCall, setStakingLimitCall];
+  const calls = [resumeProtocolCall, setStakingLimitCall];
 
   const encoded = encodeCallScript(calls);
   return [encoded, ...calls] as const;

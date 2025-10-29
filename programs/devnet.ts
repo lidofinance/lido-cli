@@ -1,5 +1,5 @@
 import { program } from '@command';
-import { agentForward, encodeFromAgent, votingNewVote } from '@scripts';
+import { encodeFromAgent, votingNewVote } from '@scripts';
 import {
   CallScriptActionWithDescription,
   encodeCallScript,
