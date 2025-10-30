@@ -7,9 +7,10 @@ import {
   fetchBlock,
   KAPIKey,
   ValidatorContainer,
+  provider,
 } from '@providers';
 import { exportToCSV, getValidatorsMap, groupByModuleId, logger } from '@utils';
-import { keccak256, AbiCoder } from 'ethers';
+import { keccak256, AbiCoder, parseEther, ethers } from 'ethers';
 
 import {
   addAccessControlSubCommands,
@@ -386,5 +387,152 @@ oracle
       }
     } catch (error) {
       logger.error('Failed to submit exit requests data:', error);
+    }
+  });
+
+oracle
+  .command('trigger-exit')
+  .description('Trigger a validator exit')
+  .option('--tx <tx>', 'Transaction hash containing the reveal data')
+  .option('--indexes <indexes>', 'Comma-separated list of validator indexes to exit (e.g., 0,1,2,3)')
+  .option('--calldata <calldata>', 'Exit requests calldata in hex format')
+  .option('--format <format>', 'Data format specifier', '1')
+  .option('--value <value>', 'ETH value to send with transaction (e.g., 0.001)', '0.001')
+  .action(async (options) => {
+    const { tx, indexes, calldata, format, value } = options;
+
+    if (!tx && !calldata) {
+      logger.error('Either --tx or --calldata must be provided');
+      logger.log('Examples:');
+      logger.log('  # Using transaction hash:');
+      logger.log('  ./run.sh vebo trigger-exit --tx 0x1234... --indexes 0,1,2,3 --value 0.001');
+      logger.log('  # Using calldata:');
+      logger.log('  ./run.sh vebo trigger-exit --calldata 0x1234... --format 1 --value 0.001');
+      return;
+    }
+
+    if (tx && calldata) {
+      logger.error('Cannot specify both --tx and --calldata');
+      return;
+    }
+
+    if (tx && !indexes) {
+      logger.error('--indexes parameter is required when using --tx');
+      return;
+    }
+
+    try {
+      let exitRequestData: { data: string; dataFormat: number };
+      let exitDataIndexes: number[];
+
+      if (tx) {
+        // Mode 1: Fetch transaction data and use specific indexes
+        logger.log('Fetching transaction data for:', tx);
+
+        const transaction = await provider.getTransaction(tx);
+        if (!transaction) {
+          logger.error('Transaction not found:', tx);
+          return;
+        }
+
+        // Parse transaction data - this should be a submitExitRequestsData call
+        if (!transaction.data) {
+          logger.error('Transaction has no data');
+          return;
+        }
+
+        // Decode the transaction data to extract exit request data
+        const abiCoder = AbiCoder.defaultAbiCoder();
+        try {
+          // Remove function selector (first 4 bytes)
+          const callDataWithoutSelector = '0x' + transaction.data.slice(10);
+
+          // Decode as (exitRequestData, version) where exitRequestData is (dataFormat, data)
+          const decoded = abiCoder.decode(['(uint256,bytes)', 'uint256'], callDataWithoutSelector);
+
+          exitRequestData = {
+            dataFormat: Number(decoded[0][0]),
+            data: decoded[0][1],
+          };
+
+          logger.log('Extracted exit request data from transaction');
+          logger.log('Data format:', exitRequestData.dataFormat);
+          logger.log('Data length:', exitRequestData.data.length);
+        } catch (decodeError) {
+          logger.error(
+            'Failed to decode transaction data:',
+            decodeError instanceof Error ? decodeError.message : decodeError,
+          );
+          return;
+        }
+
+        exitDataIndexes = indexes.split(',').map((idx: string) => parseInt(idx.trim(), 10));
+        if (exitDataIndexes.some(isNaN)) {
+          logger.error('Invalid indexes format. Use comma-separated numbers like: 0,1,2,3');
+          return;
+        }
+
+        logger.log('Validator indexes to exit:', exitDataIndexes);
+      } else {
+        // Mode 2: Use provided calldata directly
+        if (!calldata.startsWith('0x')) {
+          logger.error('Calldata must be in hex format starting with 0x');
+          return;
+        }
+
+        exitRequestData = {
+          dataFormat: parseInt(format, 10),
+          data: calldata,
+        };
+
+        // For calldata mode, we'll exit all validators in the data
+        // Calculate number of validators based on data length
+        // Each validator record is 64 bytes (3+5+8+48 bytes = 64 bytes)
+        const dataWithoutPrefix = calldata.slice(2);
+        const validatorCount = Math.floor(dataWithoutPrefix.length / (64 * 2)); // 2 hex chars per byte
+        exitDataIndexes = Array.from({ length: validatorCount }, (_, i) => i);
+
+        logger.log('Using provided calldata');
+        logger.log('Data format:', exitRequestData.dataFormat);
+        logger.log('Calculated validator count:', validatorCount);
+        logger.log('Will exit all validators:', exitDataIndexes);
+      }
+
+      // Validate indexes array is sorted and unique
+      const sortedIndexes = [...exitDataIndexes].sort((a, b) => a - b);
+      if (!exitDataIndexes.every((val, i) => val === sortedIndexes[i])) {
+        logger.error('Indexes must be sorted in ascending order and unique');
+        return;
+      }
+
+      const ethValue = parseEther(value);
+      logger.log('ETH value to send:', value, 'ETH');
+
+      logger.log('Triggering exits...');
+      logger.log('Exit request data format:', exitRequestData.dataFormat);
+      logger.log('Exit request data:', exitRequestData.data.slice(0, 66) + '...');
+      logger.log('Validator indexes:', exitDataIndexes);
+      logger.log('Contract address:', exitBusOracleContract.target);
+
+      const txResult = await exitBusOracleContract.triggerExits(
+        exitRequestData,
+        exitDataIndexes,
+        ethers.ZeroAddress, // refund recipient (zero address means sender)
+        { value: ethValue },
+      );
+
+      logger.log('Transaction hash:', txResult.hash);
+      logger.log('Waiting for transaction confirmation...');
+
+      const receipt = await txResult.wait();
+
+      if (receipt.status === 1) {
+        logger.log('Validator exits triggered successfully!');
+        logger.log('Transaction confirmed in block:', receipt.blockNumber);
+      } else {
+        logger.error('Transaction failed');
+      }
+    } catch (error) {
+      logger.error('Failed to trigger validator exits:', error);
     }
   });

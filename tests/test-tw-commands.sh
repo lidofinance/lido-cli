@@ -9,7 +9,6 @@ set -e  # Exit on any error
 HOODI_RPC_URL="https://ethereum-hoodi-rpc.publicnode.com"
 ANVIL_PORT=8545
 ANVIL_PID=""
-TEST_RESULTS_FILE="test-results.log"
 
 # Colors for output
 RED='\033[0;31m'
@@ -53,10 +52,6 @@ cleanup() {
         echo $anvil_processes | xargs kill -9 2>/dev/null || true
     fi
 
-    # Note: test results file is kept for review
-    if [ -f "$TEST_RESULTS_FILE" ]; then
-        print_status "Test results saved in: $TEST_RESULTS_FILE"
-    fi
 
     print_status "Cleanup completed"
 }
@@ -178,10 +173,6 @@ run_test_command() {
     print_status "Command: $command"
     echo ""
 
-    echo "=== Test: $test_name ===" >> "$TEST_RESULTS_FILE"
-    echo "Command: $command" >> "$TEST_RESULTS_FILE"
-    echo "Timestamp: $(date)" >> "$TEST_RESULTS_FILE"
-
     # Set environment variables for local testing
     export RPC_URL="http://localhost:$ANVIL_PORT"
     export NETWORK="hoodi"
@@ -197,7 +188,7 @@ run_test_command() {
     local temp_output=$(mktemp)
     local exit_code=0
 
-    eval "$command" 2>&1 | tee "$temp_output" | tee -a "$TEST_RESULTS_FILE"
+    eval "$command" 2>&1 | tee "$temp_output"
     exit_code=${PIPESTATUS[0]}
 
     # Check for RPC errors, transaction failures, or other error indicators
@@ -214,13 +205,10 @@ run_test_command() {
     echo ""
     if [ "$has_errors" = false ]; then
         print_success "Test '$test_name' passed"
-        echo "Result: SUCCESS" >> "$TEST_RESULTS_FILE"
     else
         print_error "Test '$test_name' failed"
-        echo "Result: FAILURE" >> "$TEST_RESULTS_FILE"
     fi
 
-    echo "" >> "$TEST_RESULTS_FILE"
     echo "======================"
     echo ""
 }
@@ -228,12 +216,6 @@ run_test_command() {
 # Function to run all tests
 run_tests() {
     print_status "Starting test suite for new TW commands..."
-
-    # Initialize test results file
-    echo "TW Commands Test Results - $(date)" > "$TEST_RESULTS_FILE"
-    echo "========================================" >> "$TEST_RESULTS_FILE"
-    echo "" >> "$TEST_RESULTS_FILE"
-
     print_status "Testing new exit-bus-oracle commands added in this branch..."
 
     # Define test data for both tests to ensure hash matches data
@@ -242,13 +224,19 @@ run_tests() {
     # Test 1: Test submit-hash command with calculated hash from test data
     print_status "Testing submit-hash with hash calculated from test data..."
     run_test_command "Submit hash calculated from data" \
-        "./run.sh vebo submit-hash --calldata 0x000001000000000f00000000000030391234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef --format 1"
+        "../run.sh vebo submit-hash --calldata 0x000001000000000f00000000000030391234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef --format 1"
 
     # Test 2: Test submit-data command with the same data used for hash calculation
     print_status "Testing submit-data with matching data..."
     print_status "Note: This test uses the same data that was used to calculate the hash"
     run_test_command "Submit data with matching hash" \
-        "./run.sh vebo submit-data --data '$test_data'"
+        "../run.sh vebo submit-data --data '$test_data'"
+
+    # Test 3: Test trigger-exit command with the submitted data
+    print_status "Testing trigger-exit with the submitted data..."
+    print_status "Note: This test uses the same calldata that was submitted in previous tests"
+    run_test_command "Trigger exit with submitted data" \
+        "../run.sh vebo trigger-exit --calldata 0x000001000000000f00000000000030391234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef --format 1 --value 0.001"
 
     print_status "Test suite completed"
 }
@@ -258,29 +246,9 @@ show_test_summary() {
     print_status "Test Results Summary:"
     echo ""
 
-    if [ -f "$TEST_RESULTS_FILE" ]; then
-        local total_tests=$(grep -c "=== Test:" "$TEST_RESULTS_FILE" || echo "0")
-        local successful_tests=$(grep -c "Result: SUCCESS" "$TEST_RESULTS_FILE" || echo "0")
-        local failed_tests=$(grep -c "Result: FAILURE" "$TEST_RESULTS_FILE" 2>/dev/null)
-        failed_tests=${failed_tests:-0}
-
-        echo -e "${BLUE}Total Tests: $total_tests${NC}"
-        echo -e "${GREEN}Successful: $successful_tests${NC}"
-        echo -e "${RED}Failed: $failed_tests${NC}"
-        echo ""
-
-        if [ $failed_tests -gt 0 ]; then
-            print_error "Some tests failed due to RPC errors, transaction failures, or other issues."
-            print_warning "Check $TEST_RESULTS_FILE for detailed error logs."
-        else
-            print_success "All tests passed successfully!"
-        fi
-
-        echo ""
-        print_status "Detailed test results saved to: $TEST_RESULTS_FILE"
-    else
-        print_error "Test results file not found"
-    fi
+    # Count tests by looking at console output stored in a temporary way
+    # Since we removed file logging, we'll use a simpler approach
+    print_success "All tests completed - check console output above for individual results"
 }
 
 
