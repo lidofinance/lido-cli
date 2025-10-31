@@ -139,6 +139,7 @@ setup_test_permissions() {
     local TEST_ACCOUNT="0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
     local ADMIN_ACCOUNT="0x0534aA41907c9631fae990960bCC72d75fA7cfeD"
     local SUBMITTER_ROLE="0x22ebb4dbafb72948800c1e1afa1688772a1a4cfc54d5ebfcec8163b1139c082e"
+    local EXIT_REQUEST_LIMIT_MANAGER_ROLE="0x9c616dd118785b2e2fccf45a4ff151a335ff7b6a84cd1c4d7fd9f97f39ea9342"
 
     print_status "Impersonating Aragon Agent and granting role..."
 
@@ -147,15 +148,28 @@ setup_test_permissions() {
         -d "{\"jsonrpc\":\"2.0\",\"method\":\"anvil_impersonateAccount\",\"params\":[\"$ADMIN_ACCOUNT\"],\"id\":1}" \
         http://localhost:$ANVIL_PORT >/dev/null
 
-    # Give it ETH
+    # Give ETH to admin account (100 ETH)
     curl -s -X POST -H "Content-Type: application/json" \
-        -d "{\"jsonrpc\":\"2.0\",\"method\":\"anvil_setBalance\",\"params\":[\"$ADMIN_ACCOUNT\",\"0x21E19E0C9BAB2400000\"],\"id\":1}" \
+        -d "{\"jsonrpc\":\"2.0\",\"method\":\"anvil_setBalance\",\"params\":[\"$ADMIN_ACCOUNT\",\"0x56BC75E2D630E0000\"],\"id\":1}" \
         http://localhost:$ANVIL_PORT >/dev/null
 
-    # Grant role using cast
+    # Give ETH to test account (1000 ETH to ensure enough for all tests)
+    curl -s -X POST -H "Content-Type: application/json" \
+        -d "{\"jsonrpc\":\"2.0\",\"method\":\"anvil_setBalance\",\"params\":[\"$TEST_ACCOUNT\",\"0x3635C9ADC5DEA00000\"],\"id\":1}" \
+        http://localhost:$ANVIL_PORT >/dev/null
+
+    # Grant submitter role using cast
     print_status "Granting submitter role to test account..."
     ETH_FROM=$ADMIN_ACCOUNT cast send $VEBO_CONTRACT "grantRole(bytes32,address)" \
         $SUBMITTER_ROLE $TEST_ACCOUNT \
+        --rpc-url http://localhost:$ANVIL_PORT \
+        --unlocked \
+        --gas-limit 200000 >/dev/null 2>&1
+
+    # Grant limit manager role using cast
+    print_status "Granting exit request limit manager role to test account..."
+    ETH_FROM=$ADMIN_ACCOUNT cast send $VEBO_CONTRACT "grantRole(bytes32,address)" \
+        $EXIT_REQUEST_LIMIT_MANAGER_ROLE $TEST_ACCOUNT \
         --rpc-url http://localhost:$ANVIL_PORT \
         --unlocked \
         --gas-limit 200000 >/dev/null 2>&1
@@ -195,7 +209,7 @@ run_test_command() {
     local has_errors=false
     if [ $exit_code -ne 0 ]; then
         has_errors=true
-    elif grep -q "RPC request failed\|execution reverted\|Transaction failed\|Failed to submit\|Error:" "$temp_output"; then
+    elif grep -q "RPC request failed\|execution reverted\|Transaction failed\|Failed to submit\|Error:\|Insufficient funds\|insufficient funds" "$temp_output"; then
         has_errors=true
     fi
 
@@ -237,6 +251,19 @@ run_tests() {
     print_status "Note: This test uses the same calldata that was submitted in previous tests"
     run_test_command "Trigger exit with submitted data" \
         "../run.sh vebo trigger-exit --calldata 0x000001000000000f00000000000030391234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef --format 1 --value 0.001"
+
+    # Test 4: Test set-limits command with valid parameters
+    print_status "Testing set-limits with valid parameters..."
+    print_status "Note: This test sets new exit request limits on the VEB contract"
+
+    # Ensure test account has enough ETH for this expensive transaction
+    print_status "Ensuring sufficient ETH balance for set-limits test..."
+    curl -s -X POST -H "Content-Type: application/json" \
+        -d "{\"jsonrpc\":\"2.0\",\"method\":\"anvil_setBalance\",\"params\":[\"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266\",\"0x3635C9ADC5DEA00000\"],\"id\":1}" \
+        http://localhost:$ANVIL_PORT >/dev/null
+
+    run_test_command "Set exit request limits" \
+        "../run.sh vebo set-limits --max-exit-requests-limit 11200 --exits-per-frame 1 --frame-duration 48"
 
     print_status "Test suite completed"
 }

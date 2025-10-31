@@ -536,3 +536,58 @@ oracle
       logger.error('Failed to trigger validator exits:', error);
     }
   });
+
+oracle
+  .command('set-limits')
+  .description('Set exit request limits on VEB contract')
+  .option('--max-exit-requests-limit <limit>', 'Maximum exit requests limit')
+  .option('--exits-per-frame <exits>', 'Number of exits per frame')
+  .option('--frame-duration <duration>', 'Frame duration in seconds')
+  .action(async (options) => {
+    const { maxExitRequestsLimit, exitsPerFrame, frameDuration } = options;
+
+    if (!maxExitRequestsLimit || !exitsPerFrame || !frameDuration) {
+      logger.error('All parameters are required: --max-exit-requests-limit, --exits-per-frame, --frame-duration');
+      logger.log('Example usage:');
+      logger.log('  ./run.sh vebo set-limits --max-exit-requests-limit 11200 --exits-per-frame 1 --frame-duration 48');
+      return;
+    }
+
+    try {
+      const maxLimit = parseInt(maxExitRequestsLimit, 10);
+      const exitsCount = parseInt(exitsPerFrame, 10);
+      const durationSec = parseInt(frameDuration, 10);
+
+      if (isNaN(maxLimit) || isNaN(exitsCount) || isNaN(durationSec)) {
+        logger.error('All parameters must be valid numbers');
+        return;
+      }
+
+      if (maxLimit <= 0 || exitsCount <= 0 || durationSec <= 0) {
+        logger.error('All parameters must be positive numbers');
+        return;
+      }
+
+      logger.log('Setting exit request limits on VEB contract...');
+      logger.log('Parameters:');
+      logger.log(`  Max Exit Requests Limit: ${maxLimit}`);
+      logger.log(`  Exits Per Frame: ${exitsCount}`);
+      logger.log(`  Frame Duration: ${durationSec} seconds`);
+      logger.log('Contract address:', exitBusOracleContract.target);
+
+      const tx = await exitBusOracleContract.setExitRequestLimit(maxLimit, exitsCount, durationSec);
+      logger.log('Transaction hash:', tx.hash);
+
+      logger.log('Waiting for transaction confirmation...');
+      const receipt = await tx.wait();
+
+      if (receipt.status === 1) {
+        logger.log('Exit request limits set successfully!');
+        logger.log('Transaction confirmed in block:', receipt.blockNumber);
+      } else {
+        logger.error('Transaction failed');
+      }
+    } catch (error) {
+      logger.error('Failed to set exit request limits:', error);
+    }
+  });
