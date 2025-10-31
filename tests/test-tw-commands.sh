@@ -115,8 +115,11 @@ start_anvil() {
         --port $ANVIL_PORT \
         --host 0.0.0.0 \
         --accounts 10 \
-        --balance 100 \
-        --chain-id 560048 &
+        --balance 100000 \
+        --chain-id 560048 \
+        --base-fee 0 \
+        --gas-price 1 \
+        --gas-limit 30000000 &
 
     ANVIL_PID=$!
 
@@ -140,6 +143,8 @@ setup_test_permissions() {
     local ADMIN_ACCOUNT="0x0534aA41907c9631fae990960bCC72d75fA7cfeD"
     local SUBMITTER_ROLE="0x22ebb4dbafb72948800c1e1afa1688772a1a4cfc54d5ebfcec8163b1139c082e"
     local EXIT_REQUEST_LIMIT_MANAGER_ROLE="0x9c616dd118785b2e2fccf45a4ff151a335ff7b6a84cd1c4d7fd9f97f39ea9342"
+    local TWG_CONTRACT="0x6679090D92b08a2a686eF8614feECD8cDFE209db"
+    local TW_EXIT_LIMIT_MANAGER_ROLE="0x03c30da9b9e4d4789ac88a294d39a63058ca4a498804c2aa823e381df59d0cf4"
 
     print_status "Impersonating Aragon Agent and granting role..."
 
@@ -153,9 +158,9 @@ setup_test_permissions() {
         -d "{\"jsonrpc\":\"2.0\",\"method\":\"anvil_setBalance\",\"params\":[\"$ADMIN_ACCOUNT\",\"0x56BC75E2D630E0000\"],\"id\":1}" \
         http://localhost:$ANVIL_PORT >/dev/null
 
-    # Give ETH to test account (1000 ETH to ensure enough for all tests)
+    # Give ETH to test account (1000000 ETH to ensure enough for all tests even with high gas)
     curl -s -X POST -H "Content-Type: application/json" \
-        -d "{\"jsonrpc\":\"2.0\",\"method\":\"anvil_setBalance\",\"params\":[\"$TEST_ACCOUNT\",\"0x3635C9ADC5DEA00000\"],\"id\":1}" \
+        -d "{\"jsonrpc\":\"2.0\",\"method\":\"anvil_setBalance\",\"params\":[\"$TEST_ACCOUNT\",\"0xD3C21BCECCEDA1000000\"],\"id\":1}" \
         http://localhost:$ANVIL_PORT >/dev/null
 
     # Grant submitter role using cast
@@ -170,6 +175,14 @@ setup_test_permissions() {
     print_status "Granting exit request limit manager role to test account..."
     ETH_FROM=$ADMIN_ACCOUNT cast send $VEBO_CONTRACT "grantRole(bytes32,address)" \
         $EXIT_REQUEST_LIMIT_MANAGER_ROLE $TEST_ACCOUNT \
+        --rpc-url http://localhost:$ANVIL_PORT \
+        --unlocked \
+        --gas-limit 200000 >/dev/null 2>&1
+
+    # Grant TWG limit manager role using cast
+    print_status "Granting TWG exit request limit manager role to test account..."
+    ETH_FROM=$ADMIN_ACCOUNT cast send $TWG_CONTRACT "grantRole(bytes32,address)" \
+        $TW_EXIT_LIMIT_MANAGER_ROLE $TEST_ACCOUNT \
         --rpc-url http://localhost:$ANVIL_PORT \
         --unlocked \
         --gas-limit 200000 >/dev/null 2>&1
@@ -194,6 +207,11 @@ run_test_command() {
     export EL_CHAIN_ID="560048"
     export EL_NETWORK_NAME="hoodi"
     export EL_API_PROVIDER="http://localhost:$ANVIL_PORT"
+
+    # Refill balance before each test to avoid gas issues
+    curl -s -X POST -H "Content-Type: application/json" \
+        -d "{\"jsonrpc\":\"2.0\",\"method\":\"anvil_setBalance\",\"params\":[\"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266\",\"0x152D02C7E14AF6800000\"],\"id\":1}" \
+        http://localhost:$ANVIL_PORT >/dev/null
 
     # Run command with output to both console and file
     echo "--- Command output ---"
@@ -236,34 +254,24 @@ run_tests() {
     local test_data='1,15,12345,0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
 
     # Test 1: Test submit-hash command with calculated hash from test data
-    print_status "Testing submit-hash with hash calculated from test data..."
     run_test_command "Submit hash calculated from data" \
         "../run.sh vebo submit-hash --calldata 0x000001000000000f00000000000030391234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef --format 1"
 
     # Test 2: Test submit-data command with the same data used for hash calculation
-    print_status "Testing submit-data with matching data..."
-    print_status "Note: This test uses the same data that was used to calculate the hash"
     run_test_command "Submit data with matching hash" \
         "../run.sh vebo submit-data --data '$test_data'"
 
     # Test 3: Test trigger-exit command with the submitted data
-    print_status "Testing trigger-exit with the submitted data..."
-    print_status "Note: This test uses the same calldata that was submitted in previous tests"
     run_test_command "Trigger exit with submitted data" \
         "../run.sh vebo trigger-exit --calldata 0x000001000000000f00000000000030391234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef --format 1 --value 0.001"
 
     # Test 4: Test set-limits command with valid parameters
-    print_status "Testing set-limits with valid parameters..."
-    print_status "Note: This test sets new exit request limits on the VEB contract"
-
-    # Ensure test account has enough ETH for this expensive transaction
-    print_status "Ensuring sufficient ETH balance for set-limits test..."
-    curl -s -X POST -H "Content-Type: application/json" \
-        -d "{\"jsonrpc\":\"2.0\",\"method\":\"anvil_setBalance\",\"params\":[\"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266\",\"0x3635C9ADC5DEA00000\"],\"id\":1}" \
-        http://localhost:$ANVIL_PORT >/dev/null
-
     run_test_command "Set exit request limits" \
         "../run.sh vebo set-limits --max-exit-requests-limit 11200 --exits-per-frame 1 --frame-duration 48"
+
+    # Test 5: Test TWG set-limits command with valid parameters
+    run_test_command "Set TWG exit request limits" \
+        "../run.sh twg set-limits --max-exit-requests-limit 11200 --exits-per-frame 1 --frame-duration 48"
 
     print_status "Test suite completed"
 }
