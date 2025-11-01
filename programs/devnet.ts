@@ -43,7 +43,6 @@ devnet
     // Lido
     logger.log(head('Lido'));
     const stakingLimit = Number(options.stakingLimit);
-    console.log('>>>>>>>>> 1');
     const lidoResumeScripts = await encodeScriptsLidoResumeIfStopped(stakingLimit);
     logger.log();
 
@@ -104,7 +103,6 @@ devnet
     // Voting start
     const voteEvmScript = encodeCallScript(votingCalls);
     const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
-    console.log('>>>> vs2');
     await forwardVoteFromTm(newVoteCalldata);
   });
 
@@ -112,20 +110,11 @@ devnet
   .command('replace-dsm-with-eoa')
   .argument('<eoa>', 'EOA address')
   .action(async (eoa) => {
-    console.log('>>>> rdwe 1');
     const getProxyAddress = async () => await locatorContract.getAddress();
-    console.log('>>>> rdwe 2');
     const locatorProxyContract = getProxyContract(getProxyAddress);
-    console.log('>>>> rdwe 3');
-    const curLocatorImplementationAddress = await locatorProxyContract.proxy__getImplementation({
-      gasLimit: 16_000_000,
-    });
+    const curLocatorImplementationAddress = await locatorProxyContract.proxy__getImplementation();
 
-    console.log('>>>> rdwe 4');
-    const currentDSMAddress = await locatorContract.depositSecurityModule({
-      gasLimit: 16_000_000,
-    });
-    console.log('>>>> rdwe 5');
+    const currentDSMAddress = await locatorContract.depositSecurityModule();
     const currentDSMAddressBytes = currentDSMAddress.slice(2).toLowerCase();
     const eoaBytes = eoa.slice(2).toLowerCase();
 
@@ -135,7 +124,6 @@ devnet
     }
 
     const currentLocatorImplementationDeploymentTx = await findDeploymentTransaction(curLocatorImplementationAddress);
-    console.log('>>>> rdwe 7');
     const newLocatorDeploymentData = currentLocatorImplementationDeploymentTx.data.replaceAll(
       currentDSMAddressBytes,
       eoaBytes,
@@ -143,7 +131,6 @@ devnet
 
     const newLocatorDeployTx = {
       data: newLocatorDeploymentData,
-      gasLimit: 16_000_000,
     };
 
     const txResponse = await wallet.sendTransaction(newLocatorDeployTx);
@@ -157,9 +144,7 @@ devnet
     logger.log('Locator implementations diff');
 
     const curLocatorImplementationContract = getLocatorContract(curLocatorImplementationAddress);
-    console.log('>>>> rdwe 8');
     const newLocatorImplementationContract = getLocatorContract(newLocatorImplementationAddress);
-    console.log('>>>> rdwe 9');
 
     await compareContractCalls(
       [curLocatorImplementationContract, newLocatorImplementationContract],
