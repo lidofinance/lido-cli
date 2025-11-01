@@ -5,7 +5,7 @@ import { parseEther } from 'ethers';
 import prompts from 'prompts';
 
 export const promptScriptsLidoResumeIfStopped = async (initialStakingLimit: number) => {
-  const isLidoStopped = await lidoContract.isStopped({ gasLimit: 16_000_000 });
+  const isLidoStopped = await lidoContract.isStopped();
 
   if (isLidoStopped) {
     logger.log('Contract is stopped. Preparing scripts to resume and set staking limit');
@@ -28,7 +28,7 @@ export const promptScriptsLidoResume = async (initialStakingLimit: number) => {
 };
 
 export const encodeScriptsLidoResumeIfStopped = async (stakingLimit: number) => {
-  const isLidoStopped = await lidoContract.isStopped({ gasLimit: 16_000_000 });
+  const isLidoStopped = await lidoContract.isStopped();
 
   if (isLidoStopped) {
     logger.log('Contract is stopped. Preparing scripts to resume and set staking limit');
@@ -41,6 +41,6 @@ export const encodeScriptsLidoResumeIfStopped = async (stakingLimit: number) => 
 
 export const encodeScriptsLidoResume = async (stakingLimit: number | string) => {
   const parsedLimit = parseEther(String(stakingLimit));
-  const [, resumeProtocolCall, resumeStakingCall, setStakingLimitCall] = resumeLidoAndSetStakingLimit(parsedLimit);
-  return [resumeProtocolCall, resumeStakingCall, setStakingLimitCall];
+  const [, resumeProtocolCall, setStakingLimitCall] = resumeLidoAndSetStakingLimit(parsedLimit);
+  return [resumeProtocolCall, setStakingLimitCall];
 };

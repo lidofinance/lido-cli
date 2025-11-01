@@ -41,7 +41,6 @@ export const populateGasLimit = async (contract: Contract, method: string, argsW
 
 export const contractCallTx = async (contract: Contract, method: string, args: unknown[]) => {
   const argsWithGasLimit = await populateGasLimit(contract, method, args);
-  console.log('contractCallTx', { method, argsWithGasLimit });
   const tx: ContractTransactionResponse = await contract[method](...argsWithGasLimit);
   logger.success('Tx sent', tx.hash);
 
