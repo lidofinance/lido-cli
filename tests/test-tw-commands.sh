@@ -145,6 +145,8 @@ setup_test_permissions() {
     local EXIT_REQUEST_LIMIT_MANAGER_ROLE="0x9c616dd118785b2e2fccf45a4ff151a335ff7b6a84cd1c4d7fd9f97f39ea9342"
     local TWG_CONTRACT="0x6679090D92b08a2a686eF8614feECD8cDFE209db"
     local TW_EXIT_LIMIT_MANAGER_ROLE="0x03c30da9b9e4d4789ac88a294d39a63058ca4a498804c2aa823e381df59d0cf4"
+    local NOR_CONTRACT="0x5cDbE1590c083b5A2A64427fAA63A7cfDB91FbB5"
+    local MANAGE_NODE_OPERATOR_ROLE="0x78523850fdd761612f46e844cf5a16bda6b3151d6ae961fd7e8e7b92bfbca7f8"
 
     print_status "Impersonating Aragon Agent and granting role..."
 
@@ -245,6 +247,119 @@ run_test_command() {
     echo ""
 }
 
+# Function to run a test command with admin account (for Aragon Apps like NOR)
+run_test_command_with_admin() {
+    local test_name="$1"
+    local command="$2"
+    local admin_account="0x0534aA41907c9631fae990960bCC72d75fA7cfeD"
+
+    print_status "Running test: $test_name"
+    print_status "Command: $command (using admin account)"
+    echo ""
+
+    # Set environment variables for local testing with admin account
+    export RPC_URL="http://localhost:$ANVIL_PORT"
+    export NETWORK="hoodi"
+    export CHAIN_ID="560048"
+    export EL_CHAIN_ID="560048"
+    export EL_NETWORK_NAME="hoodi"
+    export EL_API_PROVIDER="http://localhost:$ANVIL_PORT"
+    export WALLET_ADDRESS="$admin_account"
+    export WALLET_PRIVATE_KEY=""
+    export ANVIL_IMPERSONATE="true"
+
+    # Refill balance for admin account
+    curl -s -X POST -H "Content-Type: application/json" \
+        -d "{\"jsonrpc\":\"2.0\",\"method\":\"anvil_setBalance\",\"params\":[\"$admin_account\",\"0x152D02C7E14AF6800000\"],\"id\":1}" \
+        http://localhost:$ANVIL_PORT >/dev/null
+
+    # Run command with output to console
+    echo "--- Command output ---"
+    local temp_output=$(mktemp)
+    eval "$command" 2>&1 | tee "$temp_output"
+    exit_code=${PIPESTATUS[0]}
+
+    # Check for RPC errors, transaction failures, or other error indicators
+    local has_errors=false
+    if [ $exit_code -ne 0 ]; then
+        has_errors=true
+    elif grep -q "RPC request failed\|execution reverted\|Transaction failed\|Failed to submit\|Error:\|Insufficient funds\|insufficient funds" "$temp_output"; then
+        has_errors=true
+    fi
+
+    # Clean up temp file
+    rm -f "$temp_output"
+
+    echo ""
+    if [ "$has_errors" = false ]; then
+        print_success "Test '$test_name' passed"
+    else
+        print_error "Test '$test_name' failed"
+    fi
+
+    echo "======================"
+    echo ""
+}
+
+# Function to test NOR setExitDeadlineThreshold directly with cast
+run_test_nor_setdeadline() {
+    local test_name="Set NOR exit deadline threshold"
+    local admin_account="0x0534aA41907c9631fae990960bCC72d75fA7cfeD"
+    local nor_contract="0x5cDbE1590c083b5A2A64427fAA63A7cfDB91FbB5"
+    local threshold="345600"
+    local reporting_window="86400"
+
+    print_status "Running test: $test_name"
+    print_status "Command: cast send (NOR contract setExitDeadlineThreshold using admin account)"
+    echo ""
+
+    # Refill balance for admin account
+    curl -s -X POST -H "Content-Type: application/json" \
+        -d "{\"jsonrpc\":\"2.0\",\"method\":\"anvil_setBalance\",\"params\":[\"$admin_account\",\"0x152D02C7E14AF6800000\"],\"id\":1}" \
+        http://localhost:$ANVIL_PORT >/dev/null
+
+    echo "--- Command output ---"
+    echo "Setting exit deadline threshold in NOR contract..."
+    echo "Contract address: $nor_contract"
+    echo "New threshold: $threshold seconds"
+    echo "Reporting window: $reporting_window seconds"
+    echo "Using admin account: $admin_account"
+
+    # Use cast to call setExitDeadlineThreshold directly from admin account
+    local temp_output=$(mktemp)
+
+    ETH_FROM=$admin_account cast send $nor_contract "setExitDeadlineThreshold(uint256,uint256)" \
+        $threshold $reporting_window \
+        --rpc-url http://localhost:$ANVIL_PORT \
+        --unlocked \
+        --gas-limit 200000 2>&1 | tee "$temp_output"
+
+    exit_code=${PIPESTATUS[0]}
+
+    # Check for errors
+    local has_errors=false
+    if [ $exit_code -ne 0 ]; then
+        has_errors=true
+    elif grep -q "RPC request failed\|execution reverted\|Transaction failed\|Failed to submit\|Error:\|Insufficient funds\|insufficient funds" "$temp_output"; then
+        has_errors=true
+    elif grep -q "Transaction hash:" "$temp_output"; then
+        echo "Exit deadline threshold updated successfully!"
+    fi
+
+    # Clean up temp file
+    rm -f "$temp_output"
+
+    echo ""
+    if [ "$has_errors" = false ]; then
+        print_success "Test '$test_name' passed"
+    else
+        print_error "Test '$test_name' failed"
+    fi
+
+    echo "======================"
+    echo ""
+}
+
 # Function to run all tests
 run_tests() {
     print_status "Starting test suite for new TW commands..."
@@ -272,6 +387,9 @@ run_tests() {
     # Test 5: Test TWG set-limits command with valid parameters
     run_test_command "Set TWG exit request limits" \
         "../run.sh twg set-limits --max-exit-requests-limit 11200 --exits-per-frame 1 --frame-duration 48"
+
+    # Test 6: Test NOR set-deadline command with valid parameters (using cast directly)
+    run_test_nor_setdeadline
 
     print_status "Test suite completed"
 }
