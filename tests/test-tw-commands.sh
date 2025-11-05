@@ -338,6 +338,10 @@ run_tests() {
     run_test_command "Get TWG exit request limits" \
         "../run.sh twg get-limits"
 
+    # Test 8: Test NOR get-deadline command (read-only, no admin privileges required)
+    run_test_command "Get NOR exit deadline threshold" \
+        "../run.sh nor get-deadline --node-operator-id 0"
+
     print_status "Test suite completed"
 }
 
