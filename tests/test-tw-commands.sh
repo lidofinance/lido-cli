@@ -334,6 +334,10 @@ run_tests() {
     run_test_command "Get VEB exit request limits" \
         "../run.sh vebo get-limits"
 
+    # Test 7: Test TWG get-limits command (read-only, no admin privileges required)
+    run_test_command "Get TWG exit request limits" \
+        "../run.sh twg get-limits"
+
     print_status "Test suite completed"
 }
 

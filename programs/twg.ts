@@ -63,3 +63,30 @@ twg
       logger.error('Failed to set exit limits:', error);
     }
   });
+
+twg
+  .command('get-limits')
+  .description('Get current exit request limits from TWG contract')
+  .action(async () => {
+    try {
+      logger.log('Retrieving current exit limits from TWG contract...');
+      logger.log('Contract address:', twgContract.target);
+
+      const limitsInfo = await twgContract.getExitRequestLimitFullInfo();
+
+      const [maxExitRequestsLimit, exitsPerFrame, frameDurationInSec, prevExitRequestsLimit, currentExitRequestsLimit] =
+        limitsInfo;
+
+      logger.log('');
+      logger.log('Current Exit Request Limits:');
+      logger.log(`max-exit-requests-limit: ${maxExitRequestsLimit}`);
+      logger.log(`exits-per-frame: ${exitsPerFrame}`);
+      logger.log(`frame-duration: ${frameDurationInSec}`);
+      logger.log('');
+      logger.log('Additional Info:');
+      logger.log(`prev-exit-requests-limit: ${prevExitRequestsLimit}`);
+      logger.log(`current-exit-requests-limit: ${currentExitRequestsLimit}`);
+    } catch (error) {
+      logger.error('Failed to retrieve exit request limits:', error);
+    }
+  });
