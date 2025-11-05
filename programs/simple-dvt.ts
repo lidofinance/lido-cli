@@ -122,3 +122,44 @@ simpleDVT
       logger.error('Failed to set exit deadline threshold:', error);
     }
   });
+
+simpleDVT
+  .command('get-deadline')
+  .description('Get current exit deadline threshold for a Node Operator in sDVT module')
+  .option('--node-operator-id <id>', 'Node Operator ID to query')
+  .action(async (options) => {
+    const { nodeOperatorId } = options;
+
+    if (!nodeOperatorId) {
+      logger.error('--node-operator-id parameter is required');
+      logger.log('');
+      logger.log('Example usage:');
+      logger.log('  lido-cli sdvt get-deadline --node-operator-id 15');
+      return;
+    }
+
+    const operatorId = parseInt(nodeOperatorId, 10);
+
+    if (isNaN(operatorId)) {
+      logger.error('Node Operator ID must be a valid number');
+      return;
+    }
+
+    if (operatorId < 0) {
+      logger.error('Node Operator ID must be a non-negative number');
+      return;
+    }
+
+    try {
+      logger.log('Retrieving exit deadline threshold from sDVT contract...');
+      logger.log('Contract address:', simpleDVTContract.target);
+      logger.log('Node Operator ID:', operatorId);
+
+      const threshold = await simpleDVTContract.exitDeadlineThreshold(operatorId);
+
+      logger.log('');
+      logger.log(`threshold: ${threshold}`);
+    } catch (error) {
+      logger.error('Failed to retrieve exit deadline threshold:', error);
+    }
+  });

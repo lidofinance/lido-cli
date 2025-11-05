@@ -342,6 +342,10 @@ run_tests() {
     run_test_command "Get NOR exit deadline threshold" \
         "../run.sh nor get-deadline --node-operator-id 0"
 
+    # Test 9: Test sDVT get-deadline command (read-only, no admin privileges required)
+    run_test_command "Get sDVT exit deadline threshold" \
+        "../run.sh sdvt get-deadline --node-operator-id 0"
+
     print_status "Test suite completed"
 }
 
