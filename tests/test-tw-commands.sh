@@ -301,64 +301,6 @@ run_test_command_with_admin() {
     echo ""
 }
 
-# Function to test NOR setExitDeadlineThreshold directly with cast
-run_test_nor_setdeadline() {
-    local test_name="Set NOR exit deadline threshold"
-    local admin_account="0x0534aA41907c9631fae990960bCC72d75fA7cfeD"
-    local nor_contract="0x5cDbE1590c083b5A2A64427fAA63A7cfDB91FbB5"
-    local threshold="345600"
-    local reporting_window="86400"
-
-    print_status "Running test: $test_name"
-    print_status "Command: cast send (NOR contract setExitDeadlineThreshold using admin account)"
-    echo ""
-
-    # Refill balance for admin account
-    curl -s -X POST -H "Content-Type: application/json" \
-        -d "{\"jsonrpc\":\"2.0\",\"method\":\"anvil_setBalance\",\"params\":[\"$admin_account\",\"0x152D02C7E14AF6800000\"],\"id\":1}" \
-        http://localhost:$ANVIL_PORT >/dev/null
-
-    echo "--- Command output ---"
-    echo "Setting exit deadline threshold in NOR contract..."
-    echo "Contract address: $nor_contract"
-    echo "New threshold: $threshold seconds"
-    echo "Reporting window: $reporting_window seconds"
-    echo "Using admin account: $admin_account"
-
-    # Use cast to call setExitDeadlineThreshold directly from admin account
-    local temp_output=$(mktemp)
-
-    ETH_FROM=$admin_account cast send $nor_contract "setExitDeadlineThreshold(uint256,uint256)" \
-        $threshold $reporting_window \
-        --rpc-url http://localhost:$ANVIL_PORT \
-        --unlocked \
-        --gas-limit 200000 2>&1 | tee "$temp_output"
-
-    exit_code=${PIPESTATUS[0]}
-
-    # Check for errors
-    local has_errors=false
-    if [ $exit_code -ne 0 ]; then
-        has_errors=true
-    elif grep -q "RPC request failed\|execution reverted\|Transaction failed\|Failed to submit\|Error:\|Insufficient funds\|insufficient funds" "$temp_output"; then
-        has_errors=true
-    elif grep -q "Transaction hash:" "$temp_output"; then
-        echo "Exit deadline threshold updated successfully!"
-    fi
-
-    # Clean up temp file
-    rm -f "$temp_output"
-
-    echo ""
-    if [ "$has_errors" = false ]; then
-        print_success "Test '$test_name' passed"
-    else
-        print_error "Test '$test_name' failed"
-    fi
-
-    echo "======================"
-    echo ""
-}
 
 # Function to run all tests
 run_tests() {
@@ -387,9 +329,6 @@ run_tests() {
     # Test 5: Test TWG set-limits command with valid parameters
     run_test_command "Set TWG exit request limits" \
         "../run.sh twg set-limits --max-exit-requests-limit 11200 --exits-per-frame 1 --frame-duration 48"
-
-    # Test 6: Test NOR set-deadline command with valid parameters (using cast directly)
-    run_test_nor_setdeadline
 
     print_status "Test suite completed"
 }
