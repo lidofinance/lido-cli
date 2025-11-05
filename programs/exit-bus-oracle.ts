@@ -591,3 +591,30 @@ oracle
       logger.error('Failed to set exit request limits:', error);
     }
   });
+
+oracle
+  .command('get-limits')
+  .description('Get current exit request limits from VEB contract')
+  .action(async () => {
+    try {
+      logger.log('Retrieving current exit limits from VEB contract...');
+      logger.log('Contract address:', exitBusOracleContract.target);
+
+      const limitsInfo = await exitBusOracleContract.getExitRequestLimitFullInfo();
+
+      const [maxExitRequestsLimit, exitsPerFrame, frameDurationInSec, prevExitRequestsLimit, currentExitRequestsLimit] =
+        limitsInfo;
+
+      logger.log('');
+      logger.log('Current Exit Request Limits:');
+      logger.log(`max-exit-requests-limit: ${maxExitRequestsLimit}`);
+      logger.log(`exits-per-frame: ${exitsPerFrame}`);
+      logger.log(`frame-duration: ${frameDurationInSec}`);
+      logger.log('');
+      logger.log('Additional Info:');
+      logger.log(`prev-exit-requests-limit: ${prevExitRequestsLimit}`);
+      logger.log(`current-exit-requests-limit: ${currentExitRequestsLimit}`);
+    } catch (error) {
+      logger.error('Failed to retrieve exit request limits:', error);
+    }
+  });

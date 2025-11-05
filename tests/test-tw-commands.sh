@@ -330,6 +330,10 @@ run_tests() {
     run_test_command "Set TWG exit request limits" \
         "../run.sh twg set-limits --max-exit-requests-limit 11200 --exits-per-frame 1 --frame-duration 48"
 
+    # Test 6: Test VEB get-limits command (read-only, no admin privileges required)
+    run_test_command "Get VEB exit request limits" \
+        "../run.sh vebo get-limits"
+
     print_status "Test suite completed"
 }
 
