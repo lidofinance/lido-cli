@@ -6,7 +6,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "lint": "eslint **/*.ts",
-    "format": "es",
+    "format": "eslint **/*.ts --fix",
     "check-types": "tsc --noEmit"
   },
   "devDependencies": {

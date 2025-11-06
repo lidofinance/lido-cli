@@ -13,6 +13,10 @@ describe('TW Commands Integration Tests', () => {
       ]);
 
       expect(cliRunner.isTestSuccessful(result)).toBe(true);
+
+      expect(result.stdout).toContain('Hash submitted successfully!');
+      expect(result.stdout).toContain('Transaction confirmed in block:');
+      expect(result.stdout).toContain('Format: 1');
     });
 
     test('Submit data with matching hash', async () => {
@@ -22,6 +26,11 @@ describe('TW Commands Integration Tests', () => {
       const result = await cliRunner.runCommand('vebo', ['submit-data', '--data', testData]);
 
       expect(cliRunner.isTestSuccessful(result)).toBe(true);
+
+      expect(result.stdout).toContain('Parsed 1 exit request(s):');
+      expect(result.stdout).toContain('Module 1, Operator 15, Index 12345');
+      expect(result.stdout).toContain('Exit requests data submitted successfully!');
+      expect(result.stdout).toContain('Data format: 1');
     });
 
     test('Trigger exit with submitted data', async () => {
@@ -36,6 +45,11 @@ describe('TW Commands Integration Tests', () => {
       ]);
 
       expect(cliRunner.isTestSuccessful(result)).toBe(true);
+
+      expect(result.stdout).toContain('ETH value to send: 0.001 ETH');
+      expect(result.stdout).toContain('Validator exits triggered successfully!');
+      expect(result.stdout).toContain('Data format: 1');
+      expect(result.stdout).toContain('Will exit all validators: [ 0 ]');
     });
 
     test('Set exit request limits', async () => {
@@ -50,12 +64,22 @@ describe('TW Commands Integration Tests', () => {
       ]);
 
       expect(cliRunner.isTestSuccessful(result)).toBe(true);
+
+      expect(result.stdout).toContain('Max Exit Requests Limit: 11200');
+      expect(result.stdout).toContain('Exits Per Frame: 1');
+      expect(result.stdout).toContain('Frame Duration: 48 seconds');
+      expect(result.stdout).toContain('Exit request limits set successfully!');
     });
 
     test('Get exit request limits', async () => {
       const result = await cliRunner.runCommand('vebo', ['get-limits']);
 
       expect(cliRunner.isTestSuccessful(result)).toBe(true);
+
+      expect(result.stdout).toContain('max-exit-requests-limit: 11200');
+      expect(result.stdout).toContain('exits-per-frame: 1');
+      expect(result.stdout).toContain('frame-duration: 48');
+      expect(result.stdout).toContain('Current Exit Request Limits:');
     });
   });
 
@@ -72,12 +96,21 @@ describe('TW Commands Integration Tests', () => {
       ]);
 
       expect(cliRunner.isTestSuccessful(result)).toBe(true);
+
+      expect(result.stdout).toContain('Max exit requests limit: 11200');
+      expect(result.stdout).toContain('Exits per frame: 1');
+      expect(result.stdout).toContain('Frame duration (seconds): 48');
+      expect(result.stdout).toContain('Exit limits updated successfully!');
     });
 
     test('Get TWG exit request limits', async () => {
       const result = await cliRunner.runCommand('twg', ['get-limits']);
 
       expect(cliRunner.isTestSuccessful(result)).toBe(true);
+
+      expect(result.stdout).toContain('max-exit-requests-limit: 11200');
+      expect(result.stdout).toContain('exits-per-frame: 1');
+      expect(result.stdout).toContain('frame-duration: 48');
     });
   });
 
@@ -86,6 +119,9 @@ describe('TW Commands Integration Tests', () => {
       const result = await cliRunner.runCommand('nor', ['get-deadline', '--node-operator-id', '0']);
 
       expect(cliRunner.isTestSuccessful(result)).toBe(true);
+
+      expect(result.stdout).toContain('Node Operator ID: 0');
+      expect(result.stdout).toContain('threshold: 345600');
     });
   });
 
@@ -94,6 +130,9 @@ describe('TW Commands Integration Tests', () => {
       const result = await cliRunner.runCommand('sdvt', ['get-deadline', '--node-operator-id', '0']);
 
       expect(cliRunner.isTestSuccessful(result)).toBe(true);
+
+      expect(result.stdout).toContain('Node Operator ID: 0');
+      expect(result.stdout).toContain('threshold: 345600');
     });
   });
 });

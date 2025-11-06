@@ -99,13 +99,11 @@ export class AnvilRunner {
 
     // @ts-expect-error TS1323: Dynamic import needed to load contracts after test config is applied
     const contractsModule = await import('@contracts');
-    const { exitBusOracleAddress, twgAddress, norAddress, simpleDVTAddress, aragonAgentAddress } = contractsModule;
+    const { exitBusOracleAddress, twgAddress, aragonAgentAddress } = contractsModule;
 
     const contracts = {
       VEBO: exitBusOracleAddress,
       TWG: twgAddress,
-      NOR: norAddress,
-      SDVT: simpleDVTAddress,
     };
 
     const adminAccount = aragonAgentAddress;
