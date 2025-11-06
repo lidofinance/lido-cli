@@ -4,7 +4,7 @@ import { aragonAgentAddress, votingAddress } from '@contracts';
 import { encodeCallScript } from './scripts';
 import { forwardVoteFromTm } from './voting';
 import { contractCallTxWithConfirm } from './call-tx';
-import { agentForward } from 'scripts/agent';
+import { agentForward } from '@scripts';
 import { getProvider, getSignerAddress } from './contract';
 import { logger } from './logger';
 
