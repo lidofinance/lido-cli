@@ -21,6 +21,7 @@
       "@utils": ["utils"]
     }
   },
+  "exclude": ["vitest.config.ts"],
   "ts-node": {
     "swc": true,
     "require": ["tsconfig-paths/register"]
