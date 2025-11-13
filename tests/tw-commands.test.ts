@@ -3,34 +3,55 @@ import { cliRunner } from './setup';
 
 describe('TW Commands Integration Tests', () => {
   describe('VEBO Commands', () => {
-    test('Submit hash calculated from data', async () => {
-      const result = await cliRunner.runCommand('vebo', [
+    test('Submit hash and data using CSV format', async () => {
+      const expectedCalldata =
+        '0x000001000000000f00000000000030391234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
+      const testData =
+        '1,15,12345,0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
+
+      // First submit the hash for the expected calldata
+      const hashResult = await cliRunner.runCommand('vebo', [
         'submit-hash',
         '--calldata',
-        '0x000001000000000f00000000000030391234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+        expectedCalldata,
         '--format',
         '1',
       ]);
 
-      expect(cliRunner.isTestSuccessful(result)).toBe(true);
+      expect(cliRunner.isTestSuccessful(hashResult)).toBe(true);
+      expect(hashResult.stdout).toContain('Hash submitted successfully!');
+      expect(hashResult.stdout).toContain('Transaction confirmed in block:');
+      expect(hashResult.stdout).toContain('Format: 1');
 
-      expect(result.stdout).toContain('Hash submitted successfully!');
-      expect(result.stdout).toContain('Transaction confirmed in block:');
-      expect(result.stdout).toContain('Format: 1');
+      // Then submit the matching CSV data
+      const dataResult = await cliRunner.runCommand('vebo', ['submit-data', '--data', testData]);
+
+      expect(cliRunner.isTestSuccessful(dataResult)).toBe(true);
+      expect(dataResult.stdout).toContain('Parsed 1 exit request(s):');
+      expect(dataResult.stdout).toContain('Module 1, Operator 15, Index 12345');
+      expect(dataResult.stdout).toContain('Exit requests data submitted successfully!');
+      expect(dataResult.stdout).toContain('Data format: 1');
     });
 
-    test('Submit data with matching hash', async () => {
-      const testData =
-        '1,15,12345,0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
+    test('Submit hash and data using hex calldata format', async () => {
+      const calldata =
+        '0x000002000000001400000000000054d1abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890';
 
-      const result = await cliRunner.runCommand('vebo', ['submit-data', '--data', testData]);
+      // First submit the hash for this calldata
+      const hashResult = await cliRunner.runCommand('vebo', ['submit-hash', '--calldata', calldata, '--format', '1']);
 
-      expect(cliRunner.isTestSuccessful(result)).toBe(true);
+      expect(cliRunner.isTestSuccessful(hashResult)).toBe(true);
+      expect(hashResult.stdout).toContain('Hash submitted successfully!');
 
-      expect(result.stdout).toContain('Parsed 1 exit request(s):');
-      expect(result.stdout).toContain('Module 1, Operator 15, Index 12345');
-      expect(result.stdout).toContain('Exit requests data submitted successfully!');
-      expect(result.stdout).toContain('Data format: 1');
+      // Then submit the actual data using the same calldata
+      const dataResult = await cliRunner.runCommand('vebo', ['submit-data', '--calldata', calldata, '--format', '1']);
+
+      expect(cliRunner.isTestSuccessful(dataResult)).toBe(true);
+
+      expect(dataResult.stdout).toContain('Using provided calldata with 1 exit request(s)');
+      expect(dataResult.stdout).toContain('Exit requests data submitted successfully!');
+      expect(dataResult.stdout).toContain('Data format: 1');
+      expect(dataResult.stdout).toContain('Transaction confirmed in block:');
     });
 
     test('Trigger exit with submitted data', async () => {

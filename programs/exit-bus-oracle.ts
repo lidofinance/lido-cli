@@ -289,78 +289,115 @@ oracle
     '--data <data>',
     'Exit requests data in format: moduleId,nodeOpId,valIndex,pubkey;moduleId,nodeOpId,valIndex,pubkey',
   )
+  .option('--calldata <calldata>', 'Exit requests calldata in hex format')
   .option('--format <format>', 'Data format specifier', '1')
   .action(async (options) => {
-    const { data, format } = options;
+    const { data, calldata, format } = options;
 
-    if (!data) {
-      logger.error('--data parameter is required');
-      logger.log('Expected format: moduleId,nodeOpId,valIndex,pubkey;moduleId,nodeOpId,valIndex,pubkey');
-      logger.log('Example: 1,15,12345,0x...pubkey1;2,22,54321,0x...pubkey2');
+    if (!data && !calldata) {
+      logger.error('Either --data or --calldata must be provided');
+      logger.log('Examples:');
+      logger.log('  # Using CSV format:');
+      logger.log('  ./run.sh vebo submit-data --data "1,15,12345,0x...;2,22,54321,0x..."');
+      logger.log('  # Using hex calldata:');
+      logger.log('  ./run.sh vebo submit-data --calldata 0x... --format 1');
+      return;
+    }
+
+    if (data && calldata) {
+      logger.error('Cannot specify both --data and --calldata');
       return;
     }
 
     try {
-      const requests = data
-        .split(';')
-        .filter((req: string) => req.trim())
-        .map((request: string) => {
-          const parts = request.trim().split(',');
-          if (parts.length !== 4) {
-            throw new Error(`Invalid request format: ${request}. Expected: moduleId,nodeOpId,valIndex,pubkey`);
-          }
+      let encodedData: string;
 
-          const [moduleId, nodeOpId, valIndex, pubkey] = parts;
+      if (data) {
+        // Mode 1: Parse CSV format data
+        const requests = data
+          .split(';')
+          .filter((req: string) => req.trim())
+          .map((request: string) => {
+            const parts = request.trim().split(',');
+            if (parts.length !== 4) {
+              throw new Error(`Invalid request format: ${request}. Expected: moduleId,nodeOpId,valIndex,pubkey`);
+            }
 
-          if (!moduleId || !nodeOpId || !valIndex || !pubkey) {
-            throw new Error(`Invalid request format: ${request}. All fields are required`);
-          }
+            const [moduleId, nodeOpId, valIndex, pubkey] = parts;
 
-          if (!pubkey.startsWith('0x') || pubkey.length !== 98) {
-            throw new Error(`Invalid pubkey format: ${pubkey}. Expected 0x-prefixed 48-byte hex string`);
-          }
+            if (!moduleId || !nodeOpId || !valIndex || !pubkey) {
+              throw new Error(`Invalid request format: ${request}. All fields are required`);
+            }
 
-          return {
-            moduleId: parseInt(moduleId, 10),
-            nodeOpId: parseInt(nodeOpId, 10),
-            valIndex: parseInt(valIndex, 10),
-            pubkey: pubkey.toLowerCase(),
-          };
+            if (!pubkey.startsWith('0x') || pubkey.length !== 98) {
+              throw new Error(`Invalid pubkey format: ${pubkey}. Expected 0x-prefixed 48-byte hex string`);
+            }
+
+            return {
+              moduleId: parseInt(moduleId, 10),
+              nodeOpId: parseInt(nodeOpId, 10),
+              valIndex: parseInt(valIndex, 10),
+              pubkey: pubkey.toLowerCase(),
+            };
+          });
+
+        if (requests.length === 0) {
+          logger.error('No valid exit requests found in data');
+          return;
+        }
+
+        logger.log(`Parsed ${requests.length} exit request(s):`);
+        requests.forEach((req: { moduleId: number; nodeOpId: number; valIndex: number; pubkey: string }, i: number) => {
+          logger.log(
+            `  ${i + 1}. Module ${req.moduleId}, Operator ${req.nodeOpId}, Index ${req.valIndex}, Pubkey ${req.pubkey}`,
+          );
         });
 
-      if (requests.length === 0) {
-        logger.error('No valid exit requests found in data');
-        return;
+        const encodeExitRequestHex = ({
+          moduleId,
+          nodeOpId,
+          valIndex,
+          pubkey,
+        }: {
+          moduleId: number;
+          nodeOpId: number;
+          valIndex: number;
+          pubkey: string;
+        }) => {
+          const pubkeyHex = pubkey.slice(2);
+
+          const moduleIdHex = moduleId.toString(16).padStart(6, '0'); // 3 bytes
+          const nodeOpIdHex = nodeOpId.toString(16).padStart(10, '0'); // 5 bytes
+          const valIndexHex = valIndex.toString(16).padStart(16, '0'); // 8 bytes
+
+          return moduleIdHex + nodeOpIdHex + valIndexHex + pubkeyHex;
+        };
+
+        encodedData = '0x' + requests.map(encodeExitRequestHex).join('');
+      } else {
+        // Mode 2: Use provided calldata directly
+        if (!calldata.startsWith('0x')) {
+          logger.error('Calldata must be in hex format starting with 0x');
+          return;
+        }
+
+        encodedData = calldata;
+
+        // Calculate number of requests based on data length
+        // Each request is 64 bytes (128 hex chars), plus 2 chars for '0x'
+        const dataLength = (calldata.length - 2) / 2; // Convert hex string to byte length
+        const requestCount = dataLength / 64;
+
+        if (dataLength % 64 !== 0) {
+          logger.error(
+            `Invalid calldata length. Expected multiple of 64 bytes (128 hex chars), got ${dataLength} bytes`,
+          );
+          return;
+        }
+
+        logger.log(`Using provided calldata with ${requestCount} exit request(s)`);
+        logger.log('Calldata:', calldata);
       }
-
-      logger.log(`Parsed ${requests.length} exit request(s):`);
-      requests.forEach((req: { moduleId: number; nodeOpId: number; valIndex: number; pubkey: string }, i: number) => {
-        logger.log(
-          `  ${i + 1}. Module ${req.moduleId}, Operator ${req.nodeOpId}, Index ${req.valIndex}, Pubkey ${req.pubkey}`,
-        );
-      });
-
-      const encodeExitRequestHex = ({
-        moduleId,
-        nodeOpId,
-        valIndex,
-        pubkey,
-      }: {
-        moduleId: number;
-        nodeOpId: number;
-        valIndex: number;
-        pubkey: string;
-      }) => {
-        const pubkeyHex = pubkey.slice(2);
-
-        const moduleIdHex = moduleId.toString(16).padStart(6, '0'); // 3 bytes
-        const nodeOpIdHex = nodeOpId.toString(16).padStart(10, '0'); // 5 bytes
-        const valIndexHex = valIndex.toString(16).padStart(16, '0'); // 8 bytes
-
-        return moduleIdHex + nodeOpIdHex + valIndexHex + pubkeyHex;
-      };
-
-      const encodedData = '0x' + requests.map(encodeExitRequestHex).join('');
 
       logger.log('Encoded data:', encodedData);
       logger.log('Data format:', format);
