@@ -59,7 +59,9 @@ simpleDVT
 
 simpleDVT
   .command('set-deadline')
-  .description('Set exit deadline threshold for validators in sDVT module')
+  .description(
+    'Set exit deadline threshold for validators in sDVT module. Note: validators exited before now will no longer be able to report as late again',
+  )
   .option('--threshold <seconds>', 'Exit deadline threshold in seconds (e.g., 345600 for 4 days)')
   .option('--reporting-window <seconds>', 'Late reporting window in seconds (e.g., 86400 for 1 day)', '86400')
   .action(async (options) => {
