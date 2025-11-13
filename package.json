@@ -3,6 +3,8 @@
   "scripts": {
     "testnet": "./testnet.sh",
     "start": "./run.sh",
+    "test": "vitest",
+    "test:run": "vitest run",
     "lint": "eslint **/*.ts",
     "format": "eslint **/*.ts --fix",
     "check-types": "tsc --noEmit"
@@ -23,7 +25,8 @@
     "prettier": "^3.0.3",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.2",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.2",
+    "vitest": "^4.0.7"
   },
   "dependencies": {
     "@chainsafe/bls-keygen": "^0.4.0",

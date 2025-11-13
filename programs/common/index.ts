@@ -3,6 +3,7 @@ export * from './aragon-app';
 export * from './base-oracle';
 export * from './consensus';
 export * from './curated-module';
+export * from './deadline-commands';
 export * from './logs';
 export * from './parsing';
 export * from './pause-until';

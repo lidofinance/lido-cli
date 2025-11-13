@@ -28,6 +28,7 @@ export * from './sanity-checker';
 export * from './scripts';
 export * from './simple-dvt';
 export * from './staking-router';
+export * from './twg';
 export * from './tx';
 export * from './unlimited-stake';
 export * from './validators';

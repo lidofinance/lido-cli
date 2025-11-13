@@ -1,19 +1,18 @@
 name: Tests and checks
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+
 jobs:
-  test:
+  lint:
     name: Linter
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: 'yarn'
       - name: Install dependencies
         run: yarn install --immutable
@@ -21,3 +20,25 @@ jobs:
         run: yarn lint
       - name: Run check types
         run: yarn check-types
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+      - name: Check Foundry installation
+        run: |
+          anvil --version
+          cast --version
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Run tests
+        run: yarn test:run

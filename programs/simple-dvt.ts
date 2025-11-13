@@ -1,6 +1,12 @@
 import { program } from '@command';
 import { simpleDVTContract } from '@contracts';
-import { addAragonAppSubCommands, addCuratedModuleSubCommands, addLogsCommands, addParsingCommands } from './common';
+import {
+  addAragonAppSubCommands,
+  addCuratedModuleSubCommands,
+  addDeadlineCommands,
+  addLogsCommands,
+  addParsingCommands,
+} from './common';
 import { getLatestBlockRange } from '@utils';
 import { check0xSplit, checkGnosisSafe, checkSignatures, checkWrapperContract } from './staking-module';
 
@@ -12,6 +18,7 @@ addAragonAppSubCommands(simpleDVT, simpleDVTContract);
 addParsingCommands(simpleDVT, simpleDVTContract);
 addLogsCommands(simpleDVT, simpleDVTContract);
 addCuratedModuleSubCommands(simpleDVT, simpleDVTContract);
+addDeadlineCommands(simpleDVT, simpleDVTContract, { moduleName: 'sDVT', commandName: 'sdvt' });
 
 simpleDVT
   .command('check-reward-address')

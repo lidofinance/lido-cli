@@ -24,6 +24,7 @@ export * from './split-main';
 export * from './staking-module';
 export * from './staking-router';
 export * from './token-manager';
+export * from './twg';
 export * from './unlimited-stake';
 export * from './voting';
 export * from './withdrawal-request';

@@ -1,6 +1,7 @@
 import { envs } from '@configs';
 import { stringify } from '@utils';
 import fetch, { RequestInit } from 'node-fetch';
+// @ts-expect-error - JSONStream types are not properly defined
 import JSONStream from 'JSONStream';
 import { Genesis, Fork, SignedBeaconBlock, SignedBeaconBlockHeaderContainer, ValidatorContainer } from './cl-types';
 
