@@ -1,4 +1,5 @@
 {
+  "name": "lido-cli",
   "license": "MIT",
   "scripts": {
     "testnet": "./testnet.sh",
