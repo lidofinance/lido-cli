@@ -10,6 +10,7 @@ import { encodeFromVotingGrantRolesAragon, encodeFromVotingGrantRolesAragonWithC
 import {
   consensusForAccountingContract,
   consensusForExitBusContract,
+  exitBusOracleContract,
   norContract,
   oracleConfigContract,
   sanityCheckerContract,
@@ -33,6 +34,7 @@ const HASH_CONSENSUS_ROLES = [
 const ORACLE_CONFIG_ROLES = ['CONFIG_MANAGER_ROLE'];
 const STAKING_ROUTER_ROLES = ['STAKING_MODULE_MANAGE_ROLE'];
 const SANITY_CHECKER_ROLES = ['ALL_LIMITS_MANAGER_ROLE'];
+const VEB_ROLES = ['SUBMIT_REPORT_HASH_ROLE'];
 
 const bold = chalk.white.bold;
 
@@ -108,7 +110,13 @@ export const encodeScriptsRoles = async (beneficiary: string) => {
     sanityCheckerContract,
     beneficiary,
   );
-  return [...srScripts, ...norScripts, ...aoScripts, ...veboScripts, ...oracleConfigScripts, ...sanityCheckerScripts];
+  const vebRoles = await encodeFromAgentGrantRolesAccessControl(
+    'VEB',
+    VEB_ROLES,
+    exitBusOracleContract,
+    beneficiary,
+  );
+  return [...srScripts, ...norScripts, ...aoScripts, ...veboScripts, ...oracleConfigScripts, ...sanityCheckerScripts, ...vebRoles];
 };
 
 export const promptRolesBeneficiary = async (initialAddress: string) => {
