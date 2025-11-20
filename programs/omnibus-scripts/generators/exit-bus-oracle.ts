@@ -7,6 +7,7 @@ import {
   promptScriptsOracleMembersIfEmpty,
 } from './oracles';
 import { DEFAULT_DEVNET_CONFIG } from './devnet';
+import { encodeFromAgentGrantRole } from './access-control';
 
 export const encodeScriptsVEBO = async (oracleMembers: string[], oracleQuorum: number, initialEpoch?: number) => {
   const veboResumeScripts = await encodeScriptsVEBOResumeIfPaused();
@@ -24,6 +25,10 @@ export const promptScriptsVEBO = async () => {
 
 export const encodeScriptsVEBOResumeIfPaused = async () => {
   return encodeUnpauseIfPaused('VEBO', exitBusOracleContract);
+};
+
+export const encodeFromAgentVEBOGrantRole = async (role: string, account: string) => {
+  return await encodeFromAgentGrantRole('VEBO', exitBusOracleContract, role, account);
 };
 
 export const encodeScriptsVEBOMembers = async (members: string[], quorum: number) => {
