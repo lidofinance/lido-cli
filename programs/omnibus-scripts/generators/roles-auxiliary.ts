@@ -89,7 +89,7 @@ export const promptScriptsCurateModulesRolesWithConfirm = async (moduleIds: numb
   for (const moduleId of moduleIds) {
     const { stakingModuleAddress } = await stakingRouterContract.getStakingModule(moduleId);
     const moduleContract = norContract.attach(stakingModuleAddress) as Contract;
-    const moduleScripts = await encodeFromVotingGrantRolesAragonWithConfirm(
+    const moduleScripts = await encodeFromAgentGrantRolesAragonWithConfirm(
       `Module ${moduleId}`,
       NOR_ROLES,
       moduleContract,
