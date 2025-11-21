@@ -6,6 +6,7 @@ import { aragonAgentAddress } from '@contracts';
 
 export const encodeUnpauseIfPaused = async (contractName: string, contract: Contract) => {
   const isPaused = await contract.isPaused();
+
   if (isPaused) {
     logger.log('Contract is paused. Preparing scripts');
     return await encodeScriptsResume(contractName, contract);
@@ -22,6 +23,7 @@ export const encodeScriptsResume = async (contractName: string, contract: Contra
     'RESUME_ROLE',
     aragonAgentAddress,
   );
+
   const [, resumeWQCall] = await encodeFromAgentResume(contractName, contract);
   return [grantResumeRoleCall, resumeWQCall];
 };

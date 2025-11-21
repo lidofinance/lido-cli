@@ -10,6 +10,7 @@ export const encodeFromAgentGrantRole = async (
   account: string,
 ) => {
   const roleHash = await getRoleHash(contract, role);
+
   return encodeFromAgent({
     to: await contract.getAddress(),
     data: contract.interface.encodeFunctionData('grantRole', [roleHash, account]),
@@ -24,6 +25,7 @@ export const encodeFromAgentGrantRolesAccessControlWithConfirm = async (
   rolesBeneficiary: string,
 ) => {
   printRoles(contractName, rolesToGrant);
+
   if (await confirmRoleGranting()) {
     logger.log();
     return await encodeFromAgentGrantRolesAccessControl(contractName, rolesToGrant, contract, rolesBeneficiary);

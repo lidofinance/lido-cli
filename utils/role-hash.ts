@@ -3,7 +3,6 @@ import { wallet } from '@providers';
 
 export const getRoleHash = async (contract: Contract, role: string): Promise<string> => {
   if (isHexString(role)) return role;
-
   return await contract[role]();
 };
 

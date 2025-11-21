@@ -16,6 +16,7 @@ export const votingNewVote = (votingData: string, votingDesc: string = '') => {
     to: votingAddress,
     data: votingContract.interface.encodeFunctionData('newVote(bytes, string)', [votingData, votingDesc]),
   };
+
   const encoded = encodeCallScript([call]);
   return [encoded, call] as const;
 };

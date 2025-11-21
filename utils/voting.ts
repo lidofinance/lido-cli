@@ -7,7 +7,6 @@ import { waitWithProgressBar } from './progress-bar';
 export const forwardVoteFromTm = async (votingCalldata: string) => {
   const tx = await contractCallTxWithConfirm(tmContract, 'forward', [votingCalldata]);
   if (tx == null) return;
-
   logger.success('Vote started');
 
   return await voteLastVoting();
