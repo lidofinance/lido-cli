@@ -1,9 +1,10 @@
-import { encodeCallScript, getRoleHash, logger } from '@utils';
+import { getRoleHash, logger } from '@utils';
 import { confirmRoleGranting, printRoles } from './roles-auxiliary';
 import { Contract } from 'ethers';
 import { aclContract } from '@contracts';
+import { encodeFromAgent } from '@scripts';
 
-export const encodeFromVotingGrantRolesAragonWithConfirm = async (
+export const encodeFromAgentGrantRolesAragonWithConfirm = async (
   contractName: string,
   rolesToGrant: string[],
   contract: Contract,
@@ -13,13 +14,13 @@ export const encodeFromVotingGrantRolesAragonWithConfirm = async (
 
   if (await confirmRoleGranting()) {
     logger.log();
-    return await encodeFromVotingGrantRolesAragon(contractName, rolesToGrant, contract, rolesBeneficiary);
+    return await encodeFromAgentGrantRolesAragon(contractName, rolesToGrant, contract, rolesBeneficiary);
   }
 
   return [];
 };
 
-export const encodeFromVotingGrantRolesAragon = async (
+export const encodeFromAgentGrantRolesAragon = async (
   contractName: string,
   rolesToGrant: string[],
   contract: Contract,
@@ -27,13 +28,13 @@ export const encodeFromVotingGrantRolesAragon = async (
 ) => {
   return await Promise.all(
     rolesToGrant.map(async (role) => {
-      const [, grantRoleCall] = await encodeFromVotingGrantRoleAragon(contractName, contract, role, rolesBeneficiary);
+      const [, grantRoleCall] = await encodeFromAgentGrantRoleAragon(contractName, contract, role, rolesBeneficiary);
       return grantRoleCall;
     }),
   );
 };
 
-export const encodeFromVotingGrantRoleAragon = async (
+export const encodeFromAgentGrantRoleAragon = async (
   contractName: string,
   contract: Contract,
   role: string,
@@ -49,6 +50,5 @@ export const encodeFromVotingGrantRoleAragon = async (
     desc: `${contractName}: Grant '${role}' role to ${account}`,
   };
 
-  const encoded = encodeCallScript([grantPermissionCall]);
-  return [encoded, grantPermissionCall] as const;
+  return encodeFromAgent(grantPermissionCall);
 };

@@ -6,7 +6,6 @@ import {
   encodeFromAgentGrantRolesAccessControl,
   encodeFromAgentGrantRolesAccessControlWithConfirm,
 } from './access-control';
-import { encodeFromVotingGrantRolesAragon, encodeFromVotingGrantRolesAragonWithConfirm } from './aragon';
 import {
   consensusForAccountingContract,
   consensusForCSMContract,
@@ -17,6 +16,7 @@ import {
   stakingRouterContract,
 } from '@contracts';
 import { DEFAULT_DEVNET_CONFIG } from './devnet';
+import { encodeFromAgentGrantRolesAragon, encodeFromAgentGrantRolesAragonWithConfirm } from './aragon';
 
 const NOR_ROLES = [
   'STAKING_ROUTER_ROLE',
@@ -49,7 +49,7 @@ export const promptScriptsRolesWithConfirm = async (beneficiary: string) => {
     stakingRouterContract,
     beneficiary,
   );
-  const norScripts = await encodeFromVotingGrantRolesAragonWithConfirm('NOR', NOR_ROLES, norContract, beneficiary);
+  const norScripts = await encodeFromAgentGrantRolesAragonWithConfirm('NOR', NOR_ROLES, norContract, beneficiary);
   const aoScripts = await encodeFromAgentGrantRolesAccessControlWithConfirm(
     'AO consensus',
     HASH_CONSENSUS_ROLES,
@@ -89,7 +89,7 @@ export const promptScriptsCurateModulesRolesWithConfirm = async (moduleIds: numb
   for (const moduleId of moduleIds) {
     const { stakingModuleAddress } = await stakingRouterContract.getStakingModule(moduleId);
     const moduleContract = norContract.attach(stakingModuleAddress) as Contract;
-    const moduleScripts = await encodeFromVotingGrantRolesAragonWithConfirm(
+    const moduleScripts = await encodeFromAgentGrantRolesAragonWithConfirm(
       `Module ${moduleId}`,
       NOR_ROLES,
       moduleContract,
@@ -137,7 +137,7 @@ export const encodeScriptsRoles = async (beneficiary: string) => {
     stakingRouterContract,
     beneficiary,
   );
-  const norScripts = await encodeFromVotingGrantRolesAragon('NOR', NOR_ROLES, norContract, beneficiary);
+  const norScripts = await encodeFromAgentGrantRolesAragon('NOR', NOR_ROLES, norContract, beneficiary);
   const aoScripts = await encodeFromAgentGrantRolesAccessControl(
     'AO consensus',
     HASH_CONSENSUS_ROLES,

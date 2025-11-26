@@ -41,6 +41,6 @@ export const encodeScriptsLidoResumeIfStopped = async (stakingLimit: number) => 
 
 export const encodeScriptsLidoResume = async (stakingLimit: number | string) => {
   const parsedLimit = parseEther(String(stakingLimit));
-  const [, resumeProtocolCall, resumeStakingCall, setStakingLimitCall] = resumeLidoAndSetStakingLimit(parsedLimit);
-  return [resumeProtocolCall, resumeStakingCall, setStakingLimitCall];
+  const [, resumeProtocolCall, setStakingLimitCall] = resumeLidoAndSetStakingLimit(parsedLimit);
+  return [resumeProtocolCall, setStakingLimitCall];
 };

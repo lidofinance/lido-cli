@@ -1,5 +1,5 @@
 import { lidoAddress, lidoContract } from '@contracts';
-import { encodeCallScript, calcStakeLimitIncreasePerBlock } from '@utils';
+import { calcStakeLimitIncreasePerBlock, encodeCallScript } from '@utils';
 import { formatEther } from 'ethers';
 
 export const resumeProtocol = () => {
@@ -39,9 +39,8 @@ export const setStakingLimit = (dailyStakingLimit: bigint) => {
 
 export const resumeLidoAndSetStakingLimit = (dailyStakingLimit: bigint) => {
   const [, resumeProtocolCall] = resumeProtocol();
-  const [, resumeStakingCall] = resumeStaking();
   const [, setStakingLimitCall] = setStakingLimit(dailyStakingLimit);
-  const calls = [resumeProtocolCall, resumeStakingCall, setStakingLimitCall];
+  const calls = [resumeProtocolCall, setStakingLimitCall];
 
   const encoded = encodeCallScript(calls);
   return [encoded, ...calls] as const;
