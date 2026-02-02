@@ -16,6 +16,9 @@ export const devnetCMv2Start = async () => {
   const CS_ORACLE_HASH_CONSENSUS_ADDRESS = process.env.CS_ORACLE_HASH_CONSENSUS_ADDRESS as string;
   const CS_EJECTOR_ADDRESS = process.env.CS_EJECTOR_ADDRESS as string | undefined;
   const CS_TWG_ADDRESS = process.env.CS_TRIGGERABLE_WITHDRAWALS_GATEWAY_ADDRESS ?? process.env.CS_TWG_ADDRESS;
+  const CS_VETTED_GATE_ADDRESS = process.env.CS_PERMISSIONLESS_GATE_ADDRESS ?? process.env.CS_VETTED_GATE_ADDRESS;
+  const CS_VETTED_GATE_SET_TREE_ROLE_GRANTEE =
+    process.env.CS_VETTED_GATE_SET_TREE_ROLE_GRANTEE ?? aragonAgentAddress;
 
   const CS_MODULE_NAME = process.env.CS_MODULE_NAME ?? 'curated-onchain-v1';
   const CS_STAKE_SHARE_LIMIT = process.env.CS_STAKE_SHARE_LIMIT ?? 2000; // 20%
@@ -206,6 +209,39 @@ export const devnetCMv2Start = async () => {
     await (await cmv2AccountingAccessControl.grantRole(cmv2AccountingAdminRole, aragonAgentAddress)).wait();
   }
 
+  if (CS_VETTED_GATE_ADDRESS) {
+    const vettedGateAccessControl = new Contract(CS_VETTED_GATE_ADDRESS, accessControlIface, wallet);
+    const vettedGateAdminRole = await vettedGateAccessControl.DEFAULT_ADMIN_ROLE();
+    const vettedGateAdmin = (await vettedGateAccessControl.getRoleMember(vettedGateAdminRole, 0)).toLowerCase();
+    const agentHasVettedGateAdminRole = await vettedGateAccessControl.hasRole(
+      vettedGateAdminRole,
+      aragonAgentAddress,
+    );
+
+    if (!agentHasVettedGateAdminRole) {
+      if (walletAddress != vettedGateAdmin) {
+        throw new Error(
+          `Wallet ${walletAddress} is not CMv2 vetted gate admin ${vettedGateAdmin}. Cannot grant admin role to agent.`,
+        );
+      }
+
+      await (await vettedGateAccessControl.grantRole(vettedGateAdminRole, aragonAgentAddress)).wait();
+    }
+
+    const setTreeRoleHash = await getRoleHashByAddress(CS_VETTED_GATE_ADDRESS, 'SET_TREE_ROLE');
+    const agentHasSetTreeRole = await vettedGateAccessControl.hasRole(setTreeRoleHash, aragonAgentAddress);
+
+    if (!agentHasSetTreeRole) {
+      if (walletAddress != vettedGateAdmin) {
+        throw new Error(
+          `Wallet ${walletAddress} is not CMv2 vetted gate admin ${vettedGateAdmin}. Cannot grant SET_TREE_ROLE to agent.`,
+        );
+      }
+
+      await (await vettedGateAccessControl.grantRole(setTreeRoleHash, aragonAgentAddress)).wait();
+    }
+  }
+
   if (!agentHasSrManageRole) {
     items.push(`${itemIdx++}. Grant staking module manage role to agent ${aragonAgentAddress}`);
     const [, moduleManageRoleGrantToAgentScript] = encodeFromAgent({
@@ -234,6 +270,23 @@ export const devnetCMv2Start = async () => {
       ]),
     });
     calls.push(addStakingModuleScript);
+  }
+
+  if (CS_VETTED_GATE_ADDRESS) {
+    const setTreeRoleHash = await getRoleHashByAddress(CS_VETTED_GATE_ADDRESS, 'SET_TREE_ROLE');
+    const vettedGateAccessControl = new Contract(CS_VETTED_GATE_ADDRESS, accessControlIface, wallet);
+    const granteeHasSetTreeRole = await vettedGateAccessControl.hasRole(setTreeRoleHash, CS_VETTED_GATE_SET_TREE_ROLE_GRANTEE);
+
+    if (!granteeHasSetTreeRole) {
+      items.push(
+        `${itemIdx++}. Grant SET_TREE_ROLE to ${CS_VETTED_GATE_SET_TREE_ROLE_GRANTEE} on vetted gate ${CS_VETTED_GATE_ADDRESS}`,
+      );
+      const [, grantSetTreeRoleScript] = encodeFromAgent({
+        to: CS_VETTED_GATE_ADDRESS,
+        data: iface.encodeFunctionData('grantRole', [setTreeRoleHash, CS_VETTED_GATE_SET_TREE_ROLE_GRANTEE]),
+      });
+      calls.push(grantSetTreeRoleScript);
+    }
   }
 
   items.push(

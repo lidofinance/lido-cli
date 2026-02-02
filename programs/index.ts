@@ -7,6 +7,7 @@ export * from './burner';
 export * from './csm-consensus';
 export * from './csm-oracle';
 export * from './csm';
+export * from './cmv2';
 export * from './deposit-contract';
 export * from './deposit-data';
 export * from './devnet';

@@ -1,6 +1,6 @@
 import { formatEther, parseEther, ZeroAddress } from 'ethers';
 import { program } from '@command';
-import { lidoContract, unlimitedStakeContract } from '@contracts';
+import { lidoContract, stakingRouterContract, unlimitedStakeContract } from '@contracts';
 import { authorizedCall, contractCallTxWithConfirm, forwardVoteFromTm, logger } from '@utils';
 import { resumeLidoAndSetStakingLimit, votingForward } from '@scripts';
 import { addAragonAppSubCommands, addLogsCommands, addParsingCommands } from './common';
@@ -62,10 +62,10 @@ lido
 lido
   .command('deposit')
   .description('deposit buffered ether (works only if DSM is set to EOA)')
-  .argument('<deposits>', 'max deposits count')
+  .argument('<deposits>', 'max deposits count (ignored for SRv3)')
   .argument('<module-id>', 'staking module id')
-  .action(async (maxDepositCount, moduleId) => {
-    await contractCallTxWithConfirm(lidoContract, 'deposit', [maxDepositCount, moduleId, '0x']);
+  .action(async (_maxDepositCount, moduleId) => {
+    await contractCallTxWithConfirm(stakingRouterContract, 'deposit', [moduleId, '0x']);
   });
 
 lido

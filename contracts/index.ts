@@ -4,6 +4,7 @@ export * from './app-proxy';
 export * from './aragon';
 export * from './burner';
 export * from './csm';
+export * from './cmv2';
 export * from './deposit-contract';
 export * from './dsm';
 export * from './dual-governance';

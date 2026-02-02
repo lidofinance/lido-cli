@@ -844,11 +844,6 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_depositsCount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "_stakingModuleId",
         "type": "uint256"
       },
@@ -860,7 +855,7 @@
     ],
     "name": "deposit",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
