@@ -23,6 +23,7 @@ export const devnetCSMStart = async () => {
   const CS_TREASURY_FEE = process.env.CS_TREASURY_FEE ?? 200; // 2%
   const CS_MAX_DEPOSITS_PER_BLOCK = process.env.CS_MAX_DEPOSITS_PER_BLOCK ?? 30;
   const CS_MIN_DEPOSIT_BLOCK_DISTANCE = process.env.CS_MIN_DEPOSIT_BLOCK_DISTANCE ?? 25;
+  const CS_WITHDRAWAL_CREDENTIALS_TYPE = process.env.CS_WITHDRAWAL_CREDENTIALS_TYPE ?? 1;
   // 60 (50 + 10)
   // https://github.com/lidofinance/community-staking-module/blob/e1bbb4133d18206fc3a1a63ae660a670be08b6ea/script/DeployLocalDevNet.s.sol#L22
   const CS_ORACLE_INITIAL_EPOCH = process.env.CS_ORACLE_INITIAL_EPOCH ?? 60;
@@ -35,7 +36,7 @@ export const devnetCSMStart = async () => {
     'function resume()',
     'function activatePublicRelease()',
     'function updateInitialEpoch(uint256)',
-    'function addStakingModule(string,address,uint256,uint256,uint256,uint256,uint256,uint256)',
+    'function addStakingModule(string,address,(uint256,uint256,uint256,uint256,uint256,uint256,uint256))',
   ]);
 
   const csmVersion = await getVersion(provider, CS_MODULE_ADDRESS);
@@ -62,12 +63,15 @@ export const devnetCSMStart = async () => {
     data: iface.encodeFunctionData('addStakingModule', [
       CS_MODULE_NAME,
       CS_MODULE_ADDRESS,
-      CS_STAKE_SHARE_LIMIT,
-      CS_PRIORITY_EXIT_SHARE_THRESHOLD,
-      CS_STAKING_MODULE_FEE,
-      CS_TREASURY_FEE,
-      CS_MAX_DEPOSITS_PER_BLOCK,
-      CS_MIN_DEPOSIT_BLOCK_DISTANCE,
+      [
+        CS_STAKE_SHARE_LIMIT,
+        CS_PRIORITY_EXIT_SHARE_THRESHOLD,
+        CS_STAKING_MODULE_FEE,
+        CS_TREASURY_FEE,
+        CS_MAX_DEPOSITS_PER_BLOCK,
+        CS_MIN_DEPOSIT_BLOCK_DISTANCE,
+        CS_WITHDRAWAL_CREDENTIALS_TYPE,
+      ],
     ]),
   });
   calls.push(addStakingModuleScript);
