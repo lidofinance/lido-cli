@@ -17,10 +17,9 @@ export const devnetCMv2Start = async () => {
   const CS_EJECTOR_ADDRESS = process.env.CS_EJECTOR_ADDRESS as string | undefined;
   const CS_TWG_ADDRESS = process.env.CS_TRIGGERABLE_WITHDRAWALS_GATEWAY_ADDRESS ?? process.env.CS_TWG_ADDRESS;
   const CS_VETTED_GATE_ADDRESS = process.env.CS_PERMISSIONLESS_GATE_ADDRESS ?? process.env.CS_VETTED_GATE_ADDRESS;
-  const CS_VETTED_GATE_SET_TREE_ROLE_GRANTEE =
-    process.env.CS_VETTED_GATE_SET_TREE_ROLE_GRANTEE ?? aragonAgentAddress;
+  const CS_VETTED_GATE_SET_TREE_ROLE_GRANTEE = process.env.CS_VETTED_GATE_SET_TREE_ROLE_GRANTEE ?? aragonAgentAddress;
 
-  const CS_MODULE_NAME = process.env.CS_MODULE_NAME ?? 'curated-onchain-v1';
+  const CS_MODULE_NAME = process.env.CS_MODULE_NAME ?? 'curated-onchain-v2';
   const CS_STAKE_SHARE_LIMIT = process.env.CS_STAKE_SHARE_LIMIT ?? 2000; // 20%
   const CS_PRIORITY_EXIT_SHARE_THRESHOLD = process.env.CS_PRIORITY_EXIT_SHARE_THRESHOLD ?? 2500; // 25%
   const CS_STAKING_MODULE_FEE = process.env.CS_STAKING_MODULE_FEE ?? 800; // 8%
@@ -213,10 +212,7 @@ export const devnetCMv2Start = async () => {
     const vettedGateAccessControl = new Contract(CS_VETTED_GATE_ADDRESS, accessControlIface, wallet);
     const vettedGateAdminRole = await vettedGateAccessControl.DEFAULT_ADMIN_ROLE();
     const vettedGateAdmin = (await vettedGateAccessControl.getRoleMember(vettedGateAdminRole, 0)).toLowerCase();
-    const agentHasVettedGateAdminRole = await vettedGateAccessControl.hasRole(
-      vettedGateAdminRole,
-      aragonAgentAddress,
-    );
+    const agentHasVettedGateAdminRole = await vettedGateAccessControl.hasRole(vettedGateAdminRole, aragonAgentAddress);
 
     if (!agentHasVettedGateAdminRole) {
       if (walletAddress != vettedGateAdmin) {
@@ -275,7 +271,10 @@ export const devnetCMv2Start = async () => {
   if (CS_VETTED_GATE_ADDRESS) {
     const setTreeRoleHash = await getRoleHashByAddress(CS_VETTED_GATE_ADDRESS, 'SET_TREE_ROLE');
     const vettedGateAccessControl = new Contract(CS_VETTED_GATE_ADDRESS, accessControlIface, wallet);
-    const granteeHasSetTreeRole = await vettedGateAccessControl.hasRole(setTreeRoleHash, CS_VETTED_GATE_SET_TREE_ROLE_GRANTEE);
+    const granteeHasSetTreeRole = await vettedGateAccessControl.hasRole(
+      setTreeRoleHash,
+      CS_VETTED_GATE_SET_TREE_ROLE_GRANTEE,
+    );
 
     if (!granteeHasSetTreeRole) {
       items.push(
