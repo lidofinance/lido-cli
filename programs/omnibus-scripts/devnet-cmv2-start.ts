@@ -26,7 +26,7 @@ export const devnetCMv2Start = async () => {
   const CS_TREASURY_FEE = process.env.CS_TREASURY_FEE ?? 200; // 2%
   const CS_MAX_DEPOSITS_PER_BLOCK = process.env.CS_MAX_DEPOSITS_PER_BLOCK ?? 30;
   const CS_MIN_DEPOSIT_BLOCK_DISTANCE = process.env.CS_MIN_DEPOSIT_BLOCK_DISTANCE ?? 25;
-  const CS_WITHDRAWAL_CREDENTIALS_TYPE = process.env.CS_WITHDRAWAL_CREDENTIALS_TYPE ?? 1;
+  const CS_WITHDRAWAL_CREDENTIALS_TYPE = 2;
   // https://github.com/lidofinance/community-staking-module/blob/e1bbb4133d18206fc3a1a63ae660a670be08b6ea/script/DeployLocalDevNet.s.sol#L22
   const CS_ORACLE_INITIAL_EPOCH = process.env.CS_ORACLE_INITIAL_EPOCH ?? 60;
 
