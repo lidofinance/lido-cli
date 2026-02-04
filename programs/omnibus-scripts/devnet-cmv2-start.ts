@@ -336,27 +336,12 @@ export const devnetCMv2Start = async () => {
     calls.push(resumeRoleRevokeScript);
   }
 
-  let canUpdateInitialEpoch = true;
-  try {
-    await cmv2ModuleContract.provider.call({
-      to: CS_ORACLE_HASH_CONSENSUS_ADDRESS,
-      from: aragonAgentAddress,
-      data: iface.encodeFunctionData('updateInitialEpoch', [CS_ORACLE_INITIAL_EPOCH]),
-    });
-  } catch {
-    canUpdateInitialEpoch = false;
-  }
-
-  if (canUpdateInitialEpoch) {
-    items.push(`${itemIdx++}. Update initial epoch to ${CS_ORACLE_INITIAL_EPOCH}`);
-    const [, updateInitialEpochScript] = encodeFromAgent({
-      to: CS_ORACLE_HASH_CONSENSUS_ADDRESS,
-      data: iface.encodeFunctionData('updateInitialEpoch', [CS_ORACLE_INITIAL_EPOCH]),
-    });
-    calls.push(updateInitialEpochScript);
-  } else {
-    console.log('[cmv2] Skipping updateInitialEpoch: call would revert');
-  }
+  items.push(`${itemIdx++}. Update initial epoch to ${CS_ORACLE_INITIAL_EPOCH}`);
+  const [, updateInitialEpochScript] = encodeFromAgent({
+    to: CS_ORACLE_HASH_CONSENSUS_ADDRESS,
+    data: iface.encodeFunctionData('updateInitialEpoch', [CS_ORACLE_INITIAL_EPOCH]),
+  });
+  calls.push(updateInitialEpochScript);
 
   const voteEvmScript = encodeCallScript(calls);
   const [newVoteCalldata] = votingNewVote(voteEvmScript, items.join('\n'));
