@@ -1,6 +1,6 @@
 import { program } from '@command';
 import { stakingRouterContract } from '@contracts';
-import { authorizedCall, logger, writeToFile } from '@utils';
+import { authorizedCall, logger, writeToFile, contractCallTxWithConfirm } from '@utils';
 import { Result, parseEther } from 'ethers';
 import { addAccessControlSubCommands, addLogsCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
 import {
@@ -374,4 +374,13 @@ router
   .action(async () => {
     const distribution = await stakingRouterContract.getStakingRewardsDistribution();
     logger.log('Distribution', distribution);
+  });
+
+// TODO: move to staking router
+router
+  .command('deposit')
+  .description('deposit buffered ether (works only if DSM is set to EOA)')
+  .argument('<module-id>', 'staking module id')
+  .action(async (moduleId) => {
+    await contractCallTxWithConfirm(stakingRouterContract, 'deposit', [moduleId, '0x']);
   });

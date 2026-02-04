@@ -59,6 +59,7 @@ lido
     logger.log('Buffered ether', formatEther(bufferedEther));
   });
 
+// TODO: move to staking router
 lido
   .command('deposit')
   .description('deposit buffered ether (works only if DSM is set to EOA)')
