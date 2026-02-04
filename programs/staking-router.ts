@@ -172,6 +172,16 @@ router
   });
 
 router
+  .command('module-withdrawal-credentials')
+  .aliases(['module-wc'])
+  .description('returns withdrawal credentials for a staking module')
+  .argument('<module-id>', 'staking module id')
+  .action(async (moduleId) => {
+    const withdrawalCredentials = await stakingRouterContract.getStakingModuleWithdrawalCredentials(moduleId);
+    logger.log('Module withdrawal credentials', withdrawalCredentials);
+  });
+
+router
   .command('is-paused')
   .description('returns if module is paused')
   .argument('<module-id>', 'module id')

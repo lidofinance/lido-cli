@@ -35,3 +35,4 @@ export * from './validators';
 export * from './voting';
 export * from './withdrawal-request';
 export * from './withdrawal-vault';
+export * from './consolidation-gateway';
