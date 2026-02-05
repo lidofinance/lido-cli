@@ -72,6 +72,9 @@ export const supplementDepositDataArray = async (depositDataArray: DepositData[]
 
   return depositDataArray.map((depositData) => {
     if (depositData.withdrawalCredentials && depositData.withdrawalCredentials !== withdrawalCredentials) {
+      if (depositData.withdrawalCredentials.toLowerCase().startsWith('0x02')) {
+        return { ...depositData, forkVersion, withdrawalCredentials: depositData.withdrawalCredentials };
+      }
       throw new Error('Withdrawal credentials do not match the withdrawal credentials from the contract');
     }
 
