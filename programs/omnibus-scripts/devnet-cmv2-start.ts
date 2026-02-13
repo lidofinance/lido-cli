@@ -38,6 +38,7 @@ export const devnetCMv2Start = async () => {
     'function resume()',
     'function updateInitialEpoch(uint256)',
     'function addStakingModule(string,address,(uint256,uint256,uint256,uint256,uint256,uint256,uint256))',
+    'function META_REGISTRY() view returns (address)',
   ]);
 
   const accessControlIface = new Interface([
@@ -101,6 +102,7 @@ export const devnetCMv2Start = async () => {
   }
 
   const walletAddress = (await wallet.getAddress()).toLowerCase();
+  const CS_META_REGISTRY_ROLE_GRANTEE = process.env.CS_META_REGISTRY_ROLE_GRANTEE ?? wallet.address;
 
   const srModuleManageRoleHash = await getRoleHash(stakingRouterContract, 'STAKING_MODULE_MANAGE_ROLE');
 
@@ -187,6 +189,32 @@ const hashConsensusContract = new Contract(CS_ORACLE_HASH_CONSENSUS_ADDRESS, ifa
     }
 
     await (await cmv2ModuleAccessControl.grantRole(cmv2ModuleAdminRole, aragonAgentAddress)).wait();
+  }
+
+  const metaRegistryAddress = await cmv2ModuleContract.META_REGISTRY();
+  if (metaRegistryAddress && metaRegistryAddress !== '0x0000000000000000000000000000000000000000') {
+    const metaRegistryAccessControl = new Contract(metaRegistryAddress, accessControlIface, wallet);
+    const metaRegistryAdminRole = await metaRegistryAccessControl.DEFAULT_ADMIN_ROLE();
+    const metaRegistryAdmin = (await metaRegistryAccessControl.getRoleMember(metaRegistryAdminRole, 0)).toLowerCase();
+    const hasManageOperatorGroupsRole = await metaRegistryAccessControl.hasRole(
+      await getRoleHashByAddress(metaRegistryAddress, 'MANAGE_OPERATOR_GROUPS_ROLE'),
+      CS_META_REGISTRY_ROLE_GRANTEE,
+    );
+
+    if (!hasManageOperatorGroupsRole) {
+      if (walletAddress != metaRegistryAdmin) {
+        throw new Error(
+          `Wallet ${walletAddress} is not MetaRegistry admin ${metaRegistryAdmin}. Cannot grant MANAGE_OPERATOR_GROUPS_ROLE.`,
+        );
+      }
+
+      await (
+        await metaRegistryAccessControl.grantRole(
+          await getRoleHashByAddress(metaRegistryAddress, 'MANAGE_OPERATOR_GROUPS_ROLE'),
+          CS_META_REGISTRY_ROLE_GRANTEE,
+        )
+      ).wait();
+    }
   }
 
   const cmv2AccountingAccessControl = new Contract(CS_ACCOUNTING_ADDRESS, accessControlIface, wallet);

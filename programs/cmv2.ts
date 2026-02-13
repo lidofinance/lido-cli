@@ -23,7 +23,7 @@ import {
   DepositData,
 } from '@utils';
 import { wallet } from '@providers';
-import { Contract, ZeroAddress } from 'ethers';
+import { Contract, ZeroAddress, id } from 'ethers';
 import { basename, extname } from 'path';
 
 const loadProof = (filePath?: string) => {
@@ -48,8 +48,9 @@ const getMerkleGateContract = () => {
 const cmv2ModuleMetaAbi = ['function META_REGISTRY() view returns (address)'];
 const metaRegistryAbi = [
   'function NO_GROUP_ID() view returns (uint256)',
-  'function createOrUpdateOperatorGroup(uint256,(tuple(uint256 nodeOperatorId,uint256 share)[] subNodeOperators, tuple(address operator,uint256 share)[] externalOperators))',
+  'function createOrUpdateOperatorGroup(uint256,(tuple(uint64 nodeOperatorId,uint16 share)[] subNodeOperators, tuple(bytes data)[] externalOperators))',
 ];
+const accessControlAbi = ['function grantRole(bytes32,address)'];
 
 const ensureMetaRegistryGroup = async (nodeOperatorId: bigint) => {
   let metaRegistryAddress: string | undefined;
@@ -70,10 +71,15 @@ const ensureMetaRegistryGroup = async (nodeOperatorId: bigint) => {
   const groupId = await metaRegistry.NO_GROUP_ID();
   const subNodeOperators = [{ nodeOperatorId, share: 10000n }];
 
-  await contractCallTxWithConfirm(metaRegistry, 'createOrUpdateOperatorGroup', [
-    groupId,
-    { subNodeOperators, externalOperators: [] },
-  ]);
+  try {
+    await contractCallTxWithConfirm(metaRegistry, 'createOrUpdateOperatorGroup', [
+      groupId,
+      { subNodeOperators, externalOperators: [] },
+    ]);
+  } catch (error) {
+    const message = (error as Error)?.message ?? String(error);
+    logger.warn(`MetaRegistry createOrUpdateOperatorGroup reverted; skipping: ${message}`);
+  }
 };
 
 const cmv2 = program
@@ -128,6 +134,107 @@ cmv2
     const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
 
     await forwardVoteFromTm(newVoteCalldata);
+  });
+
+cmv2
+  .command('set-gate-tree-vote')
+  .description('creates a vote to set vetted/curated gate tree root')
+  .requiredOption('--root <bytes32>', 'merkle tree root')
+  .option('-c, --cid <string>', 'tree cid', 'devnet-allowlist')
+  .option('-g, --gate <string>', 'gate address (curated/vetted)')
+  .action(async (options) => {
+    const gateContract = getMerkleGateContract();
+    const gate = options.gate ?? gateContract?.target;
+    if (!gate) throw new Error('No gate address available');
+
+    const iface = gateContract ? gateContract.interface : cmv2VettedGateContract.interface;
+    const [, setTreeScript] = encodeFromAgent({
+      to: gate,
+      data: iface.encodeFunctionData('setTreeParams', [options.root, options.cid]),
+    });
+
+    const calls: CallScriptAction[] = [setTreeScript];
+    const description = `Set gate tree root on ${gate} with cid ${options.cid}`;
+    const voteEvmScript = encodeCallScript(calls);
+    const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
+
+    await forwardVoteFromTm(newVoteCalldata);
+  });
+
+cmv2
+  .command('grant-manage-operator-groups-role')
+  .description('grants MANAGE_OPERATOR_GROUPS_ROLE on MetaRegistry')
+  .argument('[account]', 'account to grant (defaults to wallet address)')
+  .option('-a, --account <string>', 'account to grant (overrides argument)')
+  .option('-m, --meta-registry <string>', 'meta registry address override')
+  .action(async (accountArg, options) => {
+    const account = options.account ?? accountArg ?? wallet.address;
+    const metaRegistryAddress =
+      options.metaRegistry ??
+      (await new Contract(await cmv2ModuleContract.getAddress(), cmv2ModuleMetaAbi, wallet).META_REGISTRY());
+    if (!metaRegistryAddress || metaRegistryAddress === ZeroAddress) {
+      throw new Error('MetaRegistry address not found on CMv2 module');
+    }
+
+    const role = id('MANAGE_OPERATOR_GROUPS_ROLE');
+    const metaRegistry = new Contract(metaRegistryAddress, accessControlAbi, wallet);
+    await contractCallTxWithConfirm(metaRegistry, 'grantRole', [role, account]);
+    logger.log('Granted MANAGE_OPERATOR_GROUPS_ROLE to', account, 'on', metaRegistryAddress);
+  });
+
+cmv2
+  .command('grant-manage-operator-groups-role-vote')
+  .description('creates a vote to grant MANAGE_OPERATOR_GROUPS_ROLE on MetaRegistry')
+  .argument('[account]', 'account to grant (defaults to wallet address)')
+  .option('-a, --account <string>', 'account to grant (overrides argument)')
+  .option('-m, --meta-registry <string>', 'meta registry address override')
+  .action(async (accountArg, options) => {
+    const account = options.account ?? accountArg ?? wallet.address;
+    const metaRegistryAddress =
+      options.metaRegistry ??
+      (await new Contract(await cmv2ModuleContract.getAddress(), cmv2ModuleMetaAbi, wallet).META_REGISTRY());
+    if (!metaRegistryAddress || metaRegistryAddress === ZeroAddress) {
+      throw new Error('MetaRegistry address not found on CMv2 module');
+    }
+
+    const role = id('MANAGE_OPERATOR_GROUPS_ROLE');
+    const iface = new Contract(metaRegistryAddress, accessControlAbi, wallet).interface;
+    const [, grantRoleScript] = encodeFromAgent({
+      to: metaRegistryAddress,
+      data: iface.encodeFunctionData('grantRole', [role, account]),
+    });
+
+    const calls: CallScriptAction[] = [grantRoleScript];
+    const description = `Grant MANAGE_OPERATOR_GROUPS_ROLE to ${account} on MetaRegistry ${metaRegistryAddress}`;
+    const voteEvmScript = encodeCallScript(calls);
+    const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
+
+    await forwardVoteFromTm(newVoteCalldata);
+  });
+
+cmv2
+  .command('update-operator-group')
+  .description('creates or updates MetaRegistry group for a CMv2 operator')
+  .argument('<operator-id>', 'node operator id')
+  .option('-m, --meta-registry <string>', 'meta registry address override')
+  .action(async (operatorId, options) => {
+    const nodeOperatorId = BigInt(operatorId);
+    const metaRegistryAddress =
+      options.metaRegistry ??
+      (await new Contract(await cmv2ModuleContract.getAddress(), cmv2ModuleMetaAbi, wallet).META_REGISTRY());
+    if (!metaRegistryAddress || metaRegistryAddress === ZeroAddress) {
+      throw new Error('MetaRegistry address not found on CMv2 module');
+    }
+
+    const metaRegistry = new Contract(metaRegistryAddress, metaRegistryAbi, wallet);
+    const groupId = await metaRegistry.NO_GROUP_ID();
+    const subNodeOperators = [{ nodeOperatorId, share: 10000n }];
+
+    await contractCallTxWithConfirm(metaRegistry, 'createOrUpdateOperatorGroup', [
+      groupId,
+      { subNodeOperators, externalOperators: [] },
+    ]);
+    logger.log('MetaRegistry group updated for operator', operatorId, 'on', metaRegistryAddress);
   });
 
 cmv2
