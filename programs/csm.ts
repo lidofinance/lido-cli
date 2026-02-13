@@ -1,11 +1,5 @@
 import { program } from '@command';
-import {
-  csAccountingContract,
-  csModuleAddress,
-  csModuleContract,
-  getCSMVersion,
-  permissionlessGateContract,
-} from '@contracts';
+import { csAccountingContract, csModuleContract, getCSMVersion, permissionlessGateContract } from '@contracts';
 import { addAccessControlSubCommands, addLogsCommands, addParsingCommands, addPauseUntilSubCommands } from './common';
 import {
   contractCallTxWithConfirm,
@@ -16,7 +10,7 @@ import {
   DepositData,
 } from '@utils';
 import { wallet } from '@providers';
-import { Contract, ZeroAddress } from 'ethers';
+import { ZeroAddress } from 'ethers';
 
 const csm = program
   .command('csm')
@@ -26,29 +20,6 @@ addAccessControlSubCommands(csm, csModuleContract);
 addParsingCommands(csm, csModuleContract);
 addLogsCommands(csm, csModuleContract);
 addPauseUntilSubCommands(csm, csModuleContract);
-
-const csModuleMetaAbi = ['function META_REGISTRY() view returns (address)'];
-const metaRegistryAbi = [
-  'function NO_GROUP_ID() view returns (uint256)',
-  'function createOrUpdateOperatorGroup(uint256,(tuple(uint256 nodeOperatorId,uint256 share)[] subNodeOperators, tuple(address operator,uint256 share)[] externalOperators))',
-];
-
-const ensureMetaRegistryGroup = async (nodeOperatorId: number) => {
-  const metaRegistryAddress = await new Contract(csModuleAddress, csModuleMetaAbi, wallet).META_REGISTRY();
-  if (!metaRegistryAddress || metaRegistryAddress === ZeroAddress) {
-    logger.warn('MetaRegistry address not found on module; skipping operator group update');
-    return;
-  }
-
-  const metaRegistry = new Contract(metaRegistryAddress, metaRegistryAbi, wallet);
-  const groupId = await metaRegistry.NO_GROUP_ID();
-  const subNodeOperators = [{ nodeOperatorId: BigInt(nodeOperatorId), share: 10000n }];
-
-  await contractCallTxWithConfirm(metaRegistry, 'createOrUpdateOperatorGroup', [
-    groupId,
-    { subNodeOperators, externalOperators: [] },
-  ]);
-};
 
 csm
   .command('operators')
@@ -91,7 +62,6 @@ csm
       options;
 
     const csmVersion = await getCSMVersion(wallet.provider);
-    const beforeCount = await csModuleContract.getNodeOperatorsCount();
 
     const curveId = await csAccountingContract.DEFAULT_BOND_CURVE_ID();
     const value = await csAccountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
@@ -117,14 +87,6 @@ csm
       ]);
     }
 
-    if (csmVersion >= 2) {
-      const afterCount = await csModuleContract.getNodeOperatorsCount();
-      if (afterCount > beforeCount) {
-        await ensureMetaRegistryGroup(Number(afterCount) - 1);
-      } else {
-        logger.warn('Node operators count did not increase; skipping MetaRegistry group update');
-      }
-    }
   });
 
 csm
@@ -143,7 +105,6 @@ csm
     await supplementAndVerifyDepositDataArray(depositData);
 
     const csmVersion = await getCSMVersion(wallet.provider);
-    const beforeCount = await csModuleContract.getNodeOperatorsCount();
 
     const curveId = await csAccountingContract.DEFAULT_BOND_CURVE_ID();
     const keysCount = depositData.length;
@@ -171,15 +132,6 @@ csm
         referrer,
         { value },
       ]);
-    }
-
-    if (csmVersion >= 2) {
-      const afterCount = await csModuleContract.getNodeOperatorsCount();
-      if (afterCount > beforeCount) {
-        await ensureMetaRegistryGroup(Number(afterCount) - 1);
-      } else {
-        logger.warn('Node operators count did not increase; skipping MetaRegistry group update');
-      }
     }
   });
 
