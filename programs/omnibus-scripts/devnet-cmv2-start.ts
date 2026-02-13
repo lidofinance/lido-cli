@@ -159,6 +159,7 @@ export const devnetCMv2Start = async () => {
   }
 
   const hashConsensusAccessControl = new Contract(CS_ORACLE_HASH_CONSENSUS_ADDRESS, accessControlIface, wallet);
+const hashConsensusContract = new Contract(CS_ORACLE_HASH_CONSENSUS_ADDRESS, iface, wallet);
   const hcAdminRole = await hashConsensusAccessControl.DEFAULT_ADMIN_ROLE();
   const hcAdmin = (await hashConsensusAccessControl.getRoleMember(hcAdminRole, 0)).toLowerCase();
   const agentHasHcAdminRole = await hashConsensusAccessControl.hasRole(hcAdminRole, aragonAgentAddress);
@@ -248,24 +249,42 @@ export const devnetCMv2Start = async () => {
   }
 
   if (!moduleExists) {
-    items.push(`${itemIdx++}. Add staking module ${CS_MODULE_NAME} with address ${CS_MODULE_ADDRESS}`);
-    const [, addStakingModuleScript] = encodeFromAgent({
-      to: stakingRouterAddress,
-      data: iface.encodeFunctionData('addStakingModule', [
-        CS_MODULE_NAME,
-        CS_MODULE_ADDRESS,
-        [
-          CS_STAKE_SHARE_LIMIT,
-          CS_PRIORITY_EXIT_SHARE_THRESHOLD,
-          CS_STAKING_MODULE_FEE,
-          CS_TREASURY_FEE,
-          CS_MAX_DEPOSITS_PER_BLOCK,
-          CS_MIN_DEPOSIT_BLOCK_DISTANCE,
-          CS_WITHDRAWAL_CREDENTIALS_TYPE,
-        ],
-      ]),
-    });
-    calls.push(addStakingModuleScript);
+    let canAddModule = true;
+    try {
+      await stakingRouterContract.addStakingModule.staticCall(CS_MODULE_NAME, CS_MODULE_ADDRESS, [
+        CS_STAKE_SHARE_LIMIT,
+        CS_PRIORITY_EXIT_SHARE_THRESHOLD,
+        CS_STAKING_MODULE_FEE,
+        CS_TREASURY_FEE,
+        CS_MAX_DEPOSITS_PER_BLOCK,
+        CS_MIN_DEPOSIT_BLOCK_DISTANCE,
+        CS_WITHDRAWAL_CREDENTIALS_TYPE,
+      ]);
+    } catch {
+      canAddModule = false;
+      console.log('[cmv2] Skipping addStakingModule in vote: call would revert');
+    }
+
+    if (canAddModule) {
+      items.push(`${itemIdx++}. Add staking module ${CS_MODULE_NAME} with address ${CS_MODULE_ADDRESS}`);
+      const [, addStakingModuleScript] = encodeFromAgent({
+        to: stakingRouterAddress,
+        data: iface.encodeFunctionData('addStakingModule', [
+          CS_MODULE_NAME,
+          CS_MODULE_ADDRESS,
+          [
+            CS_STAKE_SHARE_LIMIT,
+            CS_PRIORITY_EXIT_SHARE_THRESHOLD,
+            CS_STAKING_MODULE_FEE,
+            CS_TREASURY_FEE,
+            CS_MAX_DEPOSITS_PER_BLOCK,
+            CS_MIN_DEPOSIT_BLOCK_DISTANCE,
+            CS_WITHDRAWAL_CREDENTIALS_TYPE,
+          ],
+        ]),
+      });
+      calls.push(addStakingModuleScript);
+    }
   }
 
   if (CS_VETTED_GATE_ADDRESS) {
@@ -336,12 +355,22 @@ export const devnetCMv2Start = async () => {
     calls.push(resumeRoleRevokeScript);
   }
 
-  items.push(`${itemIdx++}. Update initial epoch to ${CS_ORACLE_INITIAL_EPOCH}`);
-  const [, updateInitialEpochScript] = encodeFromAgent({
-    to: CS_ORACLE_HASH_CONSENSUS_ADDRESS,
-    data: iface.encodeFunctionData('updateInitialEpoch', [CS_ORACLE_INITIAL_EPOCH]),
-  });
-  calls.push(updateInitialEpochScript);
+  let canUpdateInitialEpoch = true;
+  try {
+    await hashConsensusContract.updateInitialEpoch.staticCall(CS_ORACLE_INITIAL_EPOCH);
+  } catch {
+    canUpdateInitialEpoch = false;
+    console.log('[cmv2] Skipping updateInitialEpoch: call would revert');
+  }
+
+  if (canUpdateInitialEpoch) {
+    items.push(`${itemIdx++}. Update initial epoch to ${CS_ORACLE_INITIAL_EPOCH}`);
+    const [, updateInitialEpochScript] = encodeFromAgent({
+      to: CS_ORACLE_HASH_CONSENSUS_ADDRESS,
+      data: iface.encodeFunctionData('updateInitialEpoch', [CS_ORACLE_INITIAL_EPOCH]),
+    });
+    calls.push(updateInitialEpochScript);
+  }
 
   const voteEvmScript = encodeCallScript(calls);
   const [newVoteCalldata] = votingNewVote(voteEvmScript, items.join('\n'));
