@@ -25,6 +25,13 @@ const cmv2ModuleAbi = [
     outputs: [],
     stateMutability: 'payable',
   },
+  {
+    type: 'function',
+    name: 'updateDepositableValidatorsCount',
+    inputs: [{ name: 'nodeOperatorId', type: 'uint256' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
 ];
 
 export const cmv2ModuleAddress = getOptionalDeployedAddress('cmv2.module.address');

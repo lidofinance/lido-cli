@@ -161,7 +161,6 @@ export const devnetCMv2Start = async () => {
   }
 
   const hashConsensusAccessControl = new Contract(CS_ORACLE_HASH_CONSENSUS_ADDRESS, accessControlIface, wallet);
-const hashConsensusContract = new Contract(CS_ORACLE_HASH_CONSENSUS_ADDRESS, iface, wallet);
   const hcAdminRole = await hashConsensusAccessControl.DEFAULT_ADMIN_ROLE();
   const hcAdmin = (await hashConsensusAccessControl.getRoleMember(hcAdminRole, 0)).toLowerCase();
   const agentHasHcAdminRole = await hashConsensusAccessControl.hasRole(hcAdminRole, aragonAgentAddress);
@@ -383,22 +382,12 @@ const hashConsensusContract = new Contract(CS_ORACLE_HASH_CONSENSUS_ADDRESS, ifa
     calls.push(resumeRoleRevokeScript);
   }
 
-  let canUpdateInitialEpoch = true;
-  try {
-    await hashConsensusContract.updateInitialEpoch.staticCall(CS_ORACLE_INITIAL_EPOCH);
-  } catch {
-    canUpdateInitialEpoch = false;
-    console.log('[cmv2] Skipping updateInitialEpoch: call would revert');
-  }
-
-  if (canUpdateInitialEpoch) {
-    items.push(`${itemIdx++}. Update initial epoch to ${CS_ORACLE_INITIAL_EPOCH}`);
-    const [, updateInitialEpochScript] = encodeFromAgent({
-      to: CS_ORACLE_HASH_CONSENSUS_ADDRESS,
-      data: iface.encodeFunctionData('updateInitialEpoch', [CS_ORACLE_INITIAL_EPOCH]),
-    });
-    calls.push(updateInitialEpochScript);
-  }
+  items.push(`${itemIdx++}. Update initial epoch to ${CS_ORACLE_INITIAL_EPOCH}`);
+  const [, updateInitialEpochScript] = encodeFromAgent({
+    to: CS_ORACLE_HASH_CONSENSUS_ADDRESS,
+    data: iface.encodeFunctionData('updateInitialEpoch', [CS_ORACLE_INITIAL_EPOCH]),
+  });
+  calls.push(updateInitialEpochScript);
 
   const voteEvmScript = encodeCallScript(calls);
   const [newVoteCalldata] = votingNewVote(voteEvmScript, items.join('\n'));

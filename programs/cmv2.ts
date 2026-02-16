@@ -8,11 +8,13 @@ import {
   cmv2PermissionlessGateAddress,
   cmv2VettedGateContract,
   cmv2VettedGateAddress,
+  stakingRouterContract,
 } from '@contracts';
 import { addAccessControlSubCommands, addLogsCommands, addParsingCommands, addPauseUntilSubCommands } from './common';
 import { encodeFromAgent, votingNewVote } from '@scripts';
 import {
   CallScriptAction,
+  authorizedCall,
   contractCallTxWithConfirm,
   encodeCallScript,
   forwardVoteFromTm,
@@ -23,8 +25,9 @@ import {
   DepositData,
 } from '@utils';
 import { wallet } from '@providers';
-import { Contract, ZeroAddress, id } from 'ethers';
-import { basename, extname } from 'path';
+import { Contract, Interface, ZeroAddress, id } from 'ethers';
+import { existsSync, readFileSync } from 'fs';
+import { basename, extname, resolve } from 'path';
 
 const loadProof = (filePath?: string) => {
   if (!filePath) return [] as string[];
@@ -51,12 +54,21 @@ const metaRegistryAbi = [
   'function createOrUpdateOperatorGroup(uint256,(tuple(uint64 nodeOperatorId,uint16 share)[] subNodeOperators, tuple(bytes data)[] externalOperators))',
 ];
 const accessControlAbi = ['function grantRole(bytes32,address)'];
+const parametersRegistryAbi = [
+  'function MANAGE_ALLOCATION_WEIGHTS_ROLE() view returns (bytes32)',
+  'function defaultDepositAllocationWeight() view returns (uint256)',
+  'function setDefaultDepositAllocationWeight(uint256)',
+  'function hasRole(bytes32,address) view returns (bool)',
+];
 
 const ensureMetaRegistryGroup = async (nodeOperatorId: bigint) => {
   let metaRegistryAddress: string | undefined;
   try {
-    metaRegistryAddress = await new Contract(await cmv2ModuleContract.getAddress(), cmv2ModuleMetaAbi, wallet)
-      .META_REGISTRY();
+    metaRegistryAddress = await new Contract(
+      await cmv2ModuleContract.getAddress(),
+      cmv2ModuleMetaAbi,
+      wallet,
+    ).META_REGISTRY();
   } catch (error) {
     logger.warn('META_REGISTRY() call reverted on CMv2 module; skipping operator group update');
     return;
@@ -82,6 +94,121 @@ const ensureMetaRegistryGroup = async (nodeOperatorId: bigint) => {
   }
 };
 
+const resolveParametersRegistryAddress = (override?: string): string => {
+  if (override && override !== ZeroAddress) return override;
+  if (process.env.CMV2_PARAMETERS_REGISTRY_ADDRESS && process.env.CMV2_PARAMETERS_REGISTRY_ADDRESS !== ZeroAddress) {
+    return process.env.CMV2_PARAMETERS_REGISTRY_ADDRESS;
+  }
+
+  const statePath = resolve(process.cwd(), '../state.json');
+  if (existsSync(statePath)) {
+    const state = JSON.parse(readFileSync(statePath, 'utf8'));
+    const address = state?.cmv2?.ParametersRegistry;
+    if (address && address !== ZeroAddress) return address;
+  }
+
+  const deployPath = resolve(process.cwd(), '../cmv2/artifacts/latest/curated/deploy-local-devnet.json');
+  if (existsSync(deployPath)) {
+    const deployment = JSON.parse(readFileSync(deployPath, 'utf8'));
+    const address = deployment?.ParametersRegistry;
+    if (address && address !== ZeroAddress) return address;
+  }
+
+  throw new Error(
+    'ParametersRegistry address not found. Pass --parameters-registry or set CMV2_PARAMETERS_REGISTRY_ADDRESS',
+  );
+};
+
+const setDefaultDepositAllocationWeight = async (weight: bigint, parametersRegistryAddress: string) => {
+  const parametersRegistry = new Contract(parametersRegistryAddress, parametersRegistryAbi, wallet);
+  const readonlyRunner = wallet.provider ?? wallet;
+  const parametersRegistryReadonly = new Contract(parametersRegistryAddress, parametersRegistryAbi, readonlyRunner);
+  let before: bigint | null = null;
+  try {
+    before = await parametersRegistryReadonly.defaultDepositAllocationWeight();
+  } catch (error) {
+    logger.warn(
+      `defaultDepositAllocationWeight() reverted on ${parametersRegistryAddress}; continuing without pre-check`,
+    );
+  }
+  let role = id('MANAGE_ALLOCATION_WEIGHTS_ROLE');
+  try {
+    role = await parametersRegistryReadonly.MANAGE_ALLOCATION_WEIGHTS_ROLE();
+  } catch (error) {
+    logger.warn(
+      `MANAGE_ALLOCATION_WEIGHTS_ROLE() reverted on ${parametersRegistryAddress}; fallback to keccak role hash`,
+    );
+  }
+  try {
+    const hasRole = await parametersRegistryReadonly.hasRole(role, wallet.address);
+    logger.log('MANAGE_ALLOCATION_WEIGHTS_ROLE for wallet', wallet.address, hasRole);
+  } catch (error) {
+    logger.warn(`hasRole() reverted on ${parametersRegistryAddress}; skipping role read check`);
+  }
+
+  await authorizedCall(parametersRegistry, 'setDefaultDepositAllocationWeight', [weight]);
+  try {
+    const after = await parametersRegistryReadonly.defaultDepositAllocationWeight();
+    if (after !== weight) {
+      throw new Error(
+        `Failed to set defaultDepositAllocationWeight: expected ${weight.toString()}, got ${after.toString()} (before ${before?.toString() ?? 'n/a'})`,
+      );
+    }
+    logger.log(
+      'Default deposit allocation weight set to',
+      weight,
+      'on',
+      parametersRegistryAddress,
+      '(before',
+      before ?? 'n/a',
+      ')',
+    );
+    return;
+  } catch (error) {
+    logger.warn(
+      `defaultDepositAllocationWeight() still reverts on ${parametersRegistryAddress}; set tx was sent without post-check`,
+    );
+  }
+  logger.log('setDefaultDepositAllocationWeight tx submitted on', parametersRegistryAddress, 'value', weight);
+};
+
+const listExistingOperatorIds = async (): Promise<bigint[]> => {
+  const total = await cmv2ModuleContract.getNodeOperatorsCount();
+  const ids: bigint[] = [];
+
+  for (let i = 0n; i < total; i++) {
+    const operator = (await cmv2ModuleContract.getNodeOperator(i)).toObject();
+    if (operator.managerAddress !== ZeroAddress) ids.push(i);
+  }
+
+  return ids;
+};
+
+const updateDepositableValidatorsCount = async (operatorIds: bigint[]) => {
+  if (operatorIds.length === 0) {
+    logger.warn('No existing operators found for updateDepositableValidatorsCount');
+    return;
+  }
+
+  for (const operatorId of operatorIds) {
+    await contractCallTxWithConfirm(cmv2ModuleContract, 'updateDepositableValidatorsCount', [operatorId]);
+    logger.log('Updated depositable validators count for operator', operatorId.toString());
+  }
+};
+
+const resolveCmv2StakingModuleId = async (): Promise<bigint | null> => {
+  const cmv2ModuleAddress = (await cmv2ModuleContract.getAddress()).toLowerCase();
+  const modulesCount = await stakingRouterContract.getStakingModulesCount();
+
+  for (let moduleId = 1n; moduleId <= modulesCount; moduleId++) {
+    const module = await stakingRouterContract.getStakingModule(moduleId);
+    const moduleAddress = module.toObject().stakingModuleAddress.toLowerCase();
+    if (moduleAddress === cmv2ModuleAddress) return moduleId;
+  }
+
+  return null;
+};
+
 const cmv2 = program
   .command('cmv2')
   .aliases(['curated-module-v2'])
@@ -90,6 +217,61 @@ addAccessControlSubCommands(cmv2, cmv2ModuleContract);
 addParsingCommands(cmv2, cmv2ModuleContract);
 addLogsCommands(cmv2, cmv2ModuleContract);
 addPauseUntilSubCommands(cmv2, cmv2ModuleContract);
+
+cmv2
+  .command('set-default-deposit-allocation-weight')
+  .description('sets default deposit allocation weight on CMv2 ParametersRegistry')
+  .argument('[weight]', 'default deposit allocation weight', '1')
+  .option('-p, --parameters-registry <string>', 'parameters registry address override')
+  .action(async (weight, options) => {
+    const parametersRegistryAddress = resolveParametersRegistryAddress(options.parametersRegistry);
+    await setDefaultDepositAllocationWeight(BigInt(weight), parametersRegistryAddress);
+  });
+
+cmv2
+  .command('update-depositable-validators-count')
+  .description('recomputes depositable validators count for CMv2 operators (all existing by default)')
+  .option('-i, --operator-id <number>', 'node operator id override')
+  .action(async (options) => {
+    const operatorIds = options.operatorId != null ? [BigInt(options.operatorId)] : await listExistingOperatorIds();
+    await updateDepositableValidatorsCount(operatorIds);
+  });
+
+cmv2
+  .command('prepare-deposit')
+  .description('sets allocation weight and recomputes depositable validators before staking-router deposit')
+  .option('-w, --weight <number>', 'default deposit allocation weight', '1')
+  .option('-p, --parameters-registry <string>', 'parameters registry address override')
+  .option('--skip-weight', 'skip setDefaultDepositAllocationWeight step', false)
+  .option('-i, --operator-id <number>', 'node operator id override')
+  .option('-m, --module-id <number>', 'staking module id override')
+  .option('--deposit', 'execute staking-router deposit after preparation', false)
+  .action(async (options) => {
+    if (!options.skipWeight) {
+      const parametersRegistryAddress = resolveParametersRegistryAddress(options.parametersRegistry);
+      await setDefaultDepositAllocationWeight(BigInt(options.weight), parametersRegistryAddress);
+    } else {
+      logger.warn('Skipping setDefaultDepositAllocationWeight step (--skip-weight)');
+    }
+
+    const operatorIds = options.operatorId != null ? [BigInt(options.operatorId)] : await listExistingOperatorIds();
+    await updateDepositableValidatorsCount(operatorIds);
+
+    const moduleId = options.moduleId != null ? BigInt(options.moduleId) : await resolveCmv2StakingModuleId();
+    if (moduleId == null) {
+      logger.warn('CMv2 module id not found in StakingRouter. Provide --module-id for deposit');
+      return;
+    }
+
+    logger.log('CMv2 staking module id in StakingRouter', moduleId.toString());
+
+    if (!options.deposit) {
+      logger.log('Next step: ./run.sh sr deposit', moduleId.toString());
+      return;
+    }
+
+    await contractCallTxWithConfirm(stakingRouterContract, 'deposit', [moduleId, '0x']);
+  });
 
 cmv2
   .command('grant-set-tree-role')
@@ -206,6 +388,32 @@ cmv2
 
     const calls: CallScriptAction[] = [grantRoleScript];
     const description = `Grant MANAGE_OPERATOR_GROUPS_ROLE to ${account} on MetaRegistry ${metaRegistryAddress}`;
+    const voteEvmScript = encodeCallScript(calls);
+    const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
+
+    await forwardVoteFromTm(newVoteCalldata);
+  });
+
+cmv2
+  .command('update-initial-epoch-vote')
+  .description('creates a vote to update initial epoch on CMv2 hash consensus')
+  .argument('<epoch>', 'initial epoch')
+  .option('-h, --hash-consensus <string>', 'hash consensus address (defaults to CS_ORACLE_HASH_CONSENSUS_ADDRESS)')
+  .action(async (epoch, options) => {
+    const hashConsensusAddress =
+      options.hashConsensus ?? process.env.CS_ORACLE_HASH_CONSENSUS_ADDRESS;
+    if (!hashConsensusAddress) {
+      throw new Error('Hash consensus address not provided; use --hash-consensus or set CS_ORACLE_HASH_CONSENSUS_ADDRESS');
+    }
+
+    const iface = new Interface(['function updateInitialEpoch(uint256)']);
+    const [, updateInitialEpochScript] = encodeFromAgent({
+      to: hashConsensusAddress,
+      data: iface.encodeFunctionData('updateInitialEpoch', [BigInt(epoch)]),
+    });
+
+    const calls: CallScriptAction[] = [updateInitialEpochScript];
+    const description = `Update initial epoch to ${epoch} on hash consensus ${hashConsensusAddress}`;
     const voteEvmScript = encodeCallScript(calls);
     const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
 
@@ -430,7 +638,7 @@ cmv2
           proof,
         ]);
 
-        await ensureMetaRegistryGroup(operatorId);
+        await ensureMetaRegistryGroup(operatorId as bigint);
       }
 
       if (operatorId === null) {
