@@ -202,17 +202,17 @@ export const devnetCMv2Start = async () => {
 
     if (!hasManageOperatorGroupsRole) {
       if (walletAddress != metaRegistryAdmin) {
-        throw new Error(
-          `Wallet ${walletAddress} is not MetaRegistry admin ${metaRegistryAdmin}. Cannot grant MANAGE_OPERATOR_GROUPS_ROLE.`,
+        console.log(
+          `[cmv2] Wallet ${walletAddress} is not MetaRegistry admin ${metaRegistryAdmin}; skipping direct MANAGE_OPERATOR_GROUPS_ROLE grant and relying on the follow-up vote flow`,
         );
+      } else {
+        await (
+          await metaRegistryAccessControl.grantRole(
+            await getRoleHashByAddress(metaRegistryAddress, 'MANAGE_OPERATOR_GROUPS_ROLE'),
+            CS_META_REGISTRY_ROLE_GRANTEE,
+          )
+        ).wait();
       }
-
-      await (
-        await metaRegistryAccessControl.grantRole(
-          await getRoleHashByAddress(metaRegistryAddress, 'MANAGE_OPERATOR_GROUPS_ROLE'),
-          CS_META_REGISTRY_ROLE_GRANTEE,
-        )
-      ).wait();
     }
   }
 
