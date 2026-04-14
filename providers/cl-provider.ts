@@ -1,7 +1,7 @@
 import { envs } from '@configs';
 import { stringify } from '@utils';
 import fetch, { RequestInit } from 'node-fetch';
-import JSONStream from 'JSONStream';
+import * as JSONStream from 'jsonstream';
 import { Genesis, Fork, SignedBeaconBlock, SignedBeaconBlockHeaderContainer, ValidatorContainer } from './cl-types';
 
 export const fetchCLResponse = async (url: string, init?: RequestInit) => {
@@ -15,6 +15,33 @@ export const fetchCLResponse = async (url: string, init?: RequestInit) => {
 export const fetchCL = async (url: string, init?: RequestInit) => {
   const response = await fetchCLResponse(url, init);
   return (await response.json()) as { data?: unknown };
+};
+
+export const fetchValidators = async (validatorIds: string[], stateId: string | number = 'head') => {
+  const response = await fetchCLResponse(`eth/v1/beacon/states/${stateId}/validators`, {
+    method: 'POST',
+    body: stringify({ ids: validatorIds }),
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  return await new Promise<ValidatorContainer[]>((resolve, reject) => {
+    try {
+      (async () => {
+        const stream = response.body?.pipe(JSONStream.parse('data.*'));
+
+        if (!stream) {
+          throw new Error('Failed to parse response');
+        }
+
+        const validators: ValidatorContainer[] = [];
+        stream.on('data', (validator: ValidatorContainer) => validators.push(validator));
+        stream.on('end', () => resolve(validators));
+        stream.on('error', reject);
+      })();
+    } catch (error) {
+      reject(error);
+    }
+  });
 };
 
 export const fetchAllValidators = async (stateId: string | number = 'head') => {

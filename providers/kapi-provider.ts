@@ -29,8 +29,19 @@ type KeysOptions = {
   nodeOperatorId?: number;
 };
 
-export const fetchAllLidoKeys = async () => {
-  const url = 'v1/keys';
+export const fetchAllLidoKeys = async (keyOptions?: Omit<KeysOptions, 'moduleId'>) => {
+  const queryParams = [];
+
+  if (keyOptions?.nodeOperatorId) {
+    queryParams.push(`operatorIndex=${keyOptions.nodeOperatorId}`);
+  }
+
+  if (keyOptions?.used) {
+    queryParams.push(`used=${keyOptions.used}`);
+  }
+
+  const query = queryParams.join('&');
+  const url = `v1/keys${query ? `?${query}` : ''}`;
   const data = (await fetchKAPI(url)) as KAPIKey[];
 
   return data;
@@ -54,7 +65,7 @@ export const fetchLidoModuleKeys = async (keyOptions: KeysOptions) => {
   return data.keys;
 };
 
-export const fetchLidoModuleOperators = async (moduleId: number) => {
+export const fetchLidoModuleOperators = async (moduleId: number | string) => {
   const url = `v1/modules/${moduleId}/operators`;
   const data = (await fetchKAPI(url)) as { operators: KAPIOperator[] };
 

@@ -11,7 +11,7 @@ const grey = chalk.white.grey;
 
 const consolidationGateway = program
   .command('consolidation-gateway')
-  .aliases(['cg', 'consolidation'])
+  .aliases(['cg'])
   .description('interact with consolidation gateway contract');
 
 // Add common sub-commands

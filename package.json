@@ -31,6 +31,7 @@
     "cli-table3": "^0.6.4",
     "commander": "^13.1.0",
     "ethers": "^6.2.2",
+    "jsonstream": "^1.0.3",
     "node-fetch": "^3.3.2",
     "prompts": "^2.4.2",
     "string-argv": "^0.3.2"
