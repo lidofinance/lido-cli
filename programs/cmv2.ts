@@ -2,6 +2,7 @@ import { program } from '@command';
 import {
   cmv2AccountingContract,
   cmv2ModuleContract,
+  cmv2MetaRegistryContract,
   cmv2CuratedGateContract,
   cmv2CuratedGateAddress,
   cmv2PermissionlessGateContract,
@@ -25,7 +26,7 @@ import {
   DepositData,
 } from '@utils';
 import { wallet } from '@providers';
-import { Contract, Interface, ZeroAddress, id } from 'ethers';
+import { Contract, Interface, ZeroAddress, getBytes, id, solidityPacked } from 'ethers';
 import { existsSync, readFileSync } from 'fs';
 import { basename, extname, resolve } from 'path';
 
@@ -48,51 +49,12 @@ const getMerkleGateContract = () => {
   return null;
 };
 
-const cmv2ModuleMetaAbi = ['function META_REGISTRY() view returns (address)'];
-const metaRegistryAbi = [
-  'function NO_GROUP_ID() view returns (uint256)',
-  'function createOrUpdateOperatorGroup(uint256,(tuple(uint64 nodeOperatorId,uint16 share)[] subNodeOperators, tuple(bytes data)[] externalOperators))',
-];
-const accessControlAbi = ['function grantRole(bytes32,address)'];
 const parametersRegistryAbi = [
   'function MANAGE_ALLOCATION_WEIGHTS_ROLE() view returns (bytes32)',
   'function defaultDepositAllocationWeight() view returns (uint256)',
   'function setDefaultDepositAllocationWeight(uint256)',
   'function hasRole(bytes32,address) view returns (bool)',
 ];
-
-const ensureMetaRegistryGroup = async (nodeOperatorId: bigint) => {
-  let metaRegistryAddress: string | undefined;
-  try {
-    metaRegistryAddress = await new Contract(
-      await cmv2ModuleContract.getAddress(),
-      cmv2ModuleMetaAbi,
-      wallet,
-    ).META_REGISTRY();
-  } catch (error) {
-    logger.warn('META_REGISTRY() call reverted on CMv2 module; skipping operator group update');
-    return;
-  }
-
-  if (!metaRegistryAddress || metaRegistryAddress === ZeroAddress) {
-    logger.warn('MetaRegistry address not found on CMv2 module; skipping operator group update');
-    return;
-  }
-
-  const metaRegistry = new Contract(metaRegistryAddress, metaRegistryAbi, wallet);
-  const groupId = await metaRegistry.NO_GROUP_ID();
-  const subNodeOperators = [{ nodeOperatorId, share: 10000n }];
-
-  try {
-    await contractCallTxWithConfirm(metaRegistry, 'createOrUpdateOperatorGroup', [
-      groupId,
-      { subNodeOperators, externalOperators: [] },
-    ]);
-  } catch (error) {
-    const message = (error as Error)?.message ?? String(error);
-    logger.warn(`MetaRegistry createOrUpdateOperatorGroup reverted; skipping: ${message}`);
-  }
-};
 
 const resolveParametersRegistryAddress = (override?: string): string => {
   if (override && override !== ZeroAddress) return override;
@@ -170,6 +132,77 @@ const setDefaultDepositAllocationWeight = async (weight: bigint, parametersRegis
     );
   }
   logger.log('setDefaultDepositAllocationWeight tx submitted on', parametersRegistryAddress, 'value', weight);
+};
+
+const resolveMetaRegistryContract = async (override?: string): Promise<Contract> => {
+  const metaRegistry = override
+    ? new Contract(override, cmv2MetaRegistryContract.interface, wallet)
+    : cmv2MetaRegistryContract;
+  const metaRegistryAddress = await metaRegistry.getAddress();
+  if (!metaRegistryAddress || metaRegistryAddress === ZeroAddress) {
+    throw new Error('MetaRegistry address not found on CMv2 module');
+  }
+  return metaRegistry;
+};
+
+const EXTERNAL_OPERATOR_TYPE_NOR = 0n;
+
+const parseUInt = (rawValue: string): bigint => BigInt(rawValue);
+
+const parsePair = (entry: string): [string, string] => {
+  const [left = '', right = ''] = entry.split(',').map((item: string) => item.trim());
+  return [left, right];
+};
+
+const toSubNodeOperators = (entries: string[]): { nodeOperatorId: bigint; share: bigint }[] => {
+  return entries.map((entry) => {
+    const [nodeOperatorIdRaw, shareRaw] = parsePair(entry);
+    const nodeOperatorId = parseUInt(nodeOperatorIdRaw);
+    const share = parseUInt(shareRaw);
+
+    return { nodeOperatorId, share };
+  });
+};
+
+const toExternalOperators = (entries: string[]): { data: string }[] => {
+  return entries.map((entry) => {
+    const [moduleIdRaw, nodeOperatorIdRaw] = parsePair(entry);
+    const moduleId = parseUInt(moduleIdRaw);
+    const nodeOperatorId = parseUInt(nodeOperatorIdRaw);
+
+    const data = solidityPacked(['uint8', 'uint8', 'uint64'], [EXTERNAL_OPERATOR_TYPE_NOR, moduleId, nodeOperatorId]);
+
+    return { data };
+  });
+};
+
+const parseExternalOperatorData = (data: string) => {
+  try {
+    const bytes = getBytes(data);
+    if (bytes.length !== 10) {
+      return { type: 'UNKNOWN', data };
+    }
+
+    const type = bytes[0];
+    if (type !== Number(EXTERNAL_OPERATOR_TYPE_NOR)) {
+      return { type: `UNKNOWN(${type})`, data };
+    }
+
+    const moduleId = bytes[1];
+    let nodeOperatorId = 0n;
+    for (let i = 2; i < 10; i++) {
+      nodeOperatorId = (nodeOperatorId << 8n) + BigInt(bytes[i]);
+    }
+
+    return {
+      type: 'NOR',
+      moduleId: moduleId.toString(),
+      nodeOperatorId: nodeOperatorId.toString(),
+      data,
+    };
+  } catch {
+    return { type: 'UNKNOWN', data };
+  }
 };
 
 const listExistingOperatorIds = async (): Promise<bigint[]> => {
@@ -351,15 +384,9 @@ cmv2
   .option('-m, --meta-registry <string>', 'meta registry address override')
   .action(async (accountArg, options) => {
     const account = options.account ?? accountArg ?? wallet.address;
-    const metaRegistryAddress =
-      options.metaRegistry ??
-      (await new Contract(await cmv2ModuleContract.getAddress(), cmv2ModuleMetaAbi, wallet).META_REGISTRY());
-    if (!metaRegistryAddress || metaRegistryAddress === ZeroAddress) {
-      throw new Error('MetaRegistry address not found on CMv2 module');
-    }
-
+    const metaRegistry = await resolveMetaRegistryContract(options.metaRegistry);
+    const metaRegistryAddress = await metaRegistry.getAddress();
     const role = id('MANAGE_OPERATOR_GROUPS_ROLE');
-    const metaRegistry = new Contract(metaRegistryAddress, accessControlAbi, wallet);
     await contractCallTxWithConfirm(metaRegistry, 'grantRole', [role, account]);
     logger.log('Granted MANAGE_OPERATOR_GROUPS_ROLE to', account, 'on', metaRegistryAddress);
   });
@@ -372,18 +399,12 @@ cmv2
   .option('-m, --meta-registry <string>', 'meta registry address override')
   .action(async (accountArg, options) => {
     const account = options.account ?? accountArg ?? wallet.address;
-    const metaRegistryAddress =
-      options.metaRegistry ??
-      (await new Contract(await cmv2ModuleContract.getAddress(), cmv2ModuleMetaAbi, wallet).META_REGISTRY());
-    if (!metaRegistryAddress || metaRegistryAddress === ZeroAddress) {
-      throw new Error('MetaRegistry address not found on CMv2 module');
-    }
-
+    const metaRegistry = await resolveMetaRegistryContract(options.metaRegistry);
+    const metaRegistryAddress = await metaRegistry.getAddress();
     const role = id('MANAGE_OPERATOR_GROUPS_ROLE');
-    const iface = new Contract(metaRegistryAddress, accessControlAbi, wallet).interface;
     const [, grantRoleScript] = encodeFromAgent({
       to: metaRegistryAddress,
-      data: iface.encodeFunctionData('grantRole', [role, account]),
+      data: metaRegistry.interface.encodeFunctionData('grantRole', [role, account]),
     });
 
     const calls: CallScriptAction[] = [grantRoleScript];
@@ -400,10 +421,11 @@ cmv2
   .argument('<epoch>', 'initial epoch')
   .option('-h, --hash-consensus <string>', 'hash consensus address (defaults to CS_ORACLE_HASH_CONSENSUS_ADDRESS)')
   .action(async (epoch, options) => {
-    const hashConsensusAddress =
-      options.hashConsensus ?? process.env.CS_ORACLE_HASH_CONSENSUS_ADDRESS;
+    const hashConsensusAddress = options.hashConsensus ?? process.env.CS_ORACLE_HASH_CONSENSUS_ADDRESS;
     if (!hashConsensusAddress) {
-      throw new Error('Hash consensus address not provided; use --hash-consensus or set CS_ORACLE_HASH_CONSENSUS_ADDRESS');
+      throw new Error(
+        'Hash consensus address not provided; use --hash-consensus or set CS_ORACLE_HASH_CONSENSUS_ADDRESS',
+      );
     }
 
     const iface = new Interface(['function updateInitialEpoch(uint256)']);
@@ -422,27 +444,82 @@ cmv2
 
 cmv2
   .command('update-operator-group')
-  .description('creates or updates MetaRegistry group for a CMv2 operator')
-  .argument('<operator-id>', 'node operator id')
+  .description('creates or updates MetaRegistry group')
+  .requiredOption('--subs <entries...>', 'sub operators as nodeOperatorId,share (e.g. 12,7000 14,3000)')
+  .option('--external <entries...>', 'external operators as moduleId,nodeOperatorId (e.g. 1,11 2,13)')
+  .option('-g, --group-id <number>', 'operator group id to update (defaults to NO_GROUP_ID/create)')
   .option('-m, --meta-registry <string>', 'meta registry address override')
-  .action(async (operatorId, options) => {
-    const nodeOperatorId = BigInt(operatorId);
-    const metaRegistryAddress =
-      options.metaRegistry ??
-      (await new Contract(await cmv2ModuleContract.getAddress(), cmv2ModuleMetaAbi, wallet).META_REGISTRY());
-    if (!metaRegistryAddress || metaRegistryAddress === ZeroAddress) {
-      throw new Error('MetaRegistry address not found on CMv2 module');
-    }
+  .action(async (options) => {
+    const subNodeOperators = toSubNodeOperators(options.subs);
+    const externalOperators = toExternalOperators(options.external ?? []);
 
-    const metaRegistry = new Contract(metaRegistryAddress, metaRegistryAbi, wallet);
-    const groupId = await metaRegistry.NO_GROUP_ID();
-    const subNodeOperators = [{ nodeOperatorId, share: 10000n }];
+    const metaRegistry = await resolveMetaRegistryContract(options.metaRegistry);
+    const groupId = options.groupId != null ? parseUInt(options.groupId) : await metaRegistry.NO_GROUP_ID();
 
     await contractCallTxWithConfirm(metaRegistry, 'createOrUpdateOperatorGroup', [
       groupId,
-      { subNodeOperators, externalOperators: [] },
+      { subNodeOperators, externalOperators },
     ]);
-    logger.log('MetaRegistry group updated for operator', operatorId, 'on', metaRegistryAddress);
+  });
+
+cmv2
+  .command('operator-groups')
+  .description('lists configured MetaRegistry operator groups')
+  .option('-g, --group-id <number>', 'single group id to show')
+  .option('-m, --meta-registry <string>', 'meta registry address override')
+  .action(async (options) => {
+    const metaRegistry = await resolveMetaRegistryContract(options.metaRegistry);
+    const metaRegistryAddress = await metaRegistry.getAddress();
+
+    if (options.groupId != null) {
+      const groupId = parseUInt(options.groupId);
+      const group = (await metaRegistry.getOperatorGroup(groupId)).toObject() as {
+        subNodeOperators: { nodeOperatorId: bigint; share: bigint }[];
+        externalOperators: { data: string }[];
+      };
+
+      logger.log('MetaRegistry group', {
+        metaRegistryAddress,
+        groupId: groupId.toString(),
+        subNodeOperators: group.subNodeOperators.map(({ nodeOperatorId, share }) => ({
+          nodeOperatorId: nodeOperatorId.toString(),
+          share: share.toString(),
+        })),
+        externalOperators: group.externalOperators.map(({ data }) => parseExternalOperatorData(data)),
+      });
+      return;
+    }
+
+    const noGroupId = await metaRegistry.NO_GROUP_ID();
+    const groupsCount = await metaRegistry.getOperatorGroupsCount();
+    const groups: {
+      groupId: string;
+      subNodeOperators: { nodeOperatorId: string; share: string }[];
+      externalOperators: ReturnType<typeof parseExternalOperatorData>[];
+    }[] = [];
+
+    for (let groupId = noGroupId + 1n; groupId < groupsCount; groupId++) {
+      const group = (await metaRegistry.getOperatorGroup(groupId)).toObject() as {
+        subNodeOperators: { nodeOperatorId: bigint; share: bigint }[];
+        externalOperators: { data: string }[];
+      };
+
+      groups.push({
+        groupId: groupId.toString(),
+        subNodeOperators: group.subNodeOperators.map(({ nodeOperatorId, share }) => ({
+          nodeOperatorId: nodeOperatorId.toString(),
+          share: share.toString(),
+        })),
+        externalOperators: group.externalOperators.map(({ data }) => parseExternalOperatorData(data)),
+      });
+    }
+
+    if (groups.length === 0) {
+      logger.log('No configured MetaRegistry groups on', metaRegistryAddress);
+      return;
+    }
+
+    logger.log('Configured MetaRegistry groups on', metaRegistryAddress, groups);
   });
 
 cmv2
@@ -517,7 +594,6 @@ cmv2
     const value = await cmv2AccountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
 
     const proof = loadProof(proofFile);
-    const beforeCount = await cmv2ModuleContract.getNodeOperatorsCount();
 
     if (cmv2CuratedGateAddress !== ZeroAddress) {
       const operatorName = name ?? `cmv2-${wallet.address.slice(0, 6)}`;
@@ -535,8 +611,6 @@ cmv2
         rewardAddress,
         proof,
       ]);
-
-      await ensureMetaRegistryGroup(predictedId);
 
       const bondValue = await cmv2AccountingContract.getRequiredBondForNextKeys(predictedId, keysCount);
       await contractCallTxWithConfirm(cmv2ModuleContract, 'addValidatorKeysETH(address,uint256,uint256,bytes,bytes)', [
@@ -571,13 +645,6 @@ cmv2
       ]);
     } else {
       throw new Error('cmv2 gate address not configured (no vettedGate or permissionlessGate)');
-    }
-
-    const afterCount = await cmv2ModuleContract.getNodeOperatorsCount();
-    if (afterCount > beforeCount) {
-      await ensureMetaRegistryGroup(afterCount - 1n);
-    } else {
-      logger.warn('Node operators count did not increase; skipping MetaRegistry group update');
     }
   });
 
@@ -617,7 +684,6 @@ cmv2
     const signatures = joinHex(depositData.map(({ signature }) => signature));
 
     const proof = loadProof(proofFile);
-    const beforeCount = await cmv2ModuleContract.getNodeOperatorsCount();
 
     if (cmv2CuratedGateAddress !== ZeroAddress) {
       let operatorId: bigint | null = operatorIdOption ? BigInt(operatorIdOption) : null;
@@ -637,8 +703,6 @@ cmv2
           rewardAddress,
           proof,
         ]);
-
-        await ensureMetaRegistryGroup(operatorId as bigint);
       }
 
       if (operatorId === null) {
@@ -678,13 +742,6 @@ cmv2
       ]);
     } else {
       throw new Error('cmv2 gate address not configured (no vettedGate or permissionlessGate)');
-    }
-
-    const afterCount = await cmv2ModuleContract.getNodeOperatorsCount();
-    if (afterCount > beforeCount) {
-      await ensureMetaRegistryGroup(afterCount - 1n);
-    } else {
-      logger.warn('Node operators count did not increase; skipping MetaRegistry group update');
     }
   });
 
