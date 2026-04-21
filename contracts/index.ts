@@ -3,6 +3,7 @@ export * from './apm-registry';
 export * from './app-proxy';
 export * from './aragon';
 export * from './burner';
+export * from './consolidation-bus';
 export * from './consolidation-gateway';
 export * from './consolidation-migrator';
 export * from './csm';

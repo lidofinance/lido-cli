@@ -5,6 +5,7 @@ export * from './allowed-list';
 export * from './aragon';
 export * from './burner';
 export * from './consolidation';
+export * from './consolidation-bus';
 export * from './consolidation-gateway';
 export * from './consolidation-migrator';
 export * from './csm-consensus';

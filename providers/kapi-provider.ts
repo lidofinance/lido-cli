@@ -79,6 +79,13 @@ export const fetchLidoModuleOperator = async (moduleId: number, nodeOperatorId: 
   return data.operator;
 };
 
+export const fetchLidoModules = async () => {
+  const url = `v1/modules`;
+  const data = (await fetchKAPI(url)) as any[];
+
+  return data;
+};
+
 export const fetchKAPI = async (endpoint: string, options: RequestInit = {}) => {
   if (!envs?.KEYS_API_PROVIDER) {
     throw new Error('KEYS_API_PROVIDER is not defined');

@@ -4,6 +4,7 @@ import { getNodeOperators } from './operators';
 import { logger } from '@utils';
 import Table from 'cli-table3';
 import chalk from 'chalk';
+import { fetchLidoModules } from '@providers';
 
 export type StakingModule = {
   id: number;
@@ -19,6 +20,7 @@ export type StakingModule = {
   priorityExitShareThreshold: number;
   maxDepositsPerBlock: number;
   minDepositBlockDistance: number;
+  withdrawalCredentialsType: number;
 };
 
 const ok = chalk.green.bold;
@@ -40,12 +42,26 @@ export const formatStakingModuleObject = (module: Record<string, bigint | string
     priorityExitShareThreshold: Number(module.priorityExitShareThreshold),
     maxDepositsPerBlock: Number(module.maxDepositsPerBlock),
     minDepositBlockDistance: Number(module.minDepositBlockDistance),
+    withdrawalCredentialsType: Number(module.withdrawalCredentialsType),
   };
 };
 
 export const getStakingModules = async (): Promise<StakingModule[]> => {
-  const modules: Result[] = await stakingRouterContract.getStakingModules();
-  return modules.map((module) => formatStakingModuleObject(module));
+  const [contractModules, kapiModules] = await Promise.all([
+    stakingRouterContract.getStakingModules() as Promise<Result[]>,
+    fetchLidoModules() as Promise<any[]>,
+  ]);
+
+  const stakingModules = contractModules.map((module) => {
+    const formatted = formatStakingModuleObject(module);
+    const kapiModule = kapiModules?.find((m) => m.id === formatted.id);
+    if (kapiModule) {
+      formatted.withdrawalCredentialsType = Number(kapiModule.withdrawalCredentialsType);
+    }
+    return formatted;
+  });
+
+  return stakingModules;
 };
 
 export const getNodeOperatorDigests = async (moduleId: number, operatorIds: number[], batchLimit = 100) => {
