@@ -154,6 +154,54 @@ export const addVettedNodeOperatorETHFromFile = async (
   });
 };
 
+export const addVettedNodeOperatorStETH = async ({
+  accountingContract,
+  vettedGateContract,
+  keysCount,
+  publicKeys,
+  signatures,
+  managerAddress,
+  rewardAddress,
+  extendedManagerPermissions,
+  referrer,
+  proof,
+}: VettedEntryOptions) => {
+  const curveId = await vettedGateContract.curveId();
+  const value = await accountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
+  const permit = await buildPermit(
+    await accountingContract.LIDO(),
+    await accountingContract.getAddress(),
+    value + PERMIT_VALUE_BUFFER,
+    STETH_PERMIT_DOMAIN_VERSION,
+  );
+
+  await contractCallTxWithConfirm(vettedGateContract, 'addNodeOperatorStETH', [
+    keysCount,
+    publicKeys,
+    signatures,
+    [managerAddress, rewardAddress, !!extendedManagerPermissions],
+    permit,
+    proof,
+    referrer,
+  ]);
+};
+
+export const addVettedNodeOperatorStETHFromFile = async (
+  filePath: string,
+  options: Omit<VettedEntryOptions, 'keysCount' | 'publicKeys' | 'signatures'>,
+) => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const depositData: DepositData[] = require(filePath);
+  await supplementAndVerifyDepositDataArray(depositData);
+
+  await addVettedNodeOperatorStETH({
+    ...options,
+    keysCount: depositData.length,
+    publicKeys: joinHex(depositData.map(({ pubkey }) => pubkey)),
+    signatures: joinHex(depositData.map(({ signature }) => signature)),
+  });
+};
+
 export const addPermissionlessNodeOperatorStETH = async ({
   accountingContract,
   permissionlessGateContract,

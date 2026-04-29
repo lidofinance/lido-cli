@@ -14,6 +14,8 @@ import {
   addPermissionlessNodeOperatorWstETHFromFile,
   addVettedNodeOperatorETH,
   addVettedNodeOperatorETHFromFile,
+  addVettedNodeOperatorStETH,
+  addVettedNodeOperatorStETHFromFile,
   loadProof,
 } from './common';
 import {
@@ -131,6 +133,45 @@ csm
   });
 
 csm
+  .command('add-operator-vetted-steth')
+  .description('adds node operator through vetted gate using stETH bond')
+  .option('-k, --keys-count <number>', 'keys count', '1')
+  .option('-p, --public-keys <string>', 'public keys')
+  .option('-s, --signatures <string>', 'signatures')
+  .option('-m, --manager-address <string>', 'manager address', wallet.address)
+  .option('-a, --reward-address <string>', 'reward address', wallet.address)
+  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
+  .option('-r, --referrer <string>', 'referrer', ZeroAddress)
+  .option('-f, --proof-file <string>', 'merkle proof JSON array file, e.g. ["0x..."]')
+  .requiredOption('-g, --gate <address>', 'vetted gate address')
+  .action(async (options) => {
+    const {
+      keysCount,
+      publicKeys,
+      signatures,
+      managerAddress,
+      rewardAddress,
+      extendedManagerPermissions,
+      referrer,
+      proofFile,
+      gate,
+    } = options;
+
+    await addVettedNodeOperatorStETH({
+      accountingContract: csAccountingContract,
+      vettedGateContract: getVettedGateContract(gate),
+      keysCount,
+      publicKeys,
+      signatures,
+      managerAddress,
+      rewardAddress,
+      extendedManagerPermissions,
+      referrer,
+      proof: loadProof(proofFile),
+    });
+  });
+
+csm
   .command('add-operator-steth')
   .description('adds node operator using stETH bond')
   .option('-k, --keys-count <number>', 'keys count', '1')
@@ -198,6 +239,30 @@ csm
     const { managerAddress, rewardAddress, extendedManagerPermissions, referrer, proofFile, gate } = options;
 
     await addVettedNodeOperatorETHFromFile(filePath, {
+      accountingContract: csAccountingContract,
+      vettedGateContract: getVettedGateContract(gate),
+      managerAddress,
+      rewardAddress,
+      extendedManagerPermissions,
+      referrer,
+      proof: loadProof(proofFile),
+    });
+  });
+
+csm
+  .command('add-operator-with-keys-from-file-vetted-steth')
+  .description('adds node operator with keys from file through vetted gate using stETH bond')
+  .argument('<file-path>', 'file path')
+  .option('-m, --manager-address <string>', 'manager address', wallet.address)
+  .option('-a, --reward-address <string>', 'reward address', wallet.address)
+  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
+  .option('-r, --referrer <string>', 'referrer', ZeroAddress)
+  .option('-f, --proof-file <string>', 'merkle proof JSON array file, e.g. ["0x..."]')
+  .requiredOption('-g, --gate <address>', 'vetted gate address')
+  .action(async (filePath, options) => {
+    const { managerAddress, rewardAddress, extendedManagerPermissions, referrer, proofFile, gate } = options;
+
+    await addVettedNodeOperatorStETHFromFile(filePath, {
       accountingContract: csAccountingContract,
       vettedGateContract: getVettedGateContract(gate),
       managerAddress,
