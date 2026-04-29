@@ -9,6 +9,8 @@ import {
   addPermissionlessNodeOperatorETHFromFile,
   addPermissionlessNodeOperatorStETH,
   addPermissionlessNodeOperatorStETHFromFile,
+  addPermissionlessNodeOperatorWstETH,
+  addPermissionlessNodeOperatorWstETHFromFile,
 } from './common';
 import {
   contractCallTxWithConfirm,
@@ -111,6 +113,33 @@ csm
   });
 
 csm
+  .command('add-operator-wsteth')
+  .description('adds node operator using wstETH bond')
+  .option('-k, --keys-count <number>', 'keys count', '1')
+  .option('-p, --public-keys <string>', 'public keys')
+  .option('-s, --signatures <string>', 'signatures')
+  .option('-m, --manager-address <string>', 'manager address', wallet.address)
+  .option('-a, --reward-address <string>', 'reward address', wallet.address)
+  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
+  .option('-r, --referrer <string>', 'referrer', ZeroAddress)
+  .action(async (options) => {
+    const { keysCount, publicKeys, signatures, managerAddress, rewardAddress, extendedManagerPermissions, referrer } =
+      options;
+
+    await addPermissionlessNodeOperatorWstETH({
+      accountingContract: csAccountingContract,
+      permissionlessGateContract,
+      keysCount,
+      publicKeys,
+      signatures,
+      managerAddress,
+      rewardAddress,
+      extendedManagerPermissions,
+      referrer,
+    });
+  });
+
+csm
   .command('add-operator-with-keys-from-file')
   .description('adds node operator with keys from file')
   .argument('<file-path>', 'file path')
@@ -143,6 +172,27 @@ csm
     const { managerAddress, rewardAddress, extendedManagerPermissions, referrer } = options;
 
     await addPermissionlessNodeOperatorStETHFromFile(filePath, {
+      accountingContract: csAccountingContract,
+      permissionlessGateContract,
+      managerAddress,
+      rewardAddress,
+      extendedManagerPermissions,
+      referrer,
+    });
+  });
+
+csm
+  .command('add-operator-with-keys-from-file-wsteth')
+  .description('adds node operator with keys from file using wstETH bond')
+  .argument('<file-path>', 'file path')
+  .option('-m, --manager-address <string>', 'manager address', wallet.address)
+  .option('-a, --reward-address <string>', 'reward address', wallet.address)
+  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
+  .option('-r, --referrer <string>', 'referrer', ZeroAddress)
+  .action(async (filePath, options) => {
+    const { managerAddress, rewardAddress, extendedManagerPermissions, referrer } = options;
+
+    await addPermissionlessNodeOperatorWstETHFromFile(filePath, {
       accountingContract: csAccountingContract,
       permissionlessGateContract,
       managerAddress,

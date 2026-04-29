@@ -1,4 +1,4 @@
-import { Contract, Signature } from 'ethers';
+import { Contract, Signature, TypedDataEncoder } from 'ethers';
 import { wallet } from '@providers';
 import { DepositData, contractCallTxWithConfirm, joinHex, supplementAndVerifyDepositDataArray } from '@utils';
 import permitAbi from 'abi/StETHPermit.json';
@@ -17,20 +17,30 @@ type PermissionlessEntryOptions = {
 
 const PERMIT_VALUE_BUFFER = 10n;
 const PERMIT_DEADLINE = 2n ** 256n - 1n;
+const STETH_PERMIT_DOMAIN_VERSION = '2';
+const WSTETH_PERMIT_DOMAIN_VERSION = '1';
 
-const buildPermit = async (tokenAddress: string, spender: string, value: bigint) => {
+const buildPermit = async (tokenAddress: string, spender: string, value: bigint, version: string) => {
   const token = new Contract(tokenAddress, permitAbi, wallet);
-  const [name, nonce, network] = await Promise.all([
+  const [name, nonce, domainSeparator, network] = await Promise.all([
     token.name(),
     token.nonces(wallet.address),
+    token.DOMAIN_SEPARATOR(),
     wallet.provider?.getNetwork(),
   ]);
 
   if (!network) throw new Error('No provider available for permit signing');
 
+  const domain = { name, version, chainId: network.chainId, verifyingContract: tokenAddress };
+  if (TypedDataEncoder.hashDomain(domain).toLowerCase() !== domainSeparator.toLowerCase()) {
+    throw new Error(
+      `EIP-712 domain separator mismatch for ${name}. Update the permit domain version in staking-modules.ts`,
+    );
+  }
+
   const signature = Signature.from(
     await wallet.signTypedData(
-      { name, version: '2', chainId: network.chainId, verifyingContract: tokenAddress },
+      domain,
       {
         Permit: [
           { name: 'owner', type: 'address' },
@@ -104,6 +114,7 @@ export const addPermissionlessNodeOperatorStETH = async ({
     await accountingContract.LIDO(),
     await accountingContract.getAddress(),
     value + PERMIT_VALUE_BUFFER,
+    STETH_PERMIT_DOMAIN_VERSION,
   );
 
   await contractCallTxWithConfirm(permissionlessGateContract, 'addNodeOperatorStETH', [
@@ -125,6 +136,52 @@ export const addPermissionlessNodeOperatorStETHFromFile = async (
   await supplementAndVerifyDepositDataArray(depositData);
 
   await addPermissionlessNodeOperatorStETH({
+    ...options,
+    keysCount: depositData.length,
+    publicKeys: joinHex(depositData.map(({ pubkey }) => pubkey)),
+    signatures: joinHex(depositData.map(({ signature }) => signature)),
+  });
+};
+
+export const addPermissionlessNodeOperatorWstETH = async ({
+  accountingContract,
+  permissionlessGateContract,
+  keysCount,
+  publicKeys,
+  signatures,
+  managerAddress,
+  rewardAddress,
+  extendedManagerPermissions,
+  referrer,
+}: PermissionlessEntryOptions) => {
+  const curveId = await accountingContract.DEFAULT_BOND_CURVE_ID();
+  const value = await accountingContract['getBondAmountByKeysCountWstETH(uint256,uint256)'](keysCount, curveId);
+  const permit = await buildPermit(
+    await accountingContract.WSTETH(),
+    await accountingContract.getAddress(),
+    value + PERMIT_VALUE_BUFFER,
+    WSTETH_PERMIT_DOMAIN_VERSION,
+  );
+
+  await contractCallTxWithConfirm(permissionlessGateContract, 'addNodeOperatorWstETH', [
+    keysCount,
+    publicKeys,
+    signatures,
+    [managerAddress, rewardAddress, !!extendedManagerPermissions],
+    permit,
+    referrer,
+  ]);
+};
+
+export const addPermissionlessNodeOperatorWstETHFromFile = async (
+  filePath: string,
+  options: Omit<PermissionlessEntryOptions, 'keysCount' | 'publicKeys' | 'signatures'>,
+) => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const depositData: DepositData[] = require(filePath);
+  await supplementAndVerifyDepositDataArray(depositData);
+
+  await addPermissionlessNodeOperatorWstETH({
     ...options,
     keysCount: depositData.length,
     publicKeys: joinHex(depositData.map(({ pubkey }) => pubkey)),
