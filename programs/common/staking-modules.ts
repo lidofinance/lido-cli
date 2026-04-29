@@ -15,6 +15,11 @@ type PermissionlessEntryOptions = {
   referrer: string;
 };
 
+type VettedEntryOptions = Omit<PermissionlessEntryOptions, 'permissionlessGateContract'> & {
+  vettedGateContract: Contract;
+  proof: string[];
+};
+
 const PERMIT_VALUE_BUFFER = 10n;
 const PERMIT_DEADLINE = 2n ** 256n - 1n;
 const STETH_PERMIT_DOMAIN_VERSION = '2';
@@ -57,6 +62,16 @@ const buildPermit = async (tokenAddress: string, spender: string, value: bigint,
   return [value, PERMIT_DEADLINE, signature.v, signature.r, signature.s] as const;
 };
 
+export const loadProof = (filePath?: string) => {
+  if (!filePath) return [] as string[];
+
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const data = require(filePath);
+  if (Array.isArray(data)) return data as string[];
+
+  throw new Error('Proof file must contain a JSON array of bytes32 proof values, e.g. ["0x..."]');
+};
+
 export const addPermissionlessNodeOperatorETH = async ({
   accountingContract,
   permissionlessGateContract,
@@ -90,6 +105,48 @@ export const addPermissionlessNodeOperatorETHFromFile = async (
   await supplementAndVerifyDepositDataArray(depositData);
 
   await addPermissionlessNodeOperatorETH({
+    ...options,
+    keysCount: depositData.length,
+    publicKeys: joinHex(depositData.map(({ pubkey }) => pubkey)),
+    signatures: joinHex(depositData.map(({ signature }) => signature)),
+  });
+};
+
+export const addVettedNodeOperatorETH = async ({
+  accountingContract,
+  vettedGateContract,
+  keysCount,
+  publicKeys,
+  signatures,
+  managerAddress,
+  rewardAddress,
+  extendedManagerPermissions,
+  referrer,
+  proof,
+}: VettedEntryOptions) => {
+  const curveId = await vettedGateContract.curveId();
+  const value = await accountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
+
+  await contractCallTxWithConfirm(vettedGateContract, 'addNodeOperatorETH', [
+    keysCount,
+    publicKeys,
+    signatures,
+    [managerAddress, rewardAddress, !!extendedManagerPermissions],
+    proof,
+    referrer,
+    { value },
+  ]);
+};
+
+export const addVettedNodeOperatorETHFromFile = async (
+  filePath: string,
+  options: Omit<VettedEntryOptions, 'keysCount' | 'publicKeys' | 'signatures'>,
+) => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const depositData: DepositData[] = require(filePath);
+  await supplementAndVerifyDepositDataArray(depositData);
+
+  await addVettedNodeOperatorETH({
     ...options,
     keysCount: depositData.length,
     publicKeys: joinHex(depositData.map(({ pubkey }) => pubkey)),
