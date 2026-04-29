@@ -3,9 +3,8 @@ import { wallet } from '@providers';
 import { DepositData, contractCallTxWithConfirm, joinHex, supplementAndVerifyDepositDataArray } from '@utils';
 import permitAbi from 'abi/StETHPermit.json';
 
-type PermissionlessEntryOptions = {
+type GateEntryOptions = {
   accountingContract: Contract;
-  permissionlessGateContract: Contract;
   keysCount: string | number | bigint;
   publicKeys: string;
   signatures: string;
@@ -15,7 +14,11 @@ type PermissionlessEntryOptions = {
   referrer: string;
 };
 
-type VettedEntryOptions = Omit<PermissionlessEntryOptions, 'permissionlessGateContract'> & {
+type PermissionlessEntryOptions = GateEntryOptions & {
+  permissionlessGateContract: Contract;
+};
+
+type VettedEntryOptions = GateEntryOptions & {
   vettedGateContract: Contract;
   proof: string[];
 };
