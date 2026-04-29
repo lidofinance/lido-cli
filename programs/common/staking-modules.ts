@@ -253,6 +253,14 @@ export const addVettedNodeOperatorWstETHFromFile = async (
   });
 };
 
+export const claimVettedBondCurve = async (
+  vettedGateContract: Contract,
+  nodeOperatorId: string | number | bigint,
+  proof: string[],
+) => {
+  await contractCallTxWithConfirm(vettedGateContract, 'claimBondCurve', [nodeOperatorId, proof]);
+};
+
 export const addPermissionlessNodeOperatorStETH = async ({
   accountingContract,
   permissionlessGateContract,

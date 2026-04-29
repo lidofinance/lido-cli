@@ -18,6 +18,7 @@ import {
   addVettedNodeOperatorStETHFromFile,
   addVettedNodeOperatorWstETH,
   addVettedNodeOperatorWstETHFromFile,
+  claimVettedBondCurve,
   loadProof,
 } from './common';
 import {
@@ -171,6 +172,18 @@ csm
       referrer,
       proof: loadProof(proofFile),
     });
+  });
+
+csm
+  .command('claim-vetted-bond-curve')
+  .description('claims vetted gate bond curve for an existing node operator')
+  .argument('<operator-id>', 'node operator id')
+  .option('-f, --proof-file <string>', 'merkle proof JSON array file, e.g. ["0x..."]')
+  .requiredOption('-g, --gate <address>', 'vetted gate address')
+  .action(async (operatorId, options) => {
+    const { proofFile, gate } = options;
+
+    await claimVettedBondCurve(getVettedGateContract(gate), operatorId, loadProof(proofFile));
   });
 
 csm
