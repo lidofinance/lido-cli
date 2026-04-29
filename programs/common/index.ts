@@ -7,3 +7,4 @@ export * from './logs';
 export * from './parsing';
 export * from './pause-until';
 export * from './proxy';
+export * from './staking-modules';

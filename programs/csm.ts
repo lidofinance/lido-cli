@@ -1,6 +1,13 @@
 import { program } from '@command';
 import { csAccountingContract, csModuleContract, permissionlessGateContract } from '@contracts';
-import { addAccessControlSubCommands, addLogsCommands, addParsingCommands, addPauseUntilSubCommands } from './common';
+import {
+  addAccessControlSubCommands,
+  addLogsCommands,
+  addParsingCommands,
+  addPauseUntilSubCommands,
+  addPermissionlessNodeOperatorETH,
+  addPermissionlessNodeOperatorETHFromFile,
+} from './common';
 import {
   contractCallTxWithConfirm,
   joinHex,
@@ -61,17 +68,17 @@ csm
     const { keysCount, publicKeys, signatures, managerAddress, rewardAddress, extendedManagerPermissions, referrer } =
       options;
 
-    const curveId = await csAccountingContract.DEFAULT_BOND_CURVE_ID();
-    const value = await csAccountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
-
-    await contractCallTxWithConfirm(permissionlessGateContract, 'addNodeOperatorETH', [
+    await addPermissionlessNodeOperatorETH({
+      accountingContract: csAccountingContract,
+      permissionlessGateContract,
       keysCount,
       publicKeys,
       signatures,
-      [managerAddress, rewardAddress, !!extendedManagerPermissions],
+      managerAddress,
+      rewardAddress,
+      extendedManagerPermissions,
       referrer,
-      { value },
-    ]);
+    });
   });
 
 csm
@@ -85,25 +92,14 @@ csm
   .action(async (filePath, options) => {
     const { managerAddress, rewardAddress, extendedManagerPermissions, referrer } = options;
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const depositData: DepositData[] = require(filePath);
-    await supplementAndVerifyDepositDataArray(depositData);
-
-    const curveId = await csAccountingContract.DEFAULT_BOND_CURVE_ID();
-    const keysCount = depositData.length;
-    const value = await csAccountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
-
-    const publicKeys = joinHex(depositData.map(({ pubkey }) => pubkey));
-    const signatures = joinHex(depositData.map(({ signature }) => signature));
-
-    await contractCallTxWithConfirm(permissionlessGateContract, 'addNodeOperatorETH', [
-      keysCount,
-      publicKeys,
-      signatures,
-      [managerAddress, rewardAddress, !!extendedManagerPermissions],
+    await addPermissionlessNodeOperatorETHFromFile(filePath, {
+      accountingContract: csAccountingContract,
+      permissionlessGateContract,
+      managerAddress,
+      rewardAddress,
+      extendedManagerPermissions,
       referrer,
-      { value },
-    ]);
+    });
   });
 
 csm
