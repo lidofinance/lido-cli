@@ -20,6 +20,7 @@ import {
   addVettedNodeOperatorWstETHFromFile,
   claimVettedBondCurve,
   loadProof,
+  removeNodeOperatorKeys,
 } from './common';
 import {
   contractCallTxWithConfirm,
@@ -284,6 +285,17 @@ csm
   .requiredOption('-t, --token <token>', 'bond token: eth, steth, or wsteth')
   .action(async (filePath: string, options: AddOperatorFromFileOptions) => {
     await addPermissionlessNodeOperatorFromFile(asAddOperatorToken(options.token), filePath, options);
+  });
+
+csm
+  .command('remove-keys')
+  .alias('delete-keys')
+  .description('removes signing keys')
+  .argument('<operator-id>', 'node operator id')
+  .argument('<start-index>', 'first key index to remove')
+  .argument('<keys-count>', 'keys count')
+  .action(async (operatorId, startIndex, keysCount) => {
+    await removeNodeOperatorKeys(csModuleContract, operatorId, startIndex, keysCount);
   });
 
 csm

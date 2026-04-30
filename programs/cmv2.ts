@@ -11,7 +11,13 @@ import {
   cmv2VettedGateAddress,
   stakingRouterContract,
 } from '@contracts';
-import { addAccessControlSubCommands, addLogsCommands, addParsingCommands, addPauseUntilSubCommands } from './common';
+import {
+  addAccessControlSubCommands,
+  addLogsCommands,
+  addParsingCommands,
+  addPauseUntilSubCommands,
+  removeNodeOperatorKeys,
+} from './common';
 import { encodeFromAgent, votingNewVote } from '@scripts';
 import {
   CallScriptAction,
@@ -762,6 +768,17 @@ cmv2
     } else {
       throw new Error('cmv2 gate address not configured (no vettedGate or permissionlessGate)');
     }
+  });
+
+cmv2
+  .command('remove-keys')
+  .alias('delete-keys')
+  .description('removes signing keys')
+  .argument('<operator-id>', 'node operator id')
+  .argument('<start-index>', 'first key index to remove')
+  .argument('<keys-count>', 'keys count')
+  .action(async (operatorId, startIndex, keysCount) => {
+    await removeNodeOperatorKeys(cmv2ModuleContract, operatorId, startIndex, keysCount);
   });
 
 cmv2

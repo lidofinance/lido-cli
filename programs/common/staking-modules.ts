@@ -267,6 +267,19 @@ export const claimVettedBondCurve = async (
   await contractCallTxWithConfirm(vettedGateContract, 'claimBondCurve', [nodeOperatorId, proof]);
 };
 
+export const removeNodeOperatorKeys = async (
+  moduleContract: Contract,
+  nodeOperatorId: string | number | bigint,
+  startIndex: string | number | bigint,
+  keysCount: string | number | bigint,
+) => {
+  await contractCallTxWithConfirm(moduleContract, 'removeKeys(uint256,uint256,uint256)', [
+    nodeOperatorId,
+    startIndex,
+    keysCount,
+  ]);
+};
+
 export const addPermissionlessNodeOperatorStETH = async ({
   accountingContract,
   permissionlessGateContract,
