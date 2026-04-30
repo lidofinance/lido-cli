@@ -2,9 +2,9 @@ import { Contract, Provider } from 'ethers';
 import { wallet } from '@providers';
 import { getOptionalDeployedAddress } from '@configs';
 import moduleAbi from 'abi/csm/CSModule.json';
-import accountingAbi from 'abi/csm/CSAccounting.json';
-import feeDistributorAbi from 'abi/csm/CSFeeDistributor.json';
-import feeOracleAbi from 'abi/csm/CSFeeOracle.json';
+import accountingAbi from 'abi/csm/Accounting.json';
+import feeDistributorAbi from 'abi/csm/FeeDistributor.json';
+import feeOracleAbi from 'abi/csm/FeeOracle.json';
 import permissionlessGateAbi from 'abi/csm/PermissionlessGate.json';
 import { getVersion } from './initializable';
 

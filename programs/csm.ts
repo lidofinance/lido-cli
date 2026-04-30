@@ -1,6 +1,6 @@
 import { program } from '@command';
 import { csAccountingContract, csModuleContract, permissionlessGateContract } from '@contracts';
-import vettedGateAbi from 'abi/csm/CSVettedGate.json';
+import vettedGateAbi from 'abi/csm/VettedGate.json';
 import {
   addAccessControlSubCommands,
   addLogsCommands,
