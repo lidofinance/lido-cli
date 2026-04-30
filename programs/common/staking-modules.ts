@@ -267,6 +267,29 @@ export const claimVettedBondCurve = async (
   await contractCallTxWithConfirm(vettedGateContract, 'claimBondCurve', [nodeOperatorId, proof]);
 };
 
+type CuratedEntryOptions = {
+  curatedGateContract: Contract;
+  name: string;
+  description: string;
+  managerAddress: string;
+  rewardAddress: string;
+  proof: string[];
+};
+
+export const createCuratedNodeOperator = async ({
+  curatedGateContract,
+  name,
+  description,
+  managerAddress,
+  rewardAddress,
+  proof,
+}: CuratedEntryOptions): Promise<bigint | null> => {
+  const args = [name, description, managerAddress, rewardAddress, proof];
+  const predictedId: bigint = await curatedGateContract.createNodeOperator.staticCall(...args);
+  const result = await contractCallTxWithConfirm(curatedGateContract, 'createNodeOperator', args);
+  return result ? predictedId : null;
+};
+
 export const removeNodeOperatorKeys = async (
   moduleContract: Contract,
   nodeOperatorId: string | number | bigint,

@@ -3,12 +3,7 @@ import {
   cmv2AccountingContract,
   cmv2ModuleContract,
   cmv2MetaRegistryContract,
-  cmv2CuratedGateContract,
   cmv2CuratedGateAddress,
-  cmv2PermissionlessGateContract,
-  cmv2PermissionlessGateAddress,
-  cmv2VettedGateContract,
-  cmv2VettedGateAddress,
   stakingRouterContract,
 } from '@contracts';
 import {
@@ -17,6 +12,8 @@ import {
   addParsingCommands,
   addPauseUntilSubCommands,
   addValidatorKeysETH,
+  createCuratedNodeOperator,
+  loadProof,
   removeNodeOperatorKeys,
 } from './common';
 import { encodeFromAgent, votingNewVote } from '@scripts';
@@ -34,27 +31,20 @@ import {
 } from '@utils';
 import { wallet } from '@providers';
 import { Contract, Interface, ZeroAddress, getBytes, id, solidityPacked } from 'ethers';
+import curatedGateAbi from 'abi/csm/CuratedGate.json';
 import { existsSync, readFileSync } from 'fs';
-import { basename, extname, resolve } from 'path';
+import { resolve } from 'path';
 
-const loadProof = (filePath?: string) => {
-  if (!filePath) return [] as string[];
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const data = require(filePath);
-  if (Array.isArray(data)) return data as string[];
-  if (data && typeof data === 'object') {
-    const addr = wallet.address.toLowerCase();
-    const proof = data[addr] ?? data[addr.replace('0x', '')];
-    return Array.isArray(proof) ? proof : ([] as string[]);
+const requireCuratedGate = (gate?: string): string => {
+  const address = gate ?? cmv2CuratedGateAddress;
+  if (!address || address === ZeroAddress) {
+    throw new Error('Curated gate address not provided; pass --gate or configure cmv2.curatedGate.address');
   }
-  return [] as string[];
+  return address;
 };
 
-const getMerkleGateContract = () => {
-  if (cmv2CuratedGateAddress !== ZeroAddress) return cmv2CuratedGateContract;
-  if (cmv2VettedGateAddress !== ZeroAddress) return cmv2VettedGateContract;
-  return null;
-};
+const getCuratedGateContract = (gate?: string): Contract =>
+  new Contract(requireCuratedGate(gate), curatedGateAbi, wallet);
 
 const parametersRegistryAbi = [
   'function MANAGE_ALLOCATION_WEIGHTS_ROLE() view returns (bytes32)',
@@ -315,14 +305,12 @@ cmv2
 
 cmv2
   .command('grant-set-tree-role')
-  .description('grants SET_TREE_ROLE on vetted gate')
+  .description('grants SET_TREE_ROLE on the curated gate')
   .argument('[account]', 'account to grant (defaults to wallet address)')
   .option('-a, --account <string>', 'account to grant (overrides argument)')
+  .option('-g, --gate <string>', 'curated gate address', cmv2CuratedGateAddress)
   .action(async (accountArg, options) => {
-    const gateContract = getMerkleGateContract();
-    if (!gateContract) {
-      throw new Error('cmv2 curated/vetted gate address is not set; SET_TREE_ROLE is only for MerkleGate');
-    }
+    const gateContract = getCuratedGateContract(options.gate);
     const account = options.account ?? accountArg ?? wallet.address;
     const role = await gateContract.SET_TREE_ROLE();
     await contractCallTxWithConfirm(gateContract, 'grantRole', [role, account]);
@@ -331,27 +319,23 @@ cmv2
 
 cmv2
   .command('grant-set-tree-role-vote')
-  .description('creates a vote to grant SET_TREE_ROLE on vetted gate')
+  .description('creates a vote to grant SET_TREE_ROLE on the curated gate')
   .argument('[account]', 'account to grant (defaults to wallet address)')
-  .option('-g, --gate <string>', 'vetted gate address')
+  .option('-a, --account <string>', 'account to grant (overrides argument)')
+  .option('-g, --gate <string>', 'curated gate address', cmv2CuratedGateAddress)
   .action(async (accountArg, options) => {
-    if (cmv2VettedGateAddress === ZeroAddress && cmv2CuratedGateAddress === ZeroAddress && !options.gate) {
-      throw new Error('cmv2 curated/vetted gate address is not set; provide --gate');
-    }
+    const gateContract = getCuratedGateContract(options.gate);
+    const gate = await gateContract.getAddress();
     const account = options.account ?? accountArg ?? wallet.address;
-    const gateContract = getMerkleGateContract();
-    const gate = options.gate ?? gateContract?.target;
-    if (!gate) throw new Error('No gate address available');
-    const role = gateContract ? await gateContract.SET_TREE_ROLE() : await cmv2VettedGateContract.SET_TREE_ROLE();
-    const iface = gateContract ? gateContract.interface : cmv2VettedGateContract.interface;
+    const role = await gateContract.SET_TREE_ROLE();
 
     const [, grantSetTreeRoleScript] = encodeFromAgent({
       to: gate,
-      data: iface.encodeFunctionData('grantRole', [role, account]),
+      data: gateContract.interface.encodeFunctionData('grantRole', [role, account]),
     });
 
     const calls: CallScriptAction[] = [grantSetTreeRoleScript];
-    const description = `Grant SET_TREE_ROLE to ${account} on vetted gate ${gate}`;
+    const description = `Grant SET_TREE_ROLE to ${account} on curated gate ${gate}`;
     const voteEvmScript = encodeCallScript(calls);
     const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
 
@@ -360,23 +344,21 @@ cmv2
 
 cmv2
   .command('set-gate-tree-vote')
-  .description('creates a vote to set vetted/curated gate tree root')
+  .description('creates a vote to set curated gate tree root')
   .requiredOption('--root <bytes32>', 'merkle tree root')
   .option('-c, --cid <string>', 'tree cid', 'devnet-allowlist')
-  .option('-g, --gate <string>', 'gate address (curated/vetted)')
+  .option('-g, --gate <string>', 'curated gate address', cmv2CuratedGateAddress)
   .action(async (options) => {
-    const gateContract = getMerkleGateContract();
-    const gate = options.gate ?? gateContract?.target;
-    if (!gate) throw new Error('No gate address available');
+    const gateContract = getCuratedGateContract(options.gate);
+    const gate = await gateContract.getAddress();
 
-    const iface = gateContract ? gateContract.interface : cmv2VettedGateContract.interface;
     const [, setTreeScript] = encodeFromAgent({
       to: gate,
-      data: iface.encodeFunctionData('setTreeParams', [options.root, options.cid]),
+      data: gateContract.interface.encodeFunctionData('setTreeParams', [options.root, options.cid]),
     });
 
     const calls: CallScriptAction[] = [setTreeScript];
-    const description = `Set gate tree root on ${gate} with cid ${options.cid}`;
+    const description = `Set curated gate tree root on ${gate} with cid ${options.cid}`;
     const voteEvmScript = encodeCallScript(calls);
     const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
 
@@ -531,15 +513,13 @@ cmv2
 
 cmv2
   .command('allow-self')
-  .description('sets vetted gate tree root to wallet leaf (empty proof)')
-  .option('-c, --tree-cid <string>', 'tree cid', 'devnet-single')
+  .description('sets curated gate tree root to wallet leaf (empty proof)')
+  .option('-c, --tree-cid <string>', 'tree cid (defaults to a unique devnet-single-<timestamp>)')
+  .option('-g, --gate <string>', 'curated gate address', cmv2CuratedGateAddress)
   .action(async (options) => {
-    const gateContract = getMerkleGateContract();
-    if (!gateContract) {
-      throw new Error('cmv2 curated/vetted gate address is not set; allow-self only works for MerkleGate');
-    }
-    const { treeCid } = options;
+    const gateContract = getCuratedGateContract(options.gate);
     const leaf = await gateContract.hashLeaf(wallet.address);
+    const treeCid = options.treeCid ?? `devnet-single-${Date.now()}`;
     await contractCallTxWithConfirm(gateContract, 'setTreeParams', [leaf, treeCid]);
     logger.log('Gate tree set for', wallet.address, 'cid', treeCid);
   });
@@ -571,185 +551,25 @@ cmv2
   });
 
 cmv2
-  .command('add-operator-eth')
-  .description('adds node operator')
-  .option('-k, --keys-count <number>', 'keys count', '1')
-  .option('-p, --public-keys <string>', 'public keys')
-  .option('-s, --signatures <string>', 'signatures')
+  .command('add-operator')
+  .description('creates a CMv2 node operator through the curated gate')
   .option('-n, --name <string>', 'operator display name')
   .option('-d, --description <string>', 'operator description', '')
   .option('-m, --manager-address <string>', 'manager address', wallet.address)
   .option('-a, --reward-address <string>', 'reward address', wallet.address)
-  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
-  .option('-r, --referrer <string>', 'referrer', ZeroAddress)
-  .option('-f, --proof-file <string>', 'merkle proof json file')
+  .option('-f, --proof-file <string>', 'merkle proof JSON array file, e.g. ["0x..."]')
+  .option('-g, --gate <address>', 'curated gate address', cmv2CuratedGateAddress)
   .action(async (options) => {
-    const {
-      keysCount,
-      publicKeys,
-      signatures,
-      name,
-      description,
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-      proofFile,
-    } = options;
+    const operatorId = await createCuratedNodeOperator({
+      curatedGateContract: getCuratedGateContract(options.gate),
+      name: options.name ?? `cmv2-${wallet.address.slice(0, 6)}`,
+      description: options.description,
+      managerAddress: options.managerAddress,
+      rewardAddress: options.rewardAddress,
+      proof: loadProof(options.proofFile),
+    });
 
-    const curveId = await cmv2AccountingContract.DEFAULT_BOND_CURVE_ID();
-    const value = await cmv2AccountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
-
-    const proof = loadProof(proofFile);
-
-    if (cmv2CuratedGateAddress !== ZeroAddress) {
-      const operatorName = name ?? `cmv2-${wallet.address.slice(0, 6)}`;
-      const predictedId = await cmv2CuratedGateContract.createNodeOperator.staticCall(
-        operatorName,
-        description ?? '',
-        managerAddress,
-        rewardAddress,
-        proof,
-      );
-      await contractCallTxWithConfirm(cmv2CuratedGateContract, 'createNodeOperator', [
-        operatorName,
-        description ?? '',
-        managerAddress,
-        rewardAddress,
-        proof,
-      ]);
-
-      const bondValue = await cmv2AccountingContract.getRequiredBondForNextKeys(predictedId, keysCount);
-      await contractCallTxWithConfirm(cmv2ModuleContract, 'addValidatorKeysETH(address,uint256,uint256,bytes,bytes)', [
-        wallet.address,
-        predictedId,
-        keysCount,
-        publicKeys,
-        signatures,
-        { value: bondValue },
-      ]);
-      return;
-    }
-
-    if (cmv2VettedGateAddress !== ZeroAddress) {
-      await contractCallTxWithConfirm(cmv2VettedGateContract, 'addNodeOperatorETH', [
-        keysCount,
-        publicKeys,
-        signatures,
-        [managerAddress, rewardAddress, !!extendedManagerPermissions],
-        proof,
-        referrer,
-        { value },
-      ]);
-    } else if (cmv2PermissionlessGateAddress !== ZeroAddress) {
-      await contractCallTxWithConfirm(cmv2PermissionlessGateContract, 'addNodeOperatorETH', [
-        keysCount,
-        publicKeys,
-        signatures,
-        [managerAddress, rewardAddress, !!extendedManagerPermissions],
-        referrer,
-        { value },
-      ]);
-    } else {
-      throw new Error('cmv2 gate address not configured (no vettedGate or permissionlessGate)');
-    }
-  });
-
-cmv2
-  .command('add-operator-with-keys-from-file')
-  .description('adds node operator with keys from file')
-  .argument('<file-path>', 'file path')
-  .option('-n, --name <string>', 'operator display name')
-  .option('-d, --description <string>', 'operator description', '')
-  .option('-i, --operator-id <number>', 'existing operator id (skip create)')
-  .option('-m, --manager-address <string>', 'manager address', wallet.address)
-  .option('-a, --reward-address <string>', 'reward address', wallet.address)
-  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
-  .option('-r, --referrer <string>', 'referrer', ZeroAddress)
-  .option('-f, --proof-file <string>', 'merkle proof json file')
-  .action(async (filePath, options) => {
-    const {
-      name,
-      description,
-      operatorId: operatorIdOption,
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-      proofFile,
-    } = options;
-
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const depositData: DepositData[] = require(filePath);
-    await supplementAndVerifyDepositDataArray(depositData);
-
-    const curveId = await cmv2AccountingContract.DEFAULT_BOND_CURVE_ID();
-    const keysCount = depositData.length;
-    const value = await cmv2AccountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
-
-    const publicKeys = joinHex(depositData.map(({ pubkey }) => pubkey));
-    const signatures = joinHex(depositData.map(({ signature }) => signature));
-
-    const proof = loadProof(proofFile);
-
-    if (cmv2CuratedGateAddress !== ZeroAddress) {
-      let operatorId: bigint | null = operatorIdOption ? BigInt(operatorIdOption) : null;
-      if (operatorId === null) {
-        const operatorName = name ?? basename(filePath, extname(filePath));
-        operatorId = await cmv2CuratedGateContract.createNodeOperator.staticCall(
-          operatorName,
-          description ?? '',
-          managerAddress,
-          rewardAddress,
-          proof,
-        );
-        await contractCallTxWithConfirm(cmv2CuratedGateContract, 'createNodeOperator', [
-          operatorName,
-          description ?? '',
-          managerAddress,
-          rewardAddress,
-          proof,
-        ]);
-      }
-
-      if (operatorId === null) {
-        throw new Error('operatorId is required when createNodeOperator is skipped');
-      }
-
-      const bondValue = await cmv2AccountingContract.getRequiredBondForNextKeys(operatorId, keysCount);
-      await contractCallTxWithConfirm(cmv2ModuleContract, 'addValidatorKeysETH(address,uint256,uint256,bytes,bytes)', [
-        wallet.address,
-        operatorId,
-        keysCount,
-        publicKeys,
-        signatures,
-        { value: bondValue },
-      ]);
-      return;
-    }
-
-    if (cmv2VettedGateAddress !== ZeroAddress) {
-      await contractCallTxWithConfirm(cmv2VettedGateContract, 'addNodeOperatorETH', [
-        keysCount,
-        publicKeys,
-        signatures,
-        [managerAddress, rewardAddress, !!extendedManagerPermissions],
-        proof,
-        referrer,
-        { value },
-      ]);
-    } else if (cmv2PermissionlessGateAddress !== ZeroAddress) {
-      await contractCallTxWithConfirm(cmv2PermissionlessGateContract, 'addNodeOperatorETH', [
-        keysCount,
-        publicKeys,
-        signatures,
-        [managerAddress, rewardAddress, !!extendedManagerPermissions],
-        referrer,
-        { value },
-      ]);
-    } else {
-      throw new Error('cmv2 gate address not configured (no vettedGate or permissionlessGate)');
-    }
+    if (operatorId !== null) logger.log('Created CMv2 node operator', operatorId.toString());
   });
 
 cmv2
