@@ -1,4 +1,4 @@
-import { Contract, Signature, TypedDataEncoder } from 'ethers';
+import { Contract, Signature, TypedDataEncoder, formatEther } from 'ethers';
 import { wallet } from '@providers';
 import { DepositData, contractCallTxWithConfirm, joinHex, supplementAndVerifyDepositDataArray } from '@utils';
 import permitAbi from 'abi/StETHPermit.json';
@@ -310,9 +310,18 @@ export const addValidatorKeysETH = async (
   keysCount: string | number | bigint,
   publicKeys: string,
   signatures: string,
-  bond: boolean,
+  topupBond: boolean,
 ) => {
-  const value = bond ? await accountingContract.getRequiredBondForNextKeys(operatorId, keysCount) : 0n;
+  const requiredTopup: bigint = await accountingContract.getRequiredBondForNextKeys(operatorId, keysCount);
+
+  if (requiredTopup > 0n && !topupBond) {
+    throw new Error(
+      `Operator ${operatorId.toString()} is short ${formatEther(requiredTopup)} ETH of bond for ${keysCount.toString()} new keys. ` +
+        `Re-run with --topup-bond to send the missing bond as msg.value, or top up bond manually first.`,
+    );
+  }
+
+  const value = topupBond ? requiredTopup : 0n;
 
   await contractCallTxWithConfirm(moduleContract, 'addValidatorKeysETH(address,uint256,uint256,bytes,bytes)', [
     wallet.address,

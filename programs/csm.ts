@@ -295,12 +295,14 @@ csm
 
 csm
   .command('add-keys')
-  .description('adds signing keys')
+  .description(
+    'adds signing keys; uses existing operator bond by default and fails if short. Pass --topup-bond to send the missing bond as msg.value.',
+  )
   .argument('<operator-id>', 'node operator id')
   .argument('<keys-count>', 'keys count')
   .argument('<public-keys>', 'public keys')
   .argument('<signatures>', 'signatures')
-  .option('--no-bond', 'do not send bond with this command')
+  .option('--topup-bond', 'send the missing bond as msg.value (default: do not top up)', false)
   .action(async (operatorId, keysCount, publicKeys, signatures, options) => {
     await addValidatorKeysETH(
       csModuleContract,
@@ -309,16 +311,18 @@ csm
       keysCount,
       publicKeys,
       signatures,
-      options.bond,
+      options.topupBond,
     );
   });
 
 csm
-  .command('add-keys-from-file-eth')
-  .description('adds signing keys from deposit data file')
+  .command('add-keys-from-file')
+  .description(
+    'adds signing keys from a deposit-data file; uses existing operator bond by default and fails if short. Pass --topup-bond to send the missing bond as msg.value.',
+  )
   .argument('<operator-id>', 'node operator id')
   .argument('<file-path>', 'file path')
-  .option('--no-bond', 'do not send bond with this command')
+  .option('--topup-bond', 'send the missing bond as msg.value (default: do not top up)', false)
   .action(async (operatorId, filePath, options) => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const depositData: DepositData[] = require(filePath);
@@ -331,7 +335,7 @@ csm
       depositData.length,
       joinHex(depositData.map(({ pubkey }) => pubkey)),
       joinHex(depositData.map(({ signature }) => signature)),
-      options.bond,
+      options.topupBond,
     );
   });
 
