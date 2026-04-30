@@ -16,6 +16,7 @@ import {
   addLogsCommands,
   addParsingCommands,
   addPauseUntilSubCommands,
+  addValidatorKeysETH,
   removeNodeOperatorKeys,
 } from './common';
 import { encodeFromAgent, votingNewVote } from '@scripts';
@@ -149,25 +150,6 @@ const resolveMetaRegistryContract = async (override?: string): Promise<Contract>
     throw new Error('MetaRegistry address not found on CMv2 module');
   }
   return metaRegistry;
-};
-
-const addValidatorKeysETH = async (
-  operatorId: string,
-  keysCount: string | number,
-  publicKeys: string,
-  signatures: string,
-  bond: boolean,
-) => {
-  const value = bond ? await cmv2AccountingContract.getRequiredBondForNextKeys(operatorId, keysCount) : 0n;
-
-  await contractCallTxWithConfirm(cmv2ModuleContract, 'addValidatorKeysETH(address,uint256,uint256,bytes,bytes)', [
-    wallet.address,
-    operatorId,
-    keysCount,
-    publicKeys,
-    signatures,
-    { value },
-  ]);
 };
 
 const EXTERNAL_OPERATOR_TYPE_NOR = 0n;
@@ -790,7 +772,15 @@ cmv2
   .argument('<signatures>', 'signatures')
   .option('--no-bond', 'do not send bond with this command')
   .action(async (operatorId, keysCount, publicKeys, signatures, options) => {
-    await addValidatorKeysETH(operatorId, keysCount, publicKeys, signatures, options.bond);
+    await addValidatorKeysETH(
+      cmv2ModuleContract,
+      cmv2AccountingContract,
+      operatorId,
+      keysCount,
+      publicKeys,
+      signatures,
+      options.bond,
+    );
   });
 
 cmv2
@@ -805,6 +795,8 @@ cmv2
     await supplementAndVerifyDepositDataArray(depositData);
 
     await addValidatorKeysETH(
+      cmv2ModuleContract,
+      cmv2AccountingContract,
       operatorId,
       depositData.length,
       joinHex(depositData.map(({ pubkey }) => pubkey)),

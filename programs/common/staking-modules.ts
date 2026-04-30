@@ -280,6 +280,27 @@ export const removeNodeOperatorKeys = async (
   ]);
 };
 
+export const addValidatorKeysETH = async (
+  moduleContract: Contract,
+  accountingContract: Contract,
+  operatorId: string | number | bigint,
+  keysCount: string | number | bigint,
+  publicKeys: string,
+  signatures: string,
+  bond: boolean,
+) => {
+  const value = bond ? await accountingContract.getRequiredBondForNextKeys(operatorId, keysCount) : 0n;
+
+  await contractCallTxWithConfirm(moduleContract, 'addValidatorKeysETH(address,uint256,uint256,bytes,bytes)', [
+    wallet.address,
+    operatorId,
+    keysCount,
+    publicKeys,
+    signatures,
+    { value },
+  ]);
+};
+
 export const addPermissionlessNodeOperatorStETH = async ({
   accountingContract,
   permissionlessGateContract,

@@ -12,6 +12,7 @@ import {
   addPermissionlessNodeOperatorStETHFromFile,
   addPermissionlessNodeOperatorWstETH,
   addPermissionlessNodeOperatorWstETHFromFile,
+  addValidatorKeysETH,
   addVettedNodeOperatorETH,
   addVettedNodeOperatorETHFromFile,
   addVettedNodeOperatorStETH,
@@ -170,25 +171,6 @@ const addVettedNodeOperatorFromFile = async (
   }
 };
 
-const addValidatorKeysETH = async (
-  operatorId: string,
-  keysCount: string | number,
-  publicKeys: string,
-  signatures: string,
-  bond: boolean,
-) => {
-  const value = bond ? await csAccountingContract.getRequiredBondForNextKeys(operatorId, keysCount) : 0n;
-
-  await contractCallTxWithConfirm(csModuleContract, 'addValidatorKeysETH(address,uint256,uint256,bytes,bytes)', [
-    wallet.address,
-    operatorId,
-    keysCount,
-    publicKeys,
-    signatures,
-    { value },
-  ]);
-};
-
 csm
   .command('operators')
   .description('returns operators count')
@@ -307,7 +289,15 @@ csm
   .argument('<signatures>', 'signatures')
   .option('--no-bond', 'do not send bond with this command')
   .action(async (operatorId, keysCount, publicKeys, signatures, options) => {
-    await addValidatorKeysETH(operatorId, keysCount, publicKeys, signatures, options.bond);
+    await addValidatorKeysETH(
+      csModuleContract,
+      csAccountingContract,
+      operatorId,
+      keysCount,
+      publicKeys,
+      signatures,
+      options.bond,
+    );
   });
 
 csm
@@ -322,6 +312,8 @@ csm
     await supplementAndVerifyDepositDataArray(depositData);
 
     await addValidatorKeysETH(
+      csModuleContract,
+      csAccountingContract,
       operatorId,
       depositData.length,
       joinHex(depositData.map(({ pubkey }) => pubkey)),
