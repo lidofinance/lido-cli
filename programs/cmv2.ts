@@ -88,7 +88,7 @@ const setDefaultDepositAllocationWeight = async (weight: bigint, parametersRegis
   let before: bigint | null = null;
   try {
     before = await parametersRegistryReadonly.defaultDepositAllocationWeight();
-  } catch (error) {
+  } catch {
     logger.warn(
       `defaultDepositAllocationWeight() reverted on ${parametersRegistryAddress}; continuing without pre-check`,
     );
@@ -96,7 +96,7 @@ const setDefaultDepositAllocationWeight = async (weight: bigint, parametersRegis
   let role = id('MANAGE_ALLOCATION_WEIGHTS_ROLE');
   try {
     role = await parametersRegistryReadonly.MANAGE_ALLOCATION_WEIGHTS_ROLE();
-  } catch (error) {
+  } catch {
     logger.warn(
       `MANAGE_ALLOCATION_WEIGHTS_ROLE() reverted on ${parametersRegistryAddress}; fallback to keccak role hash`,
     );
@@ -104,7 +104,7 @@ const setDefaultDepositAllocationWeight = async (weight: bigint, parametersRegis
   try {
     const hasRole = await parametersRegistryReadonly.hasRole(role, wallet.address);
     logger.log('MANAGE_ALLOCATION_WEIGHTS_ROLE for wallet', wallet.address, hasRole);
-  } catch (error) {
+  } catch {
     logger.warn(`hasRole() reverted on ${parametersRegistryAddress}; skipping role read check`);
   }
 
@@ -126,7 +126,7 @@ const setDefaultDepositAllocationWeight = async (weight: bigint, parametersRegis
       ')',
     );
     return;
-  } catch (error) {
+  } catch {
     logger.warn(
       `defaultDepositAllocationWeight() still reverts on ${parametersRegistryAddress}; set tx was sent without post-check`,
     );
@@ -143,6 +143,25 @@ const resolveMetaRegistryContract = async (override?: string): Promise<Contract>
     throw new Error('MetaRegistry address not found on CMv2 module');
   }
   return metaRegistry;
+};
+
+const addValidatorKeysETH = async (
+  operatorId: string,
+  keysCount: string | number,
+  publicKeys: string,
+  signatures: string,
+  bond: boolean,
+) => {
+  const value = bond ? await cmv2AccountingContract.getRequiredBondForNextKeys(operatorId, keysCount) : 0n;
+
+  await contractCallTxWithConfirm(cmv2ModuleContract, 'addValidatorKeysETH(address,uint256,uint256,bytes,bytes)', [
+    wallet.address,
+    operatorId,
+    keysCount,
+    publicKeys,
+    signatures,
+    { value },
+  ]);
 };
 
 const EXTERNAL_OPERATOR_TYPE_NOR = 0n;
@@ -746,29 +765,35 @@ cmv2
   });
 
 cmv2
+  .command('add-keys')
+  .description('adds signing keys')
+  .argument('<operator-id>', 'node operator id')
+  .argument('<keys-count>', 'keys count')
+  .argument('<public-keys>', 'public keys')
+  .argument('<signatures>', 'signatures')
+  .option('--no-bond', 'do not send bond with this command')
+  .action(async (operatorId, keysCount, publicKeys, signatures, options) => {
+    await addValidatorKeysETH(operatorId, keysCount, publicKeys, signatures, options.bond);
+  });
+
+cmv2
   .command('add-keys-from-file-eth')
   .description('adds signing keys from deposit data file')
   .argument('<operator-id>', 'node operator id')
   .argument('<file-path>', 'file path')
-  .action(async (operatorId, filePath) => {
+  .option('--no-bond', 'do not send bond with this command')
+  .action(async (operatorId, filePath, options) => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const depositData: DepositData[] = require(filePath);
     await supplementAndVerifyDepositDataArray(depositData);
 
-    const keysCount = depositData.length;
-    const value = await cmv2AccountingContract.getRequiredBondForNextKeys(operatorId, keysCount);
-
-    const publicKeys = joinHex(depositData.map(({ pubkey }) => pubkey));
-    const signatures = joinHex(depositData.map(({ signature }) => signature));
-
-    await contractCallTxWithConfirm(cmv2ModuleContract, 'addValidatorKeysETH(address,uint256,uint256,bytes,bytes)', [
-      wallet.address,
+    await addValidatorKeysETH(
       operatorId,
-      keysCount,
-      publicKeys,
-      signatures,
-      { value },
-    ]);
+      depositData.length,
+      joinHex(depositData.map(({ pubkey }) => pubkey)),
+      joinHex(depositData.map(({ signature }) => signature)),
+      options.bond,
+    );
   });
 
 cmv2
