@@ -169,6 +169,25 @@ const addVettedNodeOperatorFromFile = async (
   }
 };
 
+const addValidatorKeysETH = async (
+  operatorId: string,
+  keysCount: string | number,
+  publicKeys: string,
+  signatures: string,
+  bond: boolean,
+) => {
+  const value = bond ? await csAccountingContract.getRequiredBondForNextKeys(operatorId, keysCount) : 0n;
+
+  await contractCallTxWithConfirm(csModuleContract, 'addValidatorKeysETH(address,uint256,uint256,bytes,bytes)', [
+    wallet.address,
+    operatorId,
+    keysCount,
+    publicKeys,
+    signatures,
+    { value },
+  ]);
+};
+
 csm
   .command('operators')
   .description('returns operators count')
@@ -268,28 +287,35 @@ csm
   });
 
 csm
+  .command('add-keys')
+  .description('adds signing keys')
+  .argument('<operator-id>', 'node operator id')
+  .argument('<keys-count>', 'keys count')
+  .argument('<public-keys>', 'public keys')
+  .argument('<signatures>', 'signatures')
+  .option('--no-bond', 'do not send bond with this command')
+  .action(async (operatorId, keysCount, publicKeys, signatures, options) => {
+    await addValidatorKeysETH(operatorId, keysCount, publicKeys, signatures, options.bond);
+  });
+
+csm
   .command('add-keys-from-file-eth')
   .description('adds signing keys from deposit data file')
   .argument('<operator-id>', 'node operator id')
   .argument('<file-path>', 'file path')
-  .action(async (operatorId, filePath) => {
+  .option('--no-bond', 'do not send bond with this command')
+  .action(async (operatorId, filePath, options) => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const depositData: DepositData[] = require(filePath);
     await supplementAndVerifyDepositDataArray(depositData);
 
-    const keysCount = depositData.length;
-    const value = await csAccountingContract.getRequiredBondForNextKeys(operatorId, keysCount);
-
-    const publicKeys = joinHex(depositData.map(({ pubkey }) => pubkey));
-    const signatures = joinHex(depositData.map(({ signature }) => signature));
-
-    await contractCallTxWithConfirm(csModuleContract, 'addValidatorKeysETH', [
+    await addValidatorKeysETH(
       operatorId,
-      keysCount,
-      publicKeys,
-      signatures,
-      { value },
-    ]);
+      depositData.length,
+      joinHex(depositData.map(({ pubkey }) => pubkey)),
+      joinHex(depositData.map(({ signature }) => signature)),
+      options.bond,
+    );
   });
 
 csm
