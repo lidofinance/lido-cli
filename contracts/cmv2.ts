@@ -7,6 +7,7 @@ import feeDistributorAbi from 'abi/csm/FeeDistributor.json';
 import feeOracleAbi from 'abi/csm/FeeOracle.json';
 import curatedGateAbi from 'abi/csm/CuratedGate.json';
 import metaRegistryAbi from 'abi/csm/MetaRegistry.json';
+import ejectorAbi from 'abi/csm/Ejector.json';
 import { getVersion } from './initializable';
 
 export const cmv2ModuleAddress = getOptionalDeployedAddress('cmv2.module.address');
@@ -23,6 +24,9 @@ export const cmv2FeeDistributorContract = new Contract(cmv2FeeDistributorAddress
 
 export const cmv2FeeOracleAddress = getOptionalDeployedAddress('cmv2.feeOracle.address');
 export const cmv2FeeOracleContract = new Contract(cmv2FeeOracleAddress, feeOracleAbi, wallet);
+
+export const cmv2EjectorAddress = getOptionalDeployedAddress('cmv2.ejector.address');
+export const cmv2EjectorContract = new Contract(cmv2EjectorAddress, ejectorAbi, wallet);
 
 export const getCmv2MetaRegistryAddress = (): Promise<string> =>
   getOptionalMethodAddress(cmv2ModuleContract, 'META_REGISTRY');

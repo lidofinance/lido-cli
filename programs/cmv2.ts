@@ -1,10 +1,12 @@
 import { program } from '@command';
 import {
   cmv2AccountingContract,
+  cmv2EjectorContract,
   cmv2ModuleContract,
   cmv2MetaRegistryContract,
   cmv2CuratedGateAddress,
   stakingRouterContract,
+  withdrawalVaultContract,
 } from '@contracts';
 import {
   addAccessControlSubCommands,
@@ -30,7 +32,14 @@ import {
   DepositData,
 } from '@utils';
 import { wallet } from '@providers';
-import { Contract, Interface, ZeroAddress, getBytes, id, solidityPacked } from 'ethers';
+import { Contract, Interface, ZeroAddress, formatEther, getBytes, id, solidityPacked } from 'ethers';
+
+const parseKeyIndices = (input: string): bigint[] =>
+  input
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
+    .map((s) => BigInt(s));
 import curatedGateAbi from 'abi/csm/CuratedGate.json';
 import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
@@ -658,6 +667,33 @@ cmv2
     const { operatorId } = options;
 
     await contractCallTxWithConfirm(cmv2ModuleContract, 'confirmNodeOperatorManagerAddressChange', [operatorId]);
+  });
+
+cmv2
+  .command('voluntary-eject')
+  .description('triggers voluntary full withdrawals for own validator keys (must be sent by the node operator owner)')
+  .argument('<operator-id>', 'node operator id')
+  .argument('<key-indices>', 'comma-separated key indices, e.g. "0,1,2"')
+  .option('-r, --refund-recipient <address>', 'refund recipient for excess fee', wallet.address)
+  .action(async (operatorId, keyIndicesInput, options) => {
+    const keyIndices = parseKeyIndices(keyIndicesInput);
+    if (keyIndices.length === 0) throw new Error('At least one key index is required');
+
+    const feePerRequest: bigint = await withdrawalVaultContract.getWithdrawalRequestFee();
+    const totalFee = feePerRequest * BigInt(keyIndices.length);
+
+    logger.log('Operator id:', operatorId);
+    logger.log('Key indices:', keyIndices.map(String).join(','));
+    logger.log('Refund recipient:', options.refundRecipient);
+    logger.log('Fee per request:', `${formatEther(feePerRequest)} ETH`);
+    logger.log('Total fee:', `${formatEther(totalFee)} ETH`);
+
+    await contractCallTxWithConfirm(cmv2EjectorContract, 'voluntaryEject', [
+      operatorId,
+      keyIndices,
+      options.refundRecipient,
+      { value: totalFee },
+    ]);
   });
 
 cmv2
