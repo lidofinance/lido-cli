@@ -334,6 +334,30 @@ csm
   });
 
 csm
+  .command('change-manager-address')
+  .description('proposes a new manager address (must be confirmed by the new manager)')
+  .option('-i, --operator-id <number>', 'node operator id')
+  .option('-a, --manager-address <string>', 'new manager address')
+  .action(async (options) => {
+    const { operatorId, managerAddress } = options;
+
+    await contractCallTxWithConfirm(csModuleContract, 'proposeNodeOperatorManagerAddressChange', [
+      operatorId,
+      managerAddress,
+    ]);
+  });
+
+csm
+  .command('confirm-manager-address')
+  .description('confirms a proposed manager address change (must be sent by the new manager)')
+  .option('-i, --operator-id <number>', 'node operator id')
+  .action(async (options) => {
+    const { operatorId } = options;
+
+    await contractCallTxWithConfirm(csModuleContract, 'confirmNodeOperatorManagerAddressChange', [operatorId]);
+  });
+
+csm
   .command('keys')
   .description('returns signing keys')
   .argument('<operator-id>', 'operator id')

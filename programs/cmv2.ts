@@ -637,6 +637,30 @@ cmv2
   });
 
 cmv2
+  .command('change-manager-address')
+  .description('proposes a new manager address (must be confirmed by the new manager)')
+  .option('-i, --operator-id <number>', 'node operator id')
+  .option('-a, --manager-address <string>', 'new manager address')
+  .action(async (options) => {
+    const { operatorId, managerAddress } = options;
+
+    await contractCallTxWithConfirm(cmv2ModuleContract, 'proposeNodeOperatorManagerAddressChange', [
+      operatorId,
+      managerAddress,
+    ]);
+  });
+
+cmv2
+  .command('confirm-manager-address')
+  .description('confirms a proposed manager address change (must be sent by the new manager)')
+  .option('-i, --operator-id <number>', 'node operator id')
+  .action(async (options) => {
+    const { operatorId } = options;
+
+    await contractCallTxWithConfirm(cmv2ModuleContract, 'confirmNodeOperatorManagerAddressChange', [operatorId]);
+  });
+
+cmv2
   .command('keys')
   .description('returns signing keys')
   .argument('<operator-id>', 'operator id')
