@@ -7,4 +7,5 @@ export * from './logs';
 export * from './parsing';
 export * from './pause-until';
 export * from './proxy';
+export * from './rewards-tree';
 export * from './staking-modules';
