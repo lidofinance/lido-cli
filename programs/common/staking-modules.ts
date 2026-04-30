@@ -23,12 +23,12 @@ type VettedEntryOptions = GateEntryOptions & {
   proof: string[];
 };
 
-const PERMIT_VALUE_BUFFER = 10n;
+export const PERMIT_VALUE_BUFFER = 10n;
 const PERMIT_DEADLINE = 2n ** 256n - 1n;
 const STETH_PERMIT_DOMAIN_VERSION = '2';
 const WSTETH_PERMIT_DOMAIN_VERSION = '1';
 
-const buildPermit = async (tokenAddress: string, spender: string, value: bigint, version: string) => {
+export const buildPermit = async (tokenAddress: string, spender: string, value: bigint, version: string) => {
   const token = new Contract(tokenAddress, permitAbi, wallet);
   const [name, nonce, domainSeparator, network] = await Promise.all([
     token.name(),
@@ -64,6 +64,22 @@ const buildPermit = async (tokenAddress: string, spender: string, value: bigint,
 
   return [value, PERMIT_DEADLINE, signature.v, signature.r, signature.s] as const;
 };
+
+export const buildStETHPermit = async (accountingContract: Contract, value: bigint) =>
+  buildPermit(
+    await accountingContract.LIDO(),
+    await accountingContract.getAddress(),
+    value + PERMIT_VALUE_BUFFER,
+    STETH_PERMIT_DOMAIN_VERSION,
+  );
+
+export const buildWstETHPermit = async (accountingContract: Contract, value: bigint) =>
+  buildPermit(
+    await accountingContract.WSTETH(),
+    await accountingContract.getAddress(),
+    value + PERMIT_VALUE_BUFFER,
+    WSTETH_PERMIT_DOMAIN_VERSION,
+  );
 
 export const loadProof = (filePath?: string) => {
   if (!filePath) return [] as string[];
@@ -171,12 +187,7 @@ export const addVettedNodeOperatorStETH = async ({
 }: VettedEntryOptions) => {
   const curveId = await vettedGateContract.curveId();
   const value = await accountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
-  const permit = await buildPermit(
-    await accountingContract.LIDO(),
-    await accountingContract.getAddress(),
-    value + PERMIT_VALUE_BUFFER,
-    STETH_PERMIT_DOMAIN_VERSION,
-  );
+  const permit = await buildStETHPermit(accountingContract, value);
 
   await contractCallTxWithConfirm(vettedGateContract, 'addNodeOperatorStETH', [
     keysCount,
@@ -219,12 +230,7 @@ export const addVettedNodeOperatorWstETH = async ({
 }: VettedEntryOptions) => {
   const curveId = await vettedGateContract.curveId();
   const value = await accountingContract['getBondAmountByKeysCountWstETH(uint256,uint256)'](keysCount, curveId);
-  const permit = await buildPermit(
-    await accountingContract.WSTETH(),
-    await accountingContract.getAddress(),
-    value + PERMIT_VALUE_BUFFER,
-    WSTETH_PERMIT_DOMAIN_VERSION,
-  );
+  const permit = await buildWstETHPermit(accountingContract, value);
 
   await contractCallTxWithConfirm(vettedGateContract, 'addNodeOperatorWstETH', [
     keysCount,
@@ -274,12 +280,7 @@ export const addPermissionlessNodeOperatorStETH = async ({
 }: PermissionlessEntryOptions) => {
   const curveId = await accountingContract.DEFAULT_BOND_CURVE_ID();
   const value = await accountingContract['getBondAmountByKeysCount(uint256,uint256)'](keysCount, curveId);
-  const permit = await buildPermit(
-    await accountingContract.LIDO(),
-    await accountingContract.getAddress(),
-    value + PERMIT_VALUE_BUFFER,
-    STETH_PERMIT_DOMAIN_VERSION,
-  );
+  const permit = await buildStETHPermit(accountingContract, value);
 
   await contractCallTxWithConfirm(permissionlessGateContract, 'addNodeOperatorStETH', [
     keysCount,
@@ -320,12 +321,7 @@ export const addPermissionlessNodeOperatorWstETH = async ({
 }: PermissionlessEntryOptions) => {
   const curveId = await accountingContract.DEFAULT_BOND_CURVE_ID();
   const value = await accountingContract['getBondAmountByKeysCountWstETH(uint256,uint256)'](keysCount, curveId);
-  const permit = await buildPermit(
-    await accountingContract.WSTETH(),
-    await accountingContract.getAddress(),
-    value + PERMIT_VALUE_BUFFER,
-    WSTETH_PERMIT_DOMAIN_VERSION,
-  );
+  const permit = await buildWstETHPermit(accountingContract, value);
 
   await contractCallTxWithConfirm(permissionlessGateContract, 'addNodeOperatorWstETH', [
     keysCount,

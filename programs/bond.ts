@@ -1,13 +1,15 @@
 import { program } from '@command';
 import { cmv2AccountingContract, csAccountingContract } from '@contracts';
 import { wallet } from '@providers';
-import { logger } from '@utils';
+import { contractCallTxWithConfirm, logger } from '@utils';
+import { buildStETHPermit, buildWstETHPermit } from './common/staking-modules';
 import accountingAbi from 'abi/csm/Accounting.json';
 import { Command } from 'commander';
 import Table from 'cli-table3';
-import { BaseContract, Contract } from 'ethers';
+import { BaseContract, Contract, parseEther } from 'ethers';
 
 type BondModule = 'csm' | 'cmv2';
+type BondToken = 'eth' | 'steth' | 'wsteth';
 type BondContext = { module: BondModule; accounting: Contract };
 
 const bond = program.command('bond').description('interact with CSM/CMv2 bond accounting');
@@ -54,6 +56,37 @@ const asBondModule = (module: string): BondModule => {
   throw new Error(`Unsupported module "${module}". Use "csm" or "cmv2"`);
 };
 
+const asBondToken = (token: string): BondToken => {
+  if (token === 'eth' || token === 'steth' || token === 'wsteth') return token;
+  throw new Error(`Unsupported token "${token}". Use "eth", "steth", or "wsteth"`);
+};
+
+const printBondInfo = async (context: BondContext, operatorId: string) => {
+  const info = await context.accounting.getNodeOperatorBondInfo(operatorId);
+  printInfoTable({
+    Module: getModuleLabel(context.module),
+    'Operator ID': operatorId,
+    ...(asObject(info) as Record<string, bigint>),
+  });
+};
+
+const getAddBondTx = async (accounting: Contract, token: BondToken, operatorId: string, amount: bigint) => {
+  switch (token) {
+    case 'eth':
+      return { method: 'depositETH(uint256)', args: [operatorId, { value: amount }] };
+    case 'steth':
+      return {
+        method: 'depositStETH(uint256,uint256,(uint256,uint256,uint8,bytes32,bytes32))',
+        args: [operatorId, amount, await buildStETHPermit(accounting, amount)],
+      };
+    case 'wsteth':
+      return {
+        method: 'depositWstETH(uint256,uint256,(uint256,uint256,uint8,bytes32,bytes32))',
+        args: [operatorId, amount, await buildWstETHPermit(accounting, amount)],
+      };
+  }
+};
+
 withModuleOption(
   bond
     .command('info')
@@ -61,13 +94,7 @@ withModuleOption(
     .argument('<operator-id>', 'node operator id'),
 ).action(async (operatorId: string, options: { module: string }) => {
   const context = await getBondContext(asBondModule(options.module));
-  const { accounting } = context;
-  const info = await accounting.getNodeOperatorBondInfo(operatorId);
-  printInfoTable({
-    Module: getModuleLabel(context.module),
-    'Operator ID': operatorId,
-    ...(asObject(info) as Record<string, bigint>),
-  });
+  await printBondInfo(context, operatorId);
 });
 
 withModuleOption(
@@ -107,4 +134,22 @@ withModuleOption(
     'Required ETH/stETH': stETH,
     'Required wstETH': wstETH,
   });
+});
+
+withModuleOption(
+  bond
+    .command('add')
+    .description('adds bond from caller to a node operator')
+    .argument('<operator-id>', 'node operator id')
+    .argument('<amount>', 'amount in ETH/stETH/wstETH units')
+    .requiredOption('-t, --token <token>', 'bond token: eth, steth, or wsteth'),
+).action(async (operatorId: string, amount: string, options: { module: string; token: string }) => {
+  const context = await getBondContext(asBondModule(options.module));
+  logModule(context);
+  const { accounting } = context;
+  const parsedAmount = parseEther(amount);
+  const { method, args } = await getAddBondTx(accounting, asBondToken(options.token), operatorId, parsedAmount);
+  const tx = await contractCallTxWithConfirm(accounting, method, args);
+
+  if (tx) await printBondInfo(context, operatorId);
 });
