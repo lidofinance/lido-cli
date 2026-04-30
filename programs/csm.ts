@@ -43,6 +43,132 @@ addPauseUntilSubCommands(csm, csModuleContract);
 
 const getVettedGateContract = (address: string) => new Contract(address, vettedGateAbi, wallet);
 
+type AddOperatorToken = 'eth' | 'steth' | 'wsteth';
+type OperatorCommonOptions = {
+  managerAddress: string;
+  rewardAddress: string;
+  extendedManagerPermissions: boolean;
+  referrer: string;
+};
+type AddOperatorOptions = OperatorCommonOptions & {
+  keysCount: string;
+  publicKeys: string;
+  signatures: string;
+  token: string;
+};
+type AddOperatorFromFileOptions = OperatorCommonOptions & {
+  token: string;
+};
+type VettedAddOperatorOptions = AddOperatorOptions & {
+  proofFile?: string;
+  gate: string;
+};
+type VettedAddOperatorFromFileOptions = AddOperatorFromFileOptions & {
+  proofFile?: string;
+  gate: string;
+};
+
+const asAddOperatorToken = (token: string): AddOperatorToken => {
+  if (token === 'eth' || token === 'steth' || token === 'wsteth') return token;
+  throw new Error(`Unsupported token "${token}". Use "eth", "steth", or "wsteth"`);
+};
+
+const addPermissionlessNodeOperator = async (token: AddOperatorToken, options: AddOperatorOptions) => {
+  const entryOptions = {
+    accountingContract: csAccountingContract,
+    permissionlessGateContract,
+    keysCount: options.keysCount,
+    publicKeys: options.publicKeys,
+    signatures: options.signatures,
+    managerAddress: options.managerAddress,
+    rewardAddress: options.rewardAddress,
+    extendedManagerPermissions: options.extendedManagerPermissions,
+    referrer: options.referrer,
+  };
+
+  switch (token) {
+    case 'eth':
+      return addPermissionlessNodeOperatorETH(entryOptions);
+    case 'steth':
+      return addPermissionlessNodeOperatorStETH(entryOptions);
+    case 'wsteth':
+      return addPermissionlessNodeOperatorWstETH(entryOptions);
+  }
+};
+
+const addVettedNodeOperator = async (token: AddOperatorToken, options: VettedAddOperatorOptions) => {
+  const entryOptions = {
+    accountingContract: csAccountingContract,
+    vettedGateContract: getVettedGateContract(options.gate),
+    keysCount: options.keysCount,
+    publicKeys: options.publicKeys,
+    signatures: options.signatures,
+    managerAddress: options.managerAddress,
+    rewardAddress: options.rewardAddress,
+    extendedManagerPermissions: options.extendedManagerPermissions,
+    referrer: options.referrer,
+    proof: loadProof(options.proofFile),
+  };
+
+  switch (token) {
+    case 'eth':
+      return addVettedNodeOperatorETH(entryOptions);
+    case 'steth':
+      return addVettedNodeOperatorStETH(entryOptions);
+    case 'wsteth':
+      return addVettedNodeOperatorWstETH(entryOptions);
+  }
+};
+
+const addPermissionlessNodeOperatorFromFile = async (
+  token: AddOperatorToken,
+  filePath: string,
+  options: AddOperatorFromFileOptions,
+) => {
+  const entryOptions = {
+    accountingContract: csAccountingContract,
+    permissionlessGateContract,
+    managerAddress: options.managerAddress,
+    rewardAddress: options.rewardAddress,
+    extendedManagerPermissions: options.extendedManagerPermissions,
+    referrer: options.referrer,
+  };
+
+  switch (token) {
+    case 'eth':
+      return addPermissionlessNodeOperatorETHFromFile(filePath, entryOptions);
+    case 'steth':
+      return addPermissionlessNodeOperatorStETHFromFile(filePath, entryOptions);
+    case 'wsteth':
+      return addPermissionlessNodeOperatorWstETHFromFile(filePath, entryOptions);
+  }
+};
+
+const addVettedNodeOperatorFromFile = async (
+  token: AddOperatorToken,
+  filePath: string,
+  options: VettedAddOperatorFromFileOptions,
+) => {
+  const entryOptions = {
+    accountingContract: csAccountingContract,
+    vettedGateContract: getVettedGateContract(options.gate),
+    managerAddress: options.managerAddress,
+    rewardAddress: options.rewardAddress,
+    extendedManagerPermissions: options.extendedManagerPermissions,
+    referrer: options.referrer,
+    proof: loadProof(options.proofFile),
+  };
+
+  switch (token) {
+    case 'eth':
+      return addVettedNodeOperatorETHFromFile(filePath, entryOptions);
+    case 'steth':
+      return addVettedNodeOperatorStETHFromFile(filePath, entryOptions);
+    case 'wsteth':
+      return addVettedNodeOperatorWstETHFromFile(filePath, entryOptions);
+  }
+};
+
 csm
   .command('operators')
   .description('returns operators count')
@@ -70,7 +196,7 @@ csm
   });
 
 csm
-  .command('add-operator-eth')
+  .command('add-operator')
   .description('adds node operator')
   .option('-k, --keys-count <number>', 'keys count', '1')
   .option('-p, --public-keys <string>', 'public keys')
@@ -79,26 +205,14 @@ csm
   .option('-a, --reward-address <string>', 'reward address', wallet.address)
   .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
   .option('-r, --referrer <string>', 'referrer', ZeroAddress)
-  .action(async (options) => {
-    const { keysCount, publicKeys, signatures, managerAddress, rewardAddress, extendedManagerPermissions, referrer } =
-      options;
-
-    await addPermissionlessNodeOperatorETH({
-      accountingContract: csAccountingContract,
-      permissionlessGateContract,
-      keysCount,
-      publicKeys,
-      signatures,
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-    });
+  .requiredOption('-t, --token <token>', 'bond token: eth, steth, or wsteth')
+  .action(async (options: AddOperatorOptions) => {
+    await addPermissionlessNodeOperator(asAddOperatorToken(options.token), options);
   });
 
 csm
-  .command('add-operator-vetted-eth')
-  .description('adds node operator through vetted gate using ETH bond')
+  .command('add-operator-vetted')
+  .description('adds node operator through vetted gate')
   .option('-k, --keys-count <number>', 'keys count', '1')
   .option('-p, --public-keys <string>', 'public keys')
   .option('-s, --signatures <string>', 'signatures')
@@ -107,71 +221,10 @@ csm
   .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
   .option('-r, --referrer <string>', 'referrer', ZeroAddress)
   .option('-f, --proof-file <string>', 'merkle proof JSON array file, e.g. ["0x..."]')
+  .requiredOption('-t, --token <token>', 'bond token: eth, steth, or wsteth')
   .requiredOption('-g, --gate <address>', 'vetted gate address')
-  .action(async (options) => {
-    const {
-      keysCount,
-      publicKeys,
-      signatures,
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-      proofFile,
-      gate,
-    } = options;
-
-    await addVettedNodeOperatorETH({
-      accountingContract: csAccountingContract,
-      vettedGateContract: getVettedGateContract(gate),
-      keysCount,
-      publicKeys,
-      signatures,
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-      proof: loadProof(proofFile),
-    });
-  });
-
-csm
-  .command('add-operator-vetted-steth')
-  .description('adds node operator through vetted gate using stETH bond')
-  .option('-k, --keys-count <number>', 'keys count', '1')
-  .option('-p, --public-keys <string>', 'public keys')
-  .option('-s, --signatures <string>', 'signatures')
-  .option('-m, --manager-address <string>', 'manager address', wallet.address)
-  .option('-a, --reward-address <string>', 'reward address', wallet.address)
-  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
-  .option('-r, --referrer <string>', 'referrer', ZeroAddress)
-  .option('-f, --proof-file <string>', 'merkle proof JSON array file, e.g. ["0x..."]')
-  .requiredOption('-g, --gate <address>', 'vetted gate address')
-  .action(async (options) => {
-    const {
-      keysCount,
-      publicKeys,
-      signatures,
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-      proofFile,
-      gate,
-    } = options;
-
-    await addVettedNodeOperatorStETH({
-      accountingContract: csAccountingContract,
-      vettedGateContract: getVettedGateContract(gate),
-      keysCount,
-      publicKeys,
-      signatures,
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-      proof: loadProof(proofFile),
-    });
+  .action(async (options: VettedAddOperatorOptions) => {
+    await addVettedNodeOperator(asAddOperatorToken(options.token), options);
   });
 
 csm
@@ -187,168 +240,18 @@ csm
   });
 
 csm
-  .command('add-operator-steth')
-  .description('adds node operator using stETH bond')
-  .option('-k, --keys-count <number>', 'keys count', '1')
-  .option('-p, --public-keys <string>', 'public keys')
-  .option('-s, --signatures <string>', 'signatures')
-  .option('-m, --manager-address <string>', 'manager address', wallet.address)
-  .option('-a, --reward-address <string>', 'reward address', wallet.address)
-  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
-  .option('-r, --referrer <string>', 'referrer', ZeroAddress)
-  .action(async (options) => {
-    const { keysCount, publicKeys, signatures, managerAddress, rewardAddress, extendedManagerPermissions, referrer } =
-      options;
-
-    await addPermissionlessNodeOperatorStETH({
-      accountingContract: csAccountingContract,
-      permissionlessGateContract,
-      keysCount,
-      publicKeys,
-      signatures,
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-    });
-  });
-
-csm
-  .command('add-operator-vetted-wsteth')
-  .description('adds node operator through vetted gate using wstETH bond')
-  .option('-k, --keys-count <number>', 'keys count', '1')
-  .option('-p, --public-keys <string>', 'public keys')
-  .option('-s, --signatures <string>', 'signatures')
-  .option('-m, --manager-address <string>', 'manager address', wallet.address)
-  .option('-a, --reward-address <string>', 'reward address', wallet.address)
-  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
-  .option('-r, --referrer <string>', 'referrer', ZeroAddress)
-  .option('-f, --proof-file <string>', 'merkle proof JSON array file, e.g. ["0x..."]')
-  .requiredOption('-g, --gate <address>', 'vetted gate address')
-  .action(async (options) => {
-    const {
-      keysCount,
-      publicKeys,
-      signatures,
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-      proofFile,
-      gate,
-    } = options;
-
-    await addVettedNodeOperatorWstETH({
-      accountingContract: csAccountingContract,
-      vettedGateContract: getVettedGateContract(gate),
-      keysCount,
-      publicKeys,
-      signatures,
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-      proof: loadProof(proofFile),
-    });
-  });
-
-csm
-  .command('add-operator-wsteth')
-  .description('adds node operator using wstETH bond')
-  .option('-k, --keys-count <number>', 'keys count', '1')
-  .option('-p, --public-keys <string>', 'public keys')
-  .option('-s, --signatures <string>', 'signatures')
-  .option('-m, --manager-address <string>', 'manager address', wallet.address)
-  .option('-a, --reward-address <string>', 'reward address', wallet.address)
-  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
-  .option('-r, --referrer <string>', 'referrer', ZeroAddress)
-  .action(async (options) => {
-    const { keysCount, publicKeys, signatures, managerAddress, rewardAddress, extendedManagerPermissions, referrer } =
-      options;
-
-    await addPermissionlessNodeOperatorWstETH({
-      accountingContract: csAccountingContract,
-      permissionlessGateContract,
-      keysCount,
-      publicKeys,
-      signatures,
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-    });
-  });
-
-csm
-  .command('add-operator-with-keys-from-file-vetted-eth')
-  .description('adds node operator with keys from file through vetted gate using ETH bond')
+  .command('add-operator-with-keys-from-file-vetted')
+  .description('adds node operator with keys from file through vetted gate')
   .argument('<file-path>', 'file path')
   .option('-m, --manager-address <string>', 'manager address', wallet.address)
   .option('-a, --reward-address <string>', 'reward address', wallet.address)
   .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
   .option('-r, --referrer <string>', 'referrer', ZeroAddress)
   .option('-f, --proof-file <string>', 'merkle proof JSON array file, e.g. ["0x..."]')
+  .requiredOption('-t, --token <token>', 'bond token: eth, steth, or wsteth')
   .requiredOption('-g, --gate <address>', 'vetted gate address')
-  .action(async (filePath, options) => {
-    const { managerAddress, rewardAddress, extendedManagerPermissions, referrer, proofFile, gate } = options;
-
-    await addVettedNodeOperatorETHFromFile(filePath, {
-      accountingContract: csAccountingContract,
-      vettedGateContract: getVettedGateContract(gate),
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-      proof: loadProof(proofFile),
-    });
-  });
-
-csm
-  .command('add-operator-with-keys-from-file-vetted-steth')
-  .description('adds node operator with keys from file through vetted gate using stETH bond')
-  .argument('<file-path>', 'file path')
-  .option('-m, --manager-address <string>', 'manager address', wallet.address)
-  .option('-a, --reward-address <string>', 'reward address', wallet.address)
-  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
-  .option('-r, --referrer <string>', 'referrer', ZeroAddress)
-  .option('-f, --proof-file <string>', 'merkle proof JSON array file, e.g. ["0x..."]')
-  .requiredOption('-g, --gate <address>', 'vetted gate address')
-  .action(async (filePath, options) => {
-    const { managerAddress, rewardAddress, extendedManagerPermissions, referrer, proofFile, gate } = options;
-
-    await addVettedNodeOperatorStETHFromFile(filePath, {
-      accountingContract: csAccountingContract,
-      vettedGateContract: getVettedGateContract(gate),
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-      proof: loadProof(proofFile),
-    });
-  });
-
-csm
-  .command('add-operator-with-keys-from-file-vetted-wsteth')
-  .description('adds node operator with keys from file through vetted gate using wstETH bond')
-  .argument('<file-path>', 'file path')
-  .option('-m, --manager-address <string>', 'manager address', wallet.address)
-  .option('-a, --reward-address <string>', 'reward address', wallet.address)
-  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
-  .option('-r, --referrer <string>', 'referrer', ZeroAddress)
-  .option('-f, --proof-file <string>', 'merkle proof JSON array file, e.g. ["0x..."]')
-  .requiredOption('-g, --gate <address>', 'vetted gate address')
-  .action(async (filePath, options) => {
-    const { managerAddress, rewardAddress, extendedManagerPermissions, referrer, proofFile, gate } = options;
-
-    await addVettedNodeOperatorWstETHFromFile(filePath, {
-      accountingContract: csAccountingContract,
-      vettedGateContract: getVettedGateContract(gate),
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-      proof: loadProof(proofFile),
-    });
+  .action(async (filePath: string, options: VettedAddOperatorFromFileOptions) => {
+    await addVettedNodeOperatorFromFile(asAddOperatorToken(options.token), filePath, options);
   });
 
 csm
@@ -359,59 +262,9 @@ csm
   .option('-a, --reward-address <string>', 'reward address', wallet.address)
   .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
   .option('-r, --referrer <string>', 'referrer', ZeroAddress)
-  .action(async (filePath, options) => {
-    const { managerAddress, rewardAddress, extendedManagerPermissions, referrer } = options;
-
-    await addPermissionlessNodeOperatorETHFromFile(filePath, {
-      accountingContract: csAccountingContract,
-      permissionlessGateContract,
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-    });
-  });
-
-csm
-  .command('add-operator-with-keys-from-file-steth')
-  .description('adds node operator with keys from file using stETH bond')
-  .argument('<file-path>', 'file path')
-  .option('-m, --manager-address <string>', 'manager address', wallet.address)
-  .option('-a, --reward-address <string>', 'reward address', wallet.address)
-  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
-  .option('-r, --referrer <string>', 'referrer', ZeroAddress)
-  .action(async (filePath, options) => {
-    const { managerAddress, rewardAddress, extendedManagerPermissions, referrer } = options;
-
-    await addPermissionlessNodeOperatorStETHFromFile(filePath, {
-      accountingContract: csAccountingContract,
-      permissionlessGateContract,
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-    });
-  });
-
-csm
-  .command('add-operator-with-keys-from-file-wsteth')
-  .description('adds node operator with keys from file using wstETH bond')
-  .argument('<file-path>', 'file path')
-  .option('-m, --manager-address <string>', 'manager address', wallet.address)
-  .option('-a, --reward-address <string>', 'reward address', wallet.address)
-  .option('-e, --extended-manager-permissions', 'extended manager permissions', false)
-  .option('-r, --referrer <string>', 'referrer', ZeroAddress)
-  .action(async (filePath, options) => {
-    const { managerAddress, rewardAddress, extendedManagerPermissions, referrer } = options;
-
-    await addPermissionlessNodeOperatorWstETHFromFile(filePath, {
-      accountingContract: csAccountingContract,
-      permissionlessGateContract,
-      managerAddress,
-      rewardAddress,
-      extendedManagerPermissions,
-      referrer,
-    });
+  .requiredOption('-t, --token <token>', 'bond token: eth, steth, or wsteth')
+  .action(async (filePath: string, options: AddOperatorFromFileOptions) => {
+    await addPermissionlessNodeOperatorFromFile(asAddOperatorToken(options.token), filePath, options);
   });
 
 csm
