@@ -33,6 +33,9 @@ import {
 } from '@utils';
 import { wallet } from '@providers';
 import { Contract, Interface, ZeroAddress, formatEther, getBytes, id, solidityPacked } from 'ethers';
+import Table from 'cli-table3';
+import chalk from 'chalk';
+import { getNodeOperatorsMap } from './staking-module';
 
 const parseKeyIndices = (input: string): bigint[] =>
   input
@@ -155,6 +158,20 @@ const EXTERNAL_OPERATOR_TYPE_NOR = 0n;
 
 const parseUInt = (rawValue: string): bigint => BigInt(rawValue);
 
+type ParsedExternalOperatorData = {
+  type: string;
+  data: string;
+  moduleId?: string;
+  nodeOperatorId?: string;
+  name?: string;
+};
+
+type FormattedOperatorGroup = {
+  groupId: string;
+  subNodeOperators: { nodeOperatorId: string; name: string; share: string; weight: string }[];
+  externalOperators: ParsedExternalOperatorData[];
+};
+
 const parsePair = (entry: string): [string, string] => {
   const [left = '', right = ''] = entry.split(',').map((item: string) => item.trim());
   return [left, right];
@@ -182,7 +199,7 @@ const toExternalOperators = (entries: string[]): { data: string }[] => {
   });
 };
 
-const parseExternalOperatorData = (data: string) => {
+const parseExternalOperatorData = (data: string): ParsedExternalOperatorData => {
   try {
     const bytes = getBytes(data);
     if (bytes.length !== 10) {
@@ -209,6 +226,101 @@ const parseExternalOperatorData = (data: string) => {
   } catch {
     return { type: 'UNKNOWN', data };
   }
+};
+
+const getExternalOperatorName = async (
+  operator: ParsedExternalOperatorData,
+  operatorsByModule: Map<string, Promise<Record<number, { name: string }>>>,
+): Promise<string | undefined> => {
+  if (operator.type !== 'NOR' || operator.moduleId == null || operator.nodeOperatorId == null) return undefined;
+
+  let operators = operatorsByModule.get(operator.moduleId);
+  if (!operators) {
+    operators = stakingRouterContract.getStakingModule(operator.moduleId).then((module) => {
+      const { stakingModuleAddress } = module.toObject() as { stakingModuleAddress: string };
+      return getNodeOperatorsMap(stakingModuleAddress);
+    });
+    operatorsByModule.set(operator.moduleId, operators);
+  }
+
+  return (await operators)[Number(operator.nodeOperatorId)]?.name ?? 'unknown';
+};
+
+const formatOperatorGroup = async (
+  metaRegistry: Contract,
+  groupId: bigint,
+  operatorsByModule: Map<string, Promise<Record<number, { name: string }>>>,
+): Promise<FormattedOperatorGroup> => {
+  const group = (await metaRegistry.getOperatorGroup(groupId)).toObject() as {
+    subNodeOperators: { nodeOperatorId: bigint; share: bigint }[];
+    externalOperators: { data: string }[];
+  };
+
+  return {
+    groupId: groupId.toString(),
+    subNodeOperators: await Promise.all(
+      group.subNodeOperators.map(async ({ nodeOperatorId, share }) => {
+        const [metadata, weight] = await Promise.all([
+          metaRegistry
+            .getOperatorMetadata(nodeOperatorId)
+            .then((result: { toObject: () => { name: string } }) => result.toObject()),
+          metaRegistry.getNodeOperatorWeight(nodeOperatorId) as Promise<bigint>,
+        ]);
+
+        return {
+          nodeOperatorId: nodeOperatorId.toString(),
+          name: metadata.name,
+          share: share.toString(),
+          weight: weight.toString(),
+        };
+      }),
+    ),
+    externalOperators: await Promise.all(
+      group.externalOperators.map(async ({ data }) => {
+        const operator = parseExternalOperatorData(data);
+        const name = await getExternalOperatorName(operator, operatorsByModule);
+        return name == null ? operator : { ...operator, name };
+      }),
+    ),
+  };
+};
+
+const formatShare = (basisPoints: string): string => `${Number(basisPoints) / 100}%`;
+
+const WEIGHT_BASE = 100_000;
+const formatWeight = (raw: string): string => {
+  const value = Number(raw) / WEIGHT_BASE;
+  const formatted = value.toString();
+  return formatted.includes('.') ? formatted : `${formatted}.0`;
+};
+
+const formatExternalSource = ({ type, moduleId }: ParsedExternalOperatorData): string =>
+  type === 'NOR' && moduleId != null ? `NOR (mod ${moduleId})` : type;
+
+const printOperatorGroup = (group: FormattedOperatorGroup) => {
+  const operatorCount = group.subNodeOperators.length + group.externalOperators.length;
+
+  const table = new Table({
+    head: ['Source', 'NO ID', 'Name', 'Share', 'Weight'],
+    colAligns: ['left', 'right', 'left', 'right', 'right'],
+    style: { head: ['white', 'bold'], compact: true },
+  });
+
+  group.subNodeOperators.forEach(({ nodeOperatorId, name, share, weight }) => {
+    table.push(['CMv2', nodeOperatorId, name, formatShare(share), formatWeight(weight)]);
+  });
+
+  group.externalOperators.forEach((operator) => {
+    table.push(
+      [formatExternalSource(operator), operator.nodeOperatorId ?? '', operator.name ?? operator.data, '—', '—'].map(
+        (cell) => chalk.gray(String(cell)),
+      ),
+    );
+  });
+
+  logger.log();
+  logger.log(`Group ${group.groupId} (${operatorCount} operators)`);
+  logger.log(table.toString());
 };
 
 const listExistingOperatorIds = async (): Promise<bigint[]> => {
@@ -468,56 +580,31 @@ cmv2
   .action(async (options) => {
     const metaRegistry = await resolveMetaRegistryContract(options.metaRegistry);
     const metaRegistryAddress = await metaRegistry.getAddress();
+    const operatorsByModule = new Map<string, Promise<Record<number, { name: string }>>>();
+
+    logger.log('MetaRegistry', metaRegistryAddress);
 
     if (options.groupId != null) {
       const groupId = parseUInt(options.groupId);
-      const group = (await metaRegistry.getOperatorGroup(groupId)).toObject() as {
-        subNodeOperators: { nodeOperatorId: bigint; share: bigint }[];
-        externalOperators: { data: string }[];
-      };
-
-      logger.log('MetaRegistry group', {
-        metaRegistryAddress,
-        groupId: groupId.toString(),
-        subNodeOperators: group.subNodeOperators.map(({ nodeOperatorId, share }) => ({
-          nodeOperatorId: nodeOperatorId.toString(),
-          share: share.toString(),
-        })),
-        externalOperators: group.externalOperators.map(({ data }) => parseExternalOperatorData(data)),
-      });
+      const group = await formatOperatorGroup(metaRegistry, groupId, operatorsByModule);
+      printOperatorGroup(group);
       return;
     }
 
     const noGroupId = await metaRegistry.NO_GROUP_ID();
     const groupsCount = await metaRegistry.getOperatorGroupsCount();
-    const groups: {
-      groupId: string;
-      subNodeOperators: { nodeOperatorId: string; share: string }[];
-      externalOperators: ReturnType<typeof parseExternalOperatorData>[];
-    }[] = [];
+    const groups: FormattedOperatorGroup[] = [];
 
     for (let groupId = noGroupId + 1n; groupId < groupsCount; groupId++) {
-      const group = (await metaRegistry.getOperatorGroup(groupId)).toObject() as {
-        subNodeOperators: { nodeOperatorId: bigint; share: bigint }[];
-        externalOperators: { data: string }[];
-      };
-
-      groups.push({
-        groupId: groupId.toString(),
-        subNodeOperators: group.subNodeOperators.map(({ nodeOperatorId, share }) => ({
-          nodeOperatorId: nodeOperatorId.toString(),
-          share: share.toString(),
-        })),
-        externalOperators: group.externalOperators.map(({ data }) => parseExternalOperatorData(data)),
-      });
+      groups.push(await formatOperatorGroup(metaRegistry, groupId, operatorsByModule));
     }
 
     if (groups.length === 0) {
-      logger.log('No configured MetaRegistry groups on', metaRegistryAddress);
+      logger.log('No configured operator groups');
       return;
     }
 
-    logger.log('Configured MetaRegistry groups on', metaRegistryAddress, groups);
+    groups.forEach(printOperatorGroup);
   });
 
 cmv2
