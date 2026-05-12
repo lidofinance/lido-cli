@@ -60,8 +60,14 @@ const getCuratedGateContract = (gate?: string): Contract =>
 
 const parametersRegistryAbi = [
   'function MANAGE_ALLOCATION_WEIGHTS_ROLE() view returns (bytes32)',
+  'function MANAGE_KEYS_LIMIT_ROLE() view returns (bytes32)',
   'function defaultDepositAllocationWeight() view returns (uint256)',
   'function setDefaultDepositAllocationWeight(uint256)',
+  'function defaultKeysLimit() view returns (uint256)',
+  'function setDefaultKeysLimit(uint256)',
+  'function setKeysLimit(uint256,uint256)',
+  'function getKeysLimit(uint256) view returns (uint256)',
+  'function grantRole(bytes32,address)',
   'function hasRole(bytes32,address) view returns (bool)',
 ];
 
@@ -523,6 +529,101 @@ cmv2
     const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
 
     await forwardVoteFromTm(newVoteCalldata);
+  });
+
+cmv2
+  .command('grant-manage-keys-limit-role-vote')
+  .description('creates a vote to grant MANAGE_KEYS_LIMIT_ROLE on CMv2 ParametersRegistry')
+  .argument('[account]', 'account to grant (defaults to wallet address)')
+  .option('-a, --account <string>', 'account to grant (overrides argument)')
+  .option('-p, --parameters-registry <string>', 'parameters registry address override')
+  .action(async (accountArg, options) => {
+    const account = options.account ?? accountArg ?? wallet.address;
+    const parametersRegistryAddress = resolveParametersRegistryAddress(options.parametersRegistry);
+    const readonlyRunner = wallet.provider ?? wallet;
+    const parametersRegistryReadonly = new Contract(parametersRegistryAddress, parametersRegistryAbi, readonlyRunner);
+    let role = id('MANAGE_KEYS_LIMIT_ROLE');
+    try {
+      role = await parametersRegistryReadonly.MANAGE_KEYS_LIMIT_ROLE();
+    } catch (error) {
+      logger.warn(
+        `MANAGE_KEYS_LIMIT_ROLE() reverted on ${parametersRegistryAddress}; fallback to keccak role hash`,
+      );
+    }
+    const iface = new Interface(['function grantRole(bytes32,address)']);
+    const [, grantRoleScript] = encodeFromAgent({
+      to: parametersRegistryAddress,
+      data: iface.encodeFunctionData('grantRole', [role, account]),
+    });
+
+    const calls: CallScriptAction[] = [grantRoleScript];
+    const description = `Grant MANAGE_KEYS_LIMIT_ROLE to ${account} on ParametersRegistry ${parametersRegistryAddress}`;
+    const voteEvmScript = encodeCallScript(calls);
+    const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
+
+    await forwardVoteFromTm(newVoteCalldata);
+  });
+
+cmv2
+  .command('set-default-keys-limit')
+  .description('sets default keys limit on CMv2 ParametersRegistry (signer must hold MANAGE_KEYS_LIMIT_ROLE)')
+  .argument('<limit>', 'default keys limit (decimal or 0x-hex; pass max for type(uint256).max)')
+  .option('-p, --parameters-registry <string>', 'parameters registry address override')
+  .action(async (limitArg: string, options) => {
+    const parametersRegistryAddress = resolveParametersRegistryAddress(options.parametersRegistry);
+    const limit = limitArg === 'max' ? (1n << 256n) - 1n : BigInt(limitArg);
+    const parametersRegistry = new Contract(parametersRegistryAddress, parametersRegistryAbi, wallet);
+    const readonlyRunner = wallet.provider ?? wallet;
+    const parametersRegistryReadonly = new Contract(parametersRegistryAddress, parametersRegistryAbi, readonlyRunner);
+
+    let before: bigint | null = null;
+    try {
+      before = await parametersRegistryReadonly.defaultKeysLimit();
+    } catch (error) {
+      logger.warn(
+        `defaultKeysLimit() reverted on ${parametersRegistryAddress}; continuing without pre-check`,
+      );
+    }
+
+    let role = id('MANAGE_KEYS_LIMIT_ROLE');
+    try {
+      role = await parametersRegistryReadonly.MANAGE_KEYS_LIMIT_ROLE();
+    } catch (error) {
+      logger.warn(
+        `MANAGE_KEYS_LIMIT_ROLE() reverted on ${parametersRegistryAddress}; fallback to keccak role hash`,
+      );
+    }
+    try {
+      const hasRole = await parametersRegistryReadonly.hasRole(role, wallet.address);
+      logger.log('MANAGE_KEYS_LIMIT_ROLE for wallet', wallet.address, hasRole);
+    } catch (error) {
+      logger.warn(`hasRole() reverted on ${parametersRegistryAddress}; skipping role read check`);
+    }
+
+    await authorizedCall(parametersRegistry, 'setDefaultKeysLimit', [limit]);
+    try {
+      const after = await parametersRegistryReadonly.defaultKeysLimit();
+      if (after !== limit) {
+        throw new Error(
+          `Failed to set defaultKeysLimit: expected ${limit.toString()}, got ${after.toString()} (before ${before?.toString() ?? 'n/a'})`,
+        );
+      }
+      logger.log(
+        'Default keys limit set to',
+        limit.toString(),
+        'on',
+        parametersRegistryAddress,
+        '(before',
+        before?.toString() ?? 'n/a',
+        ')',
+      );
+      return;
+    } catch (error) {
+      logger.warn(
+        `defaultKeysLimit() still reverts on ${parametersRegistryAddress}; set tx was sent without post-check`,
+      );
+    }
+    logger.log('setDefaultKeysLimit tx submitted on', parametersRegistryAddress, 'value', limit.toString());
   });
 
 cmv2
