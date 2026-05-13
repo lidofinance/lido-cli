@@ -52,7 +52,7 @@ export const voteAgainst = async (voteId: number) => {
 };
 
 export const executeVote = async (voteId: number) => {
-  const result = await contractCallTx(votingContract, 'executeVote', [voteId]);
+  const result = await contractCallTx(votingContract, 'executeVote', [voteId, { gasLimit: 16_000_000n }]);
   logger.success('Vote executed');
   return result;
 };

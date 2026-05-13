@@ -61,14 +61,18 @@ export const contractCallTx = async (contract: Contract, method: string, args: u
 
     receipt.logs.forEach((log) => {
       for (let i = 0; i < ifaces.length; i++) {
-        const parsedLog = ifaces[i].parseLog({
-          data: log.data,
-          topics: log.topics as string[],
-        });
+        try {
+          const parsedLog = ifaces[i].parseLog({
+            data: log.data,
+            topics: log.topics as string[],
+          });
 
-        if (parsedLog) {
-          logger.dir(formatLog(parsedLog), { depth: null });
-          return;
+          if (parsedLog) {
+            logger.dir(formatLog(parsedLog), { depth: null });
+            return;
+          }
+        } catch {
+          continue;
         }
       }
 
