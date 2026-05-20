@@ -5,6 +5,7 @@ import {
   cmv2ModuleContract,
   cmv2MetaRegistryContract,
   cmv2CuratedGateAddress,
+  lidoContract,
   stakingRouterContract,
   withdrawalVaultContract,
 } from '@contracts';
@@ -31,7 +32,7 @@ import {
   supplementAndVerifyDepositDataArray,
   DepositData,
 } from '@utils';
-import { wallet } from '@providers';
+import { provider, wallet } from '@providers';
 import { Contract, Interface, ZeroAddress, formatEther, getBytes, id, solidityPacked } from 'ethers';
 import Table from 'cli-table3';
 import chalk from 'chalk';
@@ -149,11 +150,10 @@ const setDefaultDepositAllocationWeight = async (weight: bigint, parametersRegis
   logger.log('setDefaultDepositAllocationWeight tx submitted on', parametersRegistryAddress, 'value', weight);
 };
 
-const resolveMetaRegistryContract = async (override?: string): Promise<Contract> => {
-  const metaRegistry = override
-    ? new Contract(override, cmv2MetaRegistryContract.interface, wallet)
-    : cmv2MetaRegistryContract;
-  const metaRegistryAddress = await metaRegistry.getAddress();
+const resolveMetaRegistryContract = async (override?: string, blockTag?: number): Promise<Contract> => {
+  const overrides = getCallOverrides(blockTag);
+  const metaRegistryAddress = override ?? (await cmv2ModuleContract.META_REGISTRY(overrides));
+  const metaRegistry = new Contract(metaRegistryAddress, cmv2MetaRegistryContract.interface, wallet);
   if (!metaRegistryAddress || metaRegistryAddress === ZeroAddress) {
     throw new Error('MetaRegistry address not found on CMv2 module');
   }
@@ -162,7 +162,10 @@ const resolveMetaRegistryContract = async (override?: string): Promise<Contract>
 
 const EXTERNAL_OPERATOR_TYPE_NOR = 0n;
 
-const parseUInt = (rawValue: string): bigint => BigInt(rawValue);
+const parseUInt = (rawValue: string): bigint => {
+  if (!/^\d+$/.test(rawValue)) throw new Error(`Expected unsigned integer, got: ${rawValue}`);
+  return BigInt(rawValue);
+};
 
 type ParsedExternalOperatorData = {
   type: string;
@@ -176,6 +179,30 @@ type FormattedOperatorGroup = {
   groupId: string;
   subNodeOperators: { nodeOperatorId: string; name: string; share: string; weight: string }[];
   externalOperators: ParsedExternalOperatorData[];
+};
+
+type DepositAllocationBaseRow = {
+  operatorId: bigint;
+  groupId: bigint;
+  name: string;
+  weight: bigint;
+  moduleCurrent: bigint;
+  externalCurrent: bigint;
+  current: bigint;
+  depositable: bigint;
+};
+
+type DepositAllocationRow = DepositAllocationBaseRow & {
+  allocationTarget: bigint | null;
+  receives: bigint;
+  unallocated: bigint;
+};
+
+type DepositAllocationOptions = {
+  requestedDeposits: bigint;
+  blockTag?: number;
+  receivesByOperatorId?: Map<string, bigint>;
+  allocated?: bigint;
 };
 
 const parsePair = (entry: string): [string, string] => {
@@ -293,11 +320,15 @@ const formatOperatorGroup = async (
 
 const formatShare = (basisPoints: string): string => `${Number(basisPoints) / 100}%`;
 
-const WEIGHT_BASE = 100_000;
+const WEIGHT_BASE = 100_000n;
 const formatWeight = (raw: string): string => {
-  const value = Number(raw) / WEIGHT_BASE;
-  const formatted = value.toString();
-  return formatted.includes('.') ? formatted : `${formatted}.0`;
+  const value = parseUInt(raw);
+  const whole = value / WEIGHT_BASE;
+  const fractional = value % WEIGHT_BASE;
+  if (fractional === 0n) return `${whole.toString()}.0`;
+
+  const fractionalString = fractional.toString().padStart(5, '0').replace(/0+$/, '');
+  return `${whole.toString()}.${fractionalString}`;
 };
 
 const formatExternalSource = ({ type, moduleId }: ParsedExternalOperatorData): string =>
@@ -329,12 +360,15 @@ const printOperatorGroup = (group: FormattedOperatorGroup) => {
   logger.log(table.toString());
 };
 
-const listExistingOperatorIds = async (): Promise<bigint[]> => {
-  const total = await cmv2ModuleContract.getNodeOperatorsCount();
+const getCallOverrides = (blockTag?: number) => (blockTag == null ? {} : { blockTag });
+
+const listExistingOperatorIds = async (blockTag?: number): Promise<bigint[]> => {
+  const overrides = getCallOverrides(blockTag);
+  const total = await cmv2ModuleContract.getNodeOperatorsCount(overrides);
   const ids: bigint[] = [];
 
   for (let i = 0n; i < total; i++) {
-    const operator = (await cmv2ModuleContract.getNodeOperator(i)).toObject();
+    const operator = (await cmv2ModuleContract.getNodeOperator(i, overrides)).toObject();
     if (operator.managerAddress !== ZeroAddress) ids.push(i);
   }
 
@@ -353,12 +387,416 @@ const updateDepositableValidatorsCount = async (operatorIds: bigint[]) => {
   }
 };
 
-const resolveCmv2StakingModuleId = async (): Promise<bigint | null> => {
+const formatSigned = (value: bigint): string => (value > 0n ? `+${value.toString()}` : value.toString());
+
+const formatReceives = (value: bigint): string => (value > 0n ? chalk.green.bold(`+${value.toString()}`) : '0');
+
+const formatMaybeWarningZero = (value: bigint): string => (value === 0n ? chalk.yellow('0') : value.toString());
+
+const formatUnallocated = (value: bigint): string =>
+  value > 0n ? chalk.yellow(value.toString()) : chalk.green(value.toString());
+
+const formatCurrent = ({ moduleCurrent, externalCurrent }: DepositAllocationBaseRow): string =>
+  externalCurrent > 0n
+    ? `${moduleCurrent.toString()} ${chalk.gray(`(+${externalCurrent.toString()} ext)`)}`
+    : moduleCurrent.toString();
+
+const formatGap = (value: bigint): string => {
+  if (value > 0n) return chalk.green(formatSigned(value));
+  if (value < 0n) return chalk.yellow(value.toString());
+  return '0';
+};
+
+const formatAllocationTarget = (value: bigint | null): string => (value == null ? chalk.gray('-') : value.toString());
+
+const formatAllocationGap = (value: bigint | null): string => (value == null ? chalk.gray('-') : formatGap(value));
+
+const getAllocationGap = ({
+  allocationTarget,
+  current,
+}: Pick<DepositAllocationRow, 'allocationTarget' | 'current'>): bigint | null =>
+  allocationTarget == null ? null : allocationTarget - current;
+
+const divRoundUp = (numerator: bigint, denominator: bigint): bigint => {
+  if (denominator === 0n) return 0n;
+  return (numerator + denominator - 1n) / denominator;
+};
+
+const compareBigIntAsc = (left: bigint, right: bigint): number => {
+  if (left < right) return -1;
+  if (left > right) return 1;
+  return 0;
+};
+
+const compareBigIntDesc = (left: bigint, right: bigint): number => compareBigIntAsc(right, left);
+
+const getOperatorName = async (metaRegistry: Contract, operatorId: bigint, blockTag?: number): Promise<string> => {
+  try {
+    const overrides = getCallOverrides(blockTag);
+    const metadata = await metaRegistry.getOperatorMetadata(operatorId, overrides);
+    return metadata.toObject().name || `Operator ${operatorId.toString()}`;
+  } catch {
+    return `Operator ${operatorId.toString()}`;
+  }
+};
+
+const sumReceives = (receivesByOperatorId: Map<string, bigint>): bigint => {
+  let total = 0n;
+  receivesByOperatorId.forEach((value) => {
+    total += value;
+  });
+  return total;
+};
+
+const getInitialDepositsRequestedByRouter = async (stakingModuleId: bigint, blockTag: number): Promise<bigint> => {
+  const overrides = getCallOverrides(blockTag);
+  const depositableEther = await lidoContract.getDepositableEther(overrides);
+
+  return stakingRouterContract.getStakingModuleMaxDepositsCount(stakingModuleId, depositableEther, overrides);
+};
+
+const S_SCALE = 1n << 96n;
+
+const computeInitialDepositAllocation = (
+  baseRows: DepositAllocationBaseRow[],
+  requestedDeposits: bigint,
+): {
+  allocated: bigint;
+  allocationsByOperatorId: Map<string, bigint>;
+  allocationTargetsByOperatorId: Map<string, bigint>;
+} => {
+  const allocationsByOperatorId = new Map<string, bigint>();
+  const allocationTargetsByOperatorId = new Map<string, bigint>();
+  if (requestedDeposits === 0n) return { allocated: 0n, allocationsByOperatorId, allocationTargetsByOperatorId };
+
+  const eligibleRows = baseRows.filter(({ weight, depositable }) => weight > 0n && depositable > 0n);
+  if (eligibleRows.length === 0) return { allocated: 0n, allocationsByOperatorId, allocationTargetsByOperatorId };
+
+  const totalEligibleWeight = eligibleRows.reduce((total, { weight }) => total + weight, 0n);
+  const totalEligibleCurrent = eligibleRows.reduce((total, { current }) => total + current, 0n);
+  const allocationTargetTotal = totalEligibleCurrent + requestedDeposits;
+  const candidates = eligibleRows.map((row, index) => {
+    const shareX96 = (row.weight * S_SCALE) / totalEligibleWeight;
+    const target = divRoundUp(shareX96 * allocationTargetTotal, S_SCALE);
+    const imbalance = target > row.current ? target - row.current : 0n;
+
+    allocationTargetsByOperatorId.set(row.operatorId.toString(), target);
+
+    return { row, index, imbalance };
+  });
+
+  candidates.sort((left, right) => {
+    const imbalanceDiff = compareBigIntDesc(left.imbalance, right.imbalance);
+    if (imbalanceDiff !== 0) return imbalanceDiff;
+    return left.index - right.index;
+  });
+
+  let remaining = requestedDeposits;
+  for (const { row, imbalance } of candidates) {
+    if (remaining === 0n) break;
+    const possible = imbalance < row.depositable ? imbalance : row.depositable;
+    if (possible === 0n) continue;
+
+    const receives = possible < remaining ? possible : remaining;
+    allocationsByOperatorId.set(row.operatorId.toString(), receives);
+    remaining -= receives;
+  }
+
+  return {
+    allocated: requestedDeposits - remaining,
+    allocationsByOperatorId,
+    allocationTargetsByOperatorId,
+  };
+};
+
+const computeInitialDepositUnallocated = (
+  baseRows: DepositAllocationBaseRow[],
+  requestedDeposits: bigint,
+  allocationTargetsByOperatorId: Map<string, bigint>,
+  allocationsByOperatorId: Map<string, bigint>,
+): Map<string, bigint> => {
+  const unallocatedByOperatorId = new Map<string, bigint>();
+  const totalAllocated = sumReceives(allocationsByOperatorId);
+  let remainingUnallocated = requestedDeposits > totalAllocated ? requestedDeposits - totalAllocated : 0n;
+  if (remainingUnallocated === 0n) return unallocatedByOperatorId;
+
+  const candidates = baseRows
+    .filter(({ weight, depositable }) => weight > 0n && depositable > 0n)
+    .map((row, index) => {
+      const operatorKey = row.operatorId.toString();
+      const target = allocationTargetsByOperatorId.get(operatorKey) ?? 0n;
+      const gap = target - row.current;
+      const targetRoom = gap > 0n ? gap : 0n;
+      const blockedByTarget = row.depositable > targetRoom ? row.depositable - targetRoom : 0n;
+      return { row, index, operatorKey, gap, blockedByTarget };
+    })
+    .filter(({ blockedByTarget }) => blockedByTarget > 0n);
+
+  candidates.sort((left, right) => {
+    const gapDiff = compareBigIntAsc(left.gap, right.gap);
+    if (gapDiff !== 0) return gapDiff;
+    return left.index - right.index;
+  });
+
+  for (const { operatorKey, blockedByTarget } of candidates) {
+    if (remainingUnallocated === 0n) break;
+
+    const unallocated = blockedByTarget < remainingUnallocated ? blockedByTarget : remainingUnallocated;
+    unallocatedByOperatorId.set(operatorKey, unallocated);
+    remainingUnallocated -= unallocated;
+  }
+
+  return unallocatedByOperatorId;
+};
+
+const getDepositAllocationRows = async ({
+  requestedDeposits,
+  blockTag,
+  receivesByOperatorId,
+  allocated: knownAllocated,
+}: DepositAllocationOptions): Promise<{ allocated: bigint; rows: DepositAllocationRow[] }> => {
+  const metaRegistry = await resolveMetaRegistryContract(undefined, blockTag);
+  const overrides = getCallOverrides(blockTag);
+  const operatorIds = await listExistingOperatorIds(blockTag);
+
+  const baseRows = await Promise.all(
+    operatorIds.map(async (operatorId): Promise<DepositAllocationBaseRow> => {
+      const [name, groupId, weightAndExternalStake, summary, operator] = await Promise.all([
+        getOperatorName(metaRegistry, operatorId, blockTag),
+        metaRegistry.getNodeOperatorGroupId(operatorId, overrides),
+        cmv2ModuleContract.getNodeOperatorWeightAndExternalStake(operatorId, overrides) as Promise<[bigint, bigint]>,
+        cmv2ModuleContract.getNodeOperatorSummary(operatorId, overrides),
+        cmv2ModuleContract.getNodeOperator(operatorId, overrides),
+      ]);
+      const summaryObject = summary.toObject() as {
+        depositableValidatorsCount: bigint;
+      };
+      const operatorObject = operator.toObject() as {
+        totalDepositedKeys: bigint;
+        totalWithdrawnKeys: bigint;
+      };
+      const moduleCurrent = operatorObject.totalDepositedKeys - operatorObject.totalWithdrawnKeys;
+      const externalCurrent = weightAndExternalStake[1] / MAX_EFFECTIVE_BALANCE;
+
+      return {
+        operatorId,
+        groupId,
+        name,
+        weight: weightAndExternalStake[0],
+        moduleCurrent,
+        externalCurrent,
+        current: moduleCurrent + externalCurrent,
+        depositable: summaryObject.depositableValidatorsCount,
+      };
+    }),
+  );
+
+  const mirroredAllocation = computeInitialDepositAllocation(baseRows, requestedDeposits);
+  const allocationsByOperatorId = receivesByOperatorId ?? mirroredAllocation.allocationsByOperatorId;
+  const allocated = receivesByOperatorId
+    ? (knownAllocated ?? sumReceives(receivesByOperatorId))
+    : mirroredAllocation.allocated;
+  const unallocatedByOperatorId = computeInitialDepositUnallocated(
+    baseRows,
+    requestedDeposits,
+    mirroredAllocation.allocationTargetsByOperatorId,
+    allocationsByOperatorId,
+  );
+
+  const rows = baseRows
+    .map((row): DepositAllocationRow => {
+      const operatorKey = row.operatorId.toString();
+      return {
+        ...row,
+        allocationTarget: mirroredAllocation.allocationTargetsByOperatorId.get(operatorKey) ?? null,
+        receives: allocationsByOperatorId.get(operatorKey) ?? 0n,
+        unallocated: unallocatedByOperatorId.get(operatorKey) ?? 0n,
+      };
+    })
+    .filter(({ receives, unallocated }) => receives > 0n || unallocated > 0n);
+
+  rows.sort((left, right) => {
+    const leftGap = getAllocationGap(left);
+    const rightGap = getAllocationGap(right);
+    if (leftGap == null && rightGap == null) return Number(left.operatorId - right.operatorId);
+    if (leftGap == null) return 1;
+    if (rightGap == null) return -1;
+
+    const gapDiff = compareBigIntDesc(leftGap, rightGap);
+    if (gapDiff !== 0) return gapDiff;
+
+    return compareBigIntAsc(left.operatorId, right.operatorId);
+  });
+
+  return { allocated, rows };
+};
+
+const toDepositAllocationTableRow = (row: DepositAllocationRow): string[] => {
+  const { operatorId, groupId, name, weight, current, allocationTarget, depositable, receives, unallocated } = row;
+  const gap = getAllocationGap({ current, allocationTarget });
+  return [
+    `${operatorId.toString()}/${groupId.toString()}`,
+    name,
+    formatWeight(weight.toString()),
+    formatCurrent(row),
+    formatAllocationTarget(allocationTarget),
+    formatAllocationGap(gap),
+    formatMaybeWarningZero(depositable),
+    formatReceives(receives),
+    formatUnallocated(unallocated),
+  ];
+};
+
+const printDepositAllocationRows = (
+  requestedDeposits: bigint,
+  allocated: bigint,
+  rows: DepositAllocationRow[],
+  notes: string[] = [],
+) => {
+  const notAllocated = requestedDeposits - allocated;
+  const table = new Table({
+    head: ['Operator/Group', 'Name', 'Weight', 'Current', 'Target', 'Gap', 'Depositable', 'Allocated', 'Unallocated'],
+    colAligns: ['right', 'left', 'right', 'right', 'right', 'right', 'right', 'right', 'right'],
+    style: { head: ['white', 'bold'], compact: true },
+  });
+
+  rows.forEach((row) => {
+    table.push(toDepositAllocationTableRow(row));
+  });
+
+  logger.log();
+  if (notes.length > 0) {
+    logger.log(chalk.yellow('Notes:'));
+    notes.forEach((note) => logger.log(chalk.yellow(`- ${note}`)));
+  }
+  logger.log(
+    'Requested:',
+    requestedDeposits.toString(),
+    '  Allocated:',
+    allocated.toString(),
+    '  Not allocated:',
+    notAllocated > 0n ? chalk.yellow(notAllocated.toString()) : chalk.green(notAllocated.toString()),
+  );
+  logger.log(table.toString());
+};
+
+const DEPOSIT_SIZE = 32n * 10n ** 18n;
+const MAX_EFFECTIVE_BALANCE = 2048n * 10n ** 18n;
+
+const getDepositReceivesByOperatorFromTx = async (
+  txHash: string,
+): Promise<{ requestedDeposits: bigint; receivesByOperatorId: Map<string, bigint>; blockTag: number }> => {
+  const receipt = await provider.getTransactionReceipt(txHash);
+  if (!receipt) throw new Error(`Transaction receipt not found: ${txHash}`);
+  if (receipt.blockNumber <= 0) throw new Error(`Cannot determine pre-tx block for ${txHash}`);
+
   const cmv2ModuleAddress = (await cmv2ModuleContract.getAddress()).toLowerCase();
-  const modulesCount = await stakingRouterContract.getStakingModulesCount();
+  const stakingRouterAddress = (await stakingRouterContract.getAddress()).toLowerCase();
+  const preTxBlock = receipt.blockNumber - 1;
+  const cmv2ModuleId = await resolveCmv2StakingModuleId(preTxBlock);
+  const nextDepositedByOperatorId = new Map<string, bigint>();
+  let depositedAmount = 0n;
+  let hasCmv2RouterDeposit = false;
+
+  for (const log of receipt.logs) {
+    const address = log.address.toLowerCase();
+
+    if (address === stakingRouterAddress) {
+      try {
+        const parsed = stakingRouterContract.interface.parseLog(log);
+        if (parsed?.name === 'StakingRouterETHDeposited') {
+          const args = parsed.args.toObject() as { stakingModuleId: bigint; amount: bigint };
+          if (cmv2ModuleId != null && args.stakingModuleId === cmv2ModuleId) {
+            depositedAmount += args.amount;
+            hasCmv2RouterDeposit = true;
+          }
+        }
+      } catch {
+        // Ignore logs that do not belong to the staking router ABI.
+      }
+    }
+
+    if (address === cmv2ModuleAddress) {
+      try {
+        const parsed = cmv2ModuleContract.interface.parseLog(log);
+        if (parsed?.name === 'DepositedSigningKeysCountChanged') {
+          const args = parsed.args.toObject() as { nodeOperatorId: bigint; depositedKeysCount: bigint };
+          nextDepositedByOperatorId.set(args.nodeOperatorId.toString(), args.depositedKeysCount);
+        }
+      } catch {
+        // Ignore logs that do not belong to the CMv2 ABI.
+      }
+    }
+  }
+
+  if (!hasCmv2RouterDeposit && nextDepositedByOperatorId.size === 0) {
+    throw new Error(`No CMv2 initial deposit events found in transaction ${txHash}`);
+  }
+  if (!hasCmv2RouterDeposit) {
+    throw new Error(`No CMv2 StakingRouterETHDeposited event found in transaction ${txHash}`);
+  }
+  if (depositedAmount % DEPOSIT_SIZE !== 0n) {
+    throw new Error(`CMv2 router deposited non-validator-sized amount: ${depositedAmount.toString()} wei`);
+  }
+
+  const receivesByOperatorId = new Map<string, bigint>();
+  const overrides = getCallOverrides(preTxBlock);
+  const sameBlockDepositedByOperatorId = new Map<string, bigint>();
+  if (receipt.index > 0) {
+    const sameBlockLogs = await provider.getLogs({
+      address: cmv2ModuleAddress,
+      fromBlock: receipt.blockNumber,
+      toBlock: receipt.blockNumber,
+    });
+    for (const log of sameBlockLogs) {
+      if (log.transactionIndex >= receipt.index) continue;
+      try {
+        const parsed = cmv2ModuleContract.interface.parseLog(log);
+        if (parsed?.name === 'DepositedSigningKeysCountChanged') {
+          const args = parsed.args.toObject() as { nodeOperatorId: bigint; depositedKeysCount: bigint };
+          sameBlockDepositedByOperatorId.set(args.nodeOperatorId.toString(), args.depositedKeysCount);
+        }
+      } catch {
+        // Ignore logs that do not belong to the CMv2 ABI.
+      }
+    }
+  }
+
+  for (const [operatorId, nextDeposited] of nextDepositedByOperatorId.entries()) {
+    const summary = await cmv2ModuleContract.getNodeOperatorSummary(operatorId, overrides);
+    const { totalDepositedValidators } = summary.toObject() as { totalDepositedValidators: bigint };
+    const previousDeposited = sameBlockDepositedByOperatorId.get(operatorId) ?? totalDepositedValidators;
+    if (nextDeposited < previousDeposited) {
+      throw new Error(
+        `Negative deposited-key delta for operator ${operatorId}: previous ${previousDeposited.toString()}, receipt ${nextDeposited.toString()}`,
+      );
+    }
+    receivesByOperatorId.set(operatorId, nextDeposited - previousDeposited);
+  }
+
+  const actualDeposits = depositedAmount / DEPOSIT_SIZE;
+  const actualReceives = sumReceives(receivesByOperatorId);
+  if (actualReceives !== actualDeposits) {
+    throw new Error(
+      `Receipt mismatch: router deposited ${actualDeposits.toString()} keys, CMv2 events account for ${actualReceives.toString()}`,
+    );
+  }
+
+  return {
+    requestedDeposits:
+      cmv2ModuleId == null ? actualDeposits : await getInitialDepositsRequestedByRouter(cmv2ModuleId, preTxBlock),
+    receivesByOperatorId,
+    blockTag: preTxBlock,
+  };
+};
+
+const resolveCmv2StakingModuleId = async (blockTag?: number): Promise<bigint | null> => {
+  const cmv2ModuleAddress = (await cmv2ModuleContract.getAddress()).toLowerCase();
+  const overrides = getCallOverrides(blockTag);
+  const modulesCount = await stakingRouterContract.getStakingModulesCount(overrides);
 
   for (let moduleId = 1n; moduleId <= modulesCount; moduleId++) {
-    const module = await stakingRouterContract.getStakingModule(moduleId);
+    const module = await stakingRouterContract.getStakingModule(moduleId, overrides);
     const moduleAddress = module.toObject().stakingModuleAddress.toLowerCase();
     if (moduleAddress === cmv2ModuleAddress) return moduleId;
   }
@@ -374,6 +812,38 @@ addAccessControlSubCommands(cmv2, cmv2ModuleContract);
 addParsingCommands(cmv2, cmv2ModuleContract);
 addLogsCommands(cmv2, cmv2ModuleContract);
 addPauseUntilSubCommands(cmv2, cmv2ModuleContract);
+
+cmv2
+  .command('deposits')
+  .description('explains initial validator deposit allocation across CMv2 node operators')
+  .argument('<count>', 'initial validator deposits count')
+  .action(async (count) => {
+    const requestedDeposits = parseUInt(count);
+    const { allocated, rows } = await getDepositAllocationRows({ requestedDeposits });
+    printDepositAllocationRows(requestedDeposits, allocated, rows, [
+      'Estimated allocation; current = CMv2 deposited-minus-withdrawn validators + floor(external stake / 2048 ETH).',
+      'Row Unallocated is inferred depositable capacity above this iteration target, not an onchain field.',
+    ]);
+  });
+
+cmv2
+  .command('deposits-tx')
+  .description('explains initial validator deposit allocation from a past CMv2 deposit transaction')
+  .argument('<tx-hash>', 'transaction hash')
+  .action(async (txHash) => {
+    const { requestedDeposits, receivesByOperatorId, blockTag } = await getDepositReceivesByOperatorFromTx(txHash);
+    const { allocated, rows } = await getDepositAllocationRows({
+      requestedDeposits,
+      blockTag,
+      receivesByOperatorId,
+    });
+    logger.log('Block:', blockTag, '(pre-tx snapshot)');
+    printDepositAllocationRows(requestedDeposits, allocated, rows, [
+      'Requested/Target use the parent-block snapshot; Receives comes from receipt events with earlier same-block CMv2 deposits as baseline.',
+      'Current = CMv2 deposited-minus-withdrawn validators + floor(external stake / 2048 ETH).',
+      'Row Unallocated is inferred depositable capacity above this iteration target, not an onchain field.',
+    ]);
+  });
 
 cmv2
   .command('set-default-deposit-allocation-weight')
@@ -545,10 +1015,8 @@ cmv2
     let role = id('MANAGE_KEYS_LIMIT_ROLE');
     try {
       role = await parametersRegistryReadonly.MANAGE_KEYS_LIMIT_ROLE();
-    } catch (error) {
-      logger.warn(
-        `MANAGE_KEYS_LIMIT_ROLE() reverted on ${parametersRegistryAddress}; fallback to keccak role hash`,
-      );
+    } catch {
+      logger.warn(`MANAGE_KEYS_LIMIT_ROLE() reverted on ${parametersRegistryAddress}; fallback to keccak role hash`);
     }
     const iface = new Interface(['function grantRole(bytes32,address)']);
     const [, grantRoleScript] = encodeFromAgent({
@@ -579,24 +1047,20 @@ cmv2
     let before: bigint | null = null;
     try {
       before = await parametersRegistryReadonly.defaultKeysLimit();
-    } catch (error) {
-      logger.warn(
-        `defaultKeysLimit() reverted on ${parametersRegistryAddress}; continuing without pre-check`,
-      );
+    } catch {
+      logger.warn(`defaultKeysLimit() reverted on ${parametersRegistryAddress}; continuing without pre-check`);
     }
 
     let role = id('MANAGE_KEYS_LIMIT_ROLE');
     try {
       role = await parametersRegistryReadonly.MANAGE_KEYS_LIMIT_ROLE();
-    } catch (error) {
-      logger.warn(
-        `MANAGE_KEYS_LIMIT_ROLE() reverted on ${parametersRegistryAddress}; fallback to keccak role hash`,
-      );
+    } catch {
+      logger.warn(`MANAGE_KEYS_LIMIT_ROLE() reverted on ${parametersRegistryAddress}; fallback to keccak role hash`);
     }
     try {
       const hasRole = await parametersRegistryReadonly.hasRole(role, wallet.address);
       logger.log('MANAGE_KEYS_LIMIT_ROLE for wallet', wallet.address, hasRole);
-    } catch (error) {
+    } catch {
       logger.warn(`hasRole() reverted on ${parametersRegistryAddress}; skipping role read check`);
     }
 
@@ -618,7 +1082,7 @@ cmv2
         ')',
       );
       return;
-    } catch (error) {
+    } catch {
       logger.warn(
         `defaultKeysLimit() still reverts on ${parametersRegistryAddress}; set tx was sent without post-check`,
       );
