@@ -3,7 +3,7 @@ import { wallet } from '@providers';
 import { getDeployedAddress, getOptionalDeployedAddress } from '@configs';
 import consensusAbi from 'abi/HashConsensus.json';
 import accountingAbi from 'abi/AccountingOracle.json';
-import csmOracleAbi from 'abi/csm/CSFeeOracle.json';
+import csmOracleAbi from 'abi/csm/FeeOracle.json';
 import exitBusAbi from 'abi/ValidatorsExitBusOracle.json';
 import configAbi from 'abi/OracleDaemonConfig.json';
 

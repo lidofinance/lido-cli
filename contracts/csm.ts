@@ -2,10 +2,11 @@ import { Contract, Provider } from 'ethers';
 import { wallet } from '@providers';
 import { getOptionalDeployedAddress } from '@configs';
 import moduleAbi from 'abi/csm/CSModule.json';
-import accountingAbi from 'abi/csm/CSAccounting.json';
-import feeDistributorAbi from 'abi/csm/CSFeeDistributor.json';
-import feeOracleAbi from 'abi/csm/CSFeeOracle.json';
+import accountingAbi from 'abi/csm/Accounting.json';
+import feeDistributorAbi from 'abi/csm/FeeDistributor.json';
+import feeOracleAbi from 'abi/csm/FeeOracle.json';
 import permissionlessGateAbi from 'abi/csm/PermissionlessGate.json';
+import ejectorAbi from 'abi/csm/Ejector.json';
 import { getVersion } from './initializable';
 
 export const csModuleAddress = getOptionalDeployedAddress('csm.module.address');
@@ -22,6 +23,9 @@ export const csFeeDistributorContract = new Contract(csFeeDistributorAddress, fe
 
 export const csFeeOracleAddress = getOptionalDeployedAddress('csm.feeOracle.address');
 export const csFeeOracleContract = new Contract(csFeeOracleAddress, feeOracleAbi, wallet);
+
+export const csEjectorAddress = getOptionalDeployedAddress('csm.ejector.address');
+export const csEjectorContract = new Contract(csEjectorAddress, ejectorAbi, wallet);
 
 export const permissionlessGateAddress = getOptionalDeployedAddress('csm.permissionlessGate.address');
 export const permissionlessGateContract = new Contract(permissionlessGateAddress, permissionlessGateAbi, wallet);

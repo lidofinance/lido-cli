@@ -8,13 +8,15 @@ import {
 } from '@contracts';
 import { provider } from '@providers';
 import { encodeFromAgent, votingNewVote } from '@scripts';
-import { CallScriptAction, encodeCallScript, forwardVoteFromTm, getRoleHash } from '@utils';
+import { CallScriptAction, encodeCallScript, forwardVoteFromTm, getRoleHash, getRoleHashByAddress } from '@utils';
 import { Contract, Interface } from 'ethers';
 
 export const devnetCSMStart = async () => {
   const CS_MODULE_ADDRESS = process.env.CS_MODULE_ADDRESS as string;
   const CS_ACCOUNTING_ADDRESS = process.env.CS_ACCOUNTING_ADDRESS as string;
   const CS_ORACLE_HASH_CONSENSUS_ADDRESS = process.env.CS_ORACLE_HASH_CONSENSUS_ADDRESS as string;
+  const CS_EJECTOR_ADDRESS = process.env.CS_EJECTOR_ADDRESS as string | undefined;
+  const CS_TWG_ADDRESS = process.env.CS_TRIGGERABLE_WITHDRAWALS_GATEWAY_ADDRESS ?? process.env.CS_TWG_ADDRESS;
 
   const CS_MODULE_NAME = process.env.CS_MODULE_NAME ?? 'Community Staking';
   const CS_STAKE_SHARE_LIMIT = process.env.CS_STAKE_SHARE_LIMIT ?? 2000; // 20%
@@ -23,6 +25,7 @@ export const devnetCSMStart = async () => {
   const CS_TREASURY_FEE = process.env.CS_TREASURY_FEE ?? 200; // 2%
   const CS_MAX_DEPOSITS_PER_BLOCK = process.env.CS_MAX_DEPOSITS_PER_BLOCK ?? 30;
   const CS_MIN_DEPOSIT_BLOCK_DISTANCE = process.env.CS_MIN_DEPOSIT_BLOCK_DISTANCE ?? 25;
+  const CS_WITHDRAWAL_CREDENTIALS_TYPE = process.env.CS_WITHDRAWAL_CREDENTIALS_TYPE ?? 1;
   // 60 (50 + 10)
   // https://github.com/lidofinance/community-staking-module/blob/e1bbb4133d18206fc3a1a63ae660a670be08b6ea/script/DeployLocalDevNet.s.sol#L22
   const CS_ORACLE_INITIAL_EPOCH = process.env.CS_ORACLE_INITIAL_EPOCH ?? 60;
@@ -35,7 +38,7 @@ export const devnetCSMStart = async () => {
     'function resume()',
     'function activatePublicRelease()',
     'function updateInitialEpoch(uint256)',
-    'function addStakingModule(string,address,uint256,uint256,uint256,uint256,uint256,uint256)',
+    'function addStakingModule(string,address,(uint256,uint256,uint256,uint256,uint256,uint256,uint256))',
   ]);
 
   const csmVersion = await getVersion(provider, CS_MODULE_ADDRESS);
@@ -62,12 +65,15 @@ export const devnetCSMStart = async () => {
     data: iface.encodeFunctionData('addStakingModule', [
       CS_MODULE_NAME,
       CS_MODULE_ADDRESS,
-      CS_STAKE_SHARE_LIMIT,
-      CS_PRIORITY_EXIT_SHARE_THRESHOLD,
-      CS_STAKING_MODULE_FEE,
-      CS_TREASURY_FEE,
-      CS_MAX_DEPOSITS_PER_BLOCK,
-      CS_MIN_DEPOSIT_BLOCK_DISTANCE,
+      [
+        CS_STAKE_SHARE_LIMIT,
+        CS_PRIORITY_EXIT_SHARE_THRESHOLD,
+        CS_STAKING_MODULE_FEE,
+        CS_TREASURY_FEE,
+        CS_MAX_DEPOSITS_PER_BLOCK,
+        CS_MIN_DEPOSIT_BLOCK_DISTANCE,
+        CS_WITHDRAWAL_CREDENTIALS_TYPE,
+      ],
     ]),
   });
   calls.push(addStakingModuleScript);
@@ -92,6 +98,20 @@ export const devnetCSMStart = async () => {
       data: iface.encodeFunctionData('grantRole', [burnerRequestBurnRoleHash, CS_ACCOUNTING_ADDRESS]),
     });
     calls.push(requestBurnRoleGrantScript);
+  }
+
+  if (CS_TWG_ADDRESS && CS_EJECTOR_ADDRESS) {
+    items.push(
+      `${itemIdx++}. Grant ADD_FULL_WITHDRAWAL_REQUEST_ROLE role to Ejector contract with address ${CS_EJECTOR_ADDRESS}`,
+    );
+    const twgRoleHash = await getRoleHashByAddress(CS_TWG_ADDRESS, 'ADD_FULL_WITHDRAWAL_REQUEST_ROLE');
+    const [, twgRoleGrantScript] = encodeFromAgent({
+      to: CS_TWG_ADDRESS,
+      data: iface.encodeFunctionData('grantRole', [twgRoleHash, CS_EJECTOR_ADDRESS]),
+    });
+    calls.push(twgRoleGrantScript);
+  } else if (CS_TWG_ADDRESS || CS_EJECTOR_ADDRESS) {
+    throw new Error('Both CS_TRIGGERABLE_WITHDRAWALS_GATEWAY_ADDRESS and CS_EJECTOR_ADDRESS are required');
   }
 
   items.push(`${itemIdx++}. Grant RESUME role to agent ${aragonAgentAddress}`);

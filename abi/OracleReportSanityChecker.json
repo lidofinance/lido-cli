@@ -8,6 +8,11 @@
       },
       {
         "internalType": "address",
+        "name": "_accounting",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "_admin",
         "type": "address"
       },
@@ -15,12 +20,12 @@
         "components": [
           {
             "internalType": "uint256",
-            "name": "exitedValidatorsPerDayLimit",
+            "name": "exitedEthAmountPerDayLimit",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "appearedValidatorsPerDayLimit",
+            "name": "appearedEthAmountPerDayLimit",
             "type": "uint256"
           },
           {
@@ -35,7 +40,17 @@
           },
           {
             "internalType": "uint256",
-            "name": "maxValidatorExitRequestsPerReport",
+            "name": "maxBalanceExitRequestedPerReportInEth",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxEffectiveBalanceWeightWCType01",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxEffectiveBalanceWeightWCType02",
             "type": "uint256"
           },
           {
@@ -60,17 +75,27 @@
           },
           {
             "internalType": "uint256",
-            "name": "initialSlashingAmountPWei",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "inactivityPenaltiesAmountPWei",
+            "name": "maxCLBalanceDecreaseBP",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
             "name": "clBalanceOraclesErrorUpperBPLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "consolidationEthAmountPerDayLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "exitedValidatorEthAmountLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "externalPendingBalanceCapEth",
             "type": "uint256"
           }
         ],
@@ -84,17 +109,44 @@
   },
   {
     "inputs": [],
-    "name": "ActualShareRateIsZero",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "AdminCannotBeZero",
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "limitPerDay",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "appearedPerDay",
+        "type": "uint256"
+      }
+    ],
+    "name": "AppearedEthAmountPerDayLimitExceeded",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxValue",
+        "type": "uint256"
+      }
+    ],
+    "name": "BasisPointsOverflow",
+    "type": "error"
+  },
+  {
     "inputs": [],
-    "name": "CalledNotFromLido",
+    "name": "CalledNotFromAccounting",
     "type": "error"
   },
   {
@@ -110,18 +162,23 @@
         "type": "uint256"
       }
     ],
-    "name": "ExitedValidatorsLimitExceeded",
+    "name": "ExitedEthAmountPerDayLimitExceeded",
     "type": "error"
   },
   {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "appearedValidatorsLimit",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "actual",
         "type": "uint256"
       }
     ],
-    "name": "IncorrectAppearedValidators",
+    "name": "InconsistentValidatorsBalanceByModule",
     "type": "error"
   },
   {
@@ -144,6 +201,27 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "baselineBalance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalDeposits",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalCLWithdrawals",
+        "type": "uint256"
+      }
+    ],
+    "name": "IncorrectCLBalanceDecreaseWindowData",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "annualBalanceDiff",
         "type": "uint256"
       }
@@ -155,22 +233,27 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "actualELRewardsVaultBalance",
+        "name": "withdrawalVaultBalance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lastWithdrawalVaultBalanceAfterTransfer",
         "type": "uint256"
       }
     ],
-    "name": "IncorrectELRewardsVaultBalance",
+    "name": "IncorrectCLWithdrawalsVaultBalance",
     "type": "error"
   },
   {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "exitedValidatorsLimit",
+        "name": "actualELRewardsVaultBalance",
         "type": "uint256"
       }
     ],
-    "name": "IncorrectExitedValidators",
+    "name": "IncorrectELRewardsVaultBalance",
     "type": "error"
   },
   {
@@ -192,17 +275,6 @@
       }
     ],
     "name": "IncorrectLimitValue",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "maxRequestsCount",
-        "type": "uint256"
-      }
-    ],
-    "name": "IncorrectNumberOfExitRequestsPerReport",
     "type": "error"
   },
   {
@@ -247,11 +319,112 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "maxBalanceSum",
+        "type": "uint256"
+      }
+    ],
+    "name": "IncorrectSumOfExitBalancePerReport",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "maxAllowed",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "actual",
+        "type": "uint256"
+      }
+    ],
+    "name": "IncorrectTotalActivatedBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "maxAllowed",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "actual",
+        "type": "uint256"
+      }
+    ],
+    "name": "IncorrectTotalCLBalanceIncrease",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "maxAllowed",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "actual",
+        "type": "uint256"
+      }
+    ],
+    "name": "IncorrectTotalModuleValidatorsBalanceIncrease",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "maxAllowed",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "actual",
+        "type": "uint256"
+      }
+    ],
+    "name": "IncorrectTotalPendingBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "actualWithdrawalVaultBalance",
         "type": "uint256"
       }
     ],
     "name": "IncorrectWithdrawalsVaultBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "withdrawalVaultBalance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "withdrawalsVaultTransfer",
+        "type": "uint256"
+      }
+    ],
+    "name": "IncorrectWithdrawalsVaultTransfer",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidClBalancesData",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MigrationAlreadyDone",
     "type": "error"
   },
   {
@@ -344,6 +517,22 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "actual",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      }
+    ],
+    "name": "UnexpectedLidoVersion",
+    "type": "error"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {
@@ -362,11 +551,36 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "appearedValidatorsPerDayLimit",
+        "name": "appearedEthAmountPerDayLimit",
         "type": "uint256"
       }
     ],
-    "name": "AppearedValidatorsPerDayLimitSet",
+    "name": "AppearedEthAmountPerDayLimitSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clBalance",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "deposits",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clWithdrawals",
+        "type": "uint256"
+      }
+    ],
+    "name": "BaselineSnapshotMigrated",
     "type": "event"
   },
   {
@@ -388,11 +602,11 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "exitedValidatorsPerDayLimit",
+        "name": "consolidationEthAmountPerDayLimit",
         "type": "uint256"
       }
     ],
-    "name": "ExitedValidatorsPerDayLimitSet",
+    "name": "ConsolidationEthAmountPerDayLimitSet",
     "type": "event"
   },
   {
@@ -401,11 +615,11 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "inactivityPenaltiesAmountPWei",
+        "name": "exitedEthAmountPerDayLimit",
         "type": "uint256"
       }
     ],
-    "name": "InactivityPenaltiesAmountSet",
+    "name": "ExitedEthAmountPerDayLimitSet",
     "type": "event"
   },
   {
@@ -414,11 +628,76 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "initialSlashingAmountPWei",
+        "name": "exitedValidatorEthAmountLimit",
         "type": "uint256"
       }
     ],
-    "name": "InitialSlashingAmountSet",
+    "name": "ExitedValidatorEthAmountLimitSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "externalPendingBalanceCapEth",
+        "type": "uint256"
+      }
+    ],
+    "name": "ExternalPendingBalanceCapEthSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "maxBalanceExitRequestedPerReportInEth",
+        "type": "uint256"
+      }
+    ],
+    "name": "MaxBalanceExitRequestedPerReportInEthSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "maxCLBalanceDecreaseBP",
+        "type": "uint256"
+      }
+    ],
+    "name": "MaxCLBalanceDecreaseBPSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "maxEffectiveBalanceWeightWCType01",
+        "type": "uint256"
+      }
+    ],
+    "name": "MaxEffectiveBalanceWeightWCType01Set",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "maxEffectiveBalanceWeightWCType02",
+        "type": "uint256"
+      }
+    ],
+    "name": "MaxEffectiveBalanceWeightWCType02Set",
     "type": "event"
   },
   {
@@ -466,19 +745,6 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "maxValidatorExitRequestsPerReport",
-        "type": "uint256"
-      }
-    ],
-    "name": "MaxValidatorExitRequestsPerReportSet",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
         "name": "refSlot",
         "type": "uint256"
       },
@@ -497,7 +763,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "maxAllowedCLRebaseNegativeSum",
+        "name": "maxAllowedDecrease",
         "type": "uint256"
       }
     ],
@@ -671,7 +937,20 @@
   },
   {
     "inputs": [],
-    "name": "APPEARED_VALIDATORS_PER_DAY_LIMIT_MANAGER_ROLE",
+    "name": "APPEARED_ETH_AMOUNT_PER_DAY_LIMIT_MANAGER_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "CONSOLIDATION_ETH_AMOUNT_PER_DAY_LIMIT_MANAGER_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -697,7 +976,7 @@
   },
   {
     "inputs": [],
-    "name": "EXITED_VALIDATORS_PER_DAY_LIMIT_MANAGER_ROLE",
+    "name": "EXITED_ETH_AMOUNT_PER_DAY_LIMIT_MANAGER_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -710,7 +989,59 @@
   },
   {
     "inputs": [],
-    "name": "INITIAL_SLASHING_AND_PENALTIES_MANAGER_ROLE",
+    "name": "EXITED_VALIDATOR_ETH_AMOUNT_LIMIT_MANAGER_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "EXTERNAL_PENDING_BALANCE_CAP_MANAGER_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_BALANCE_EXIT_REQUESTED_PER_REPORT_IN_ETH_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_CL_BALANCE_DECREASE_MANAGER_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_EFFECTIVE_BALANCE_WEIGHTS_MANAGER_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -750,19 +1081,6 @@
   {
     "inputs": [],
     "name": "MAX_POSITIVE_TOKEN_REBASE_MANAGER_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "MAX_VALIDATOR_EXIT_REQUESTS_PER_REPORT_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -821,12 +1139,22 @@
       },
       {
         "internalType": "uint256",
-        "name": "_preCLBalance",
+        "name": "_preCLValidatorsBalance",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_postCLBalance",
+        "name": "_preCLPendingBalance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_postCLValidatorsBalance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_postCLPendingBalance",
         "type": "uint256"
       },
       {
@@ -846,12 +1174,12 @@
       },
       {
         "internalType": "uint256",
-        "name": "_preCLValidators",
+        "name": "_deposits",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_postCLValidators",
+        "name": "_withdrawalsVaultTransfer",
         "type": "uint256"
       }
     ],
@@ -864,7 +1192,86 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_exitRequestsCount",
+        "name": "_appearedEthAmountPerDay",
+        "type": "uint256"
+      }
+    ],
+    "name": "checkAppearedEthAmountPerDay",
+    "outputs": [],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "_stakingModuleIdsWithUpdatedBalance",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_validatorBalancesWeiByStakingModule",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_clValidatorsBalanceWei",
+        "type": "uint256"
+      }
+    ],
+    "name": "checkCLBalancesConsistency",
+    "outputs": [],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_timeElapsed",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_preCLValidatorsBalance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_preCLPendingBalance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_postCLValidatorsBalance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_postCLPendingBalance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_withdrawalVaultBalance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_deposits",
+        "type": "uint256"
+      }
+    ],
+    "name": "checkCLPendingBalanceIncrease",
+    "outputs": [],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_maxBalanceExitRequestedPerReportInEth",
         "type": "uint256"
       }
     ],
@@ -877,11 +1284,16 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_exitedValidatorsCount",
+        "name": "_newlyExitedValidatorsCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_timeElapsed",
         "type": "uint256"
       }
     ],
-    "name": "checkExitedValidatorsRatePerDay",
+    "name": "checkExitedEthAmountPerDay",
     "outputs": [],
     "stateMutability": "view",
     "type": "function"
@@ -895,6 +1307,54 @@
       }
     ],
     "name": "checkExtraDataItemsCountPerTransaction",
+    "outputs": [],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "_stakingModuleIdsWithUpdatedBalance",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_validatorBalancesWeiByStakingModule",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_preCLValidatorsBalanceWei",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_preCLPendingBalanceWei",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_postCLValidatorsBalanceWei",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_postCLPendingBalanceWei",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_depositsWei",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_timeElapsed",
+        "type": "uint256"
+      }
+    ],
+    "name": "checkModuleAndCLBalancesChangeRates",
     "outputs": [],
     "stateMutability": "view",
     "type": "function"
@@ -921,22 +1381,22 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_postTotalPooledEther",
+        "name": "_postInternalEther",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_postTotalShares",
+        "name": "_postInternalShares",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_etherLockedOnWithdrawalQueue",
+        "name": "_etherToFinalizeWQ",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_sharesBurntDueToWithdrawals",
+        "name": "_sharesToBurnForWithdrawals",
         "type": "uint256"
       },
       {
@@ -983,6 +1443,45 @@
   },
   {
     "inputs": [],
+    "name": "getMaxCLBalanceDecreaseBP",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getMaxEffectiveBalanceWeightWCType01",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getMaxEffectiveBalanceWeightWCType02",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "getMaxPositiveTokenRebase",
     "outputs": [
       {
@@ -1002,12 +1501,12 @@
         "components": [
           {
             "internalType": "uint256",
-            "name": "exitedValidatorsPerDayLimit",
+            "name": "exitedEthAmountPerDayLimit",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "appearedValidatorsPerDayLimit",
+            "name": "appearedEthAmountPerDayLimit",
             "type": "uint256"
           },
           {
@@ -1022,7 +1521,17 @@
           },
           {
             "internalType": "uint256",
-            "name": "maxValidatorExitRequestsPerReport",
+            "name": "maxBalanceExitRequestedPerReportInEth",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxEffectiveBalanceWeightWCType01",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxEffectiveBalanceWeightWCType02",
             "type": "uint256"
           },
           {
@@ -1047,17 +1556,27 @@
           },
           {
             "internalType": "uint256",
-            "name": "initialSlashingAmountPWei",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "inactivityPenaltiesAmountPWei",
+            "name": "maxCLBalanceDecreaseBP",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
             "name": "clBalanceOraclesErrorUpperBPLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "consolidationEthAmountPerDayLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "exitedValidatorEthAmountLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "externalPendingBalanceCapEth",
             "type": "uint256"
           }
         ],
@@ -1187,6 +1706,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "migrateBaselineSnapshot",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "bytes32",
@@ -1220,13 +1746,18 @@
         "type": "uint64"
       },
       {
-        "internalType": "uint64",
-        "name": "totalExitedValidators",
-        "type": "uint64"
+        "internalType": "uint128",
+        "name": "clBalance",
+        "type": "uint128"
       },
       {
         "internalType": "uint128",
-        "name": "negativeCLRebaseWei",
+        "name": "deposits",
+        "type": "uint128"
+      },
+      {
+        "internalType": "uint128",
+        "name": "clWithdrawals",
         "type": "uint128"
       }
     ],
@@ -1281,11 +1812,11 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_appearedValidatorsPerDayLimit",
+        "name": "_appearedEthAmountPerDayLimit",
         "type": "uint256"
       }
     ],
-    "name": "setAppearedValidatorsPerDayLimit",
+    "name": "setAppearedEthAmountPerDayLimit",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1294,11 +1825,11 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_exitedValidatorsPerDayLimit",
+        "name": "_consolidationEthAmountPerDayLimit",
         "type": "uint256"
       }
     ],
-    "name": "setExitedValidatorsPerDayLimit",
+    "name": "setConsolidationEthAmountPerDayLimit",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1307,16 +1838,11 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_initialSlashingAmountPWei",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_inactivityPenaltiesAmountPWei",
+        "name": "_exitedEthAmountPerDayLimit",
         "type": "uint256"
       }
     ],
-    "name": "setInitialSlashingAndPenaltiesAmount",
+    "name": "setExitedEthAmountPerDayLimit",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1325,11 +1851,76 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_maxValidatorExitRequestsPerReport",
+        "name": "_exitedValidatorEthAmountLimit",
         "type": "uint256"
       }
     ],
-    "name": "setMaxExitRequestsPerOracleReport",
+    "name": "setExitedValidatorEthAmountLimit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_externalPendingBalanceCapEth",
+        "type": "uint256"
+      }
+    ],
+    "name": "setExternalPendingBalanceCapEth",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_maxBalanceExitRequestedPerReportInEth",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxBalanceExitRequestedPerReportInEth",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_maxCLBalanceDecreaseBP",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxCLBalanceDecreaseBP",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_maxEffectiveBalanceWeightWCType01",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxEffectiveBalanceWeightWCType01",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_maxEffectiveBalanceWeightWCType02",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxEffectiveBalanceWeightWCType02",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1379,12 +1970,12 @@
         "components": [
           {
             "internalType": "uint256",
-            "name": "exitedValidatorsPerDayLimit",
+            "name": "exitedEthAmountPerDayLimit",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "appearedValidatorsPerDayLimit",
+            "name": "appearedEthAmountPerDayLimit",
             "type": "uint256"
           },
           {
@@ -1399,7 +1990,17 @@
           },
           {
             "internalType": "uint256",
-            "name": "maxValidatorExitRequestsPerReport",
+            "name": "maxBalanceExitRequestedPerReportInEth",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxEffectiveBalanceWeightWCType01",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxEffectiveBalanceWeightWCType02",
             "type": "uint256"
           },
           {
@@ -1424,17 +2025,27 @@
           },
           {
             "internalType": "uint256",
-            "name": "initialSlashingAmountPWei",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "inactivityPenaltiesAmountPWei",
+            "name": "maxCLBalanceDecreaseBP",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
             "name": "clBalanceOraclesErrorUpperBPLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "consolidationEthAmountPerDayLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "exitedValidatorEthAmountLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "externalPendingBalanceCapEth",
             "type": "uint256"
           }
         ],
@@ -1501,12 +2112,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_preTotalPooledEther",
+        "name": "_preInternalEther",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_preTotalShares",
+        "name": "_preInternalShares",
         "type": "uint256"
       },
       {
@@ -1559,7 +2170,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "simulatedSharesToBurn",
+        "name": "sharesFromWQToBurn",
         "type": "uint256"
       },
       {
