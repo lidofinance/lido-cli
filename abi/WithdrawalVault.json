@@ -20,6 +20,16 @@
         "internalType": "address",
         "name": "_consolidationGateway",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_withdrawalRequest",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_consolidationRequest",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -368,13 +378,6 @@
     "name": "addWithdrawalRequests",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "finalizeUpgrade_v2",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

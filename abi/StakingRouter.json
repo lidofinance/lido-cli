@@ -15,6 +15,16 @@
         "internalType": "address",
         "name": "_lidoLocator",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_maxEBType1",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_maxEBType2",
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
@@ -43,7 +53,7 @@
   },
   {
     "inputs": [],
-    "name": "AllocationExceedsTarget",
+    "name": "AllocationExceedsLimit",
     "type": "error"
   },
   {
@@ -53,22 +63,7 @@
   },
   {
     "inputs": [],
-    "name": "AppAuthDSMFailed",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "AppAuthFailed",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "CannotDeposit",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "DepositValueNotMultipleOfInitialDeposit",
+    "name": "ArraysLengthMismatch",
     "type": "error"
   },
   {
@@ -83,7 +78,22 @@
   },
   {
     "inputs": [],
-    "name": "EmptyWithdrawalsCredentials",
+    "name": "ExitedValidatorsCountCannotDecrease",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InconsistentFeeSum",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidAmountGwei",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidFeeSum",
     "type": "error"
   },
   {
@@ -93,17 +103,79 @@
   },
   {
     "inputs": [],
-    "name": "KeysDoesntBelongToModule",
+    "name": "InvalidMaxDepositPerBlockValue",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "LegacyStakingModuleRequired",
+    "name": "InvalidMinDepositBlockDistance",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidPriorityExitShareThreshold",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "code",
+        "type": "uint256"
+      }
+    ],
+    "name": "InvalidReportData",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidStakeShareLimit",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ModuleReturnExceedTarget",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotAuthorized",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OracleExtraDataNotSubmitted",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "reportedExitedValidatorsCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "depositedValidatorsCount",
+        "type": "uint256"
+      }
+    ],
+    "name": "ReportedExitedValidatorsExceedDeposited",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StakingModuleAddressExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StakingModuleNotActive",
     "type": "error"
   },
   {
@@ -118,17 +190,70 @@
   },
   {
     "inputs": [],
-    "name": "TopUpAmountTooLow",
+    "name": "StakingModuleWrongName",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "WrongArrayLength",
+    "name": "StakingModulesLimitExceeded",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "currentModuleExitedValidatorsCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "currentNodeOpExitedValidatorsCount",
+        "type": "uint256"
+      }
+    ],
+    "name": "UnexpectedCurrentValidatorsCount",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "newModuleTotalExitedValidatorsCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "newModuleTotalExitedValidatorsCountInStakingRouter",
+        "type": "uint256"
+      }
+    ],
+    "name": "UnexpectedFinalExitedValidatorsCount",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expectedId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "actualId",
+        "type": "uint256"
+      }
+    ],
+    "name": "UnexpectedModuleId",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "WrongPubkeysLength",
+    "name": "UnrecoverableModuleError",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "WrongPubkeyLength",
     "type": "error"
   },
   {
@@ -139,6 +264,16 @@
   {
     "inputs": [],
     "name": "ZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroArgument",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroDeposits",
     "type": "error"
   },
   {
@@ -158,6 +293,25 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "stakingModuleId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "lowLevelRevertData",
+        "type": "bytes"
+      }
+    ],
+    "name": "ExitedAndStuckValidatorsCountsUpdateFailed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": false,
         "internalType": "uint64",
         "name": "version",
@@ -165,6 +319,25 @@
       }
     ],
     "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "stakingModuleId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "lowLevelRevertData",
+        "type": "bytes"
+      }
+    ],
+    "name": "RewardsMintedReportFailed",
     "type": "event"
   },
   {
@@ -271,6 +444,50 @@
       }
     ],
     "name": "StakingModuleAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "stakingModuleId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "nodeOperatorId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "_publicKey",
+        "type": "bytes"
+      }
+    ],
+    "name": "StakingModuleExitNotificationFailed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "stakingModuleId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "unreportedExitedValidatorsCount",
+        "type": "uint256"
+      }
+    ],
+    "name": "StakingModuleExitedValidatorsIncompleteReporting",
     "type": "event"
   },
   {
@@ -396,6 +613,31 @@
       },
       {
         "indexed": false,
+        "internalType": "enum StakingModuleStatus",
+        "name": "status",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "setBy",
+        "type": "address"
+      }
+    ],
+    "name": "StakingModuleStatusSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "stakingModuleId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
@@ -424,17 +666,23 @@
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "ACCOUNTING_REPORT_ROLE",
-    "outputs": [
+    "anonymous": false,
+    "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "stakingModuleId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "lowLevelRevertData",
+        "type": "bytes"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
+    "name": "WithdrawalsCredentialsChangeFailed",
+    "type": "event"
   },
   {
     "inputs": [],
@@ -485,7 +733,7 @@
         "type": "uint256"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -522,6 +770,32 @@
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_EFFECTIVE_BALANCE_WC_TYPE_01",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_EFFECTIVE_BALANCE_WC_TYPE_02",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -608,6 +882,19 @@
   {
     "inputs": [],
     "name": "STAKING_MODULE_MANAGE_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "STAKING_MODULE_SHARE_MANAGE_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -778,6 +1065,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "finalizeUpgrade_v4",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -942,6 +1236,11 @@
                 "internalType": "uint8",
                 "name": "withdrawalCredentialsType",
                 "type": "uint8"
+              },
+              {
+                "internalType": "uint64",
+                "name": "validatorsBalanceGwei",
+                "type": "uint64"
               }
             ],
             "internalType": "struct StakingModule",
@@ -998,19 +1297,48 @@
         "internalType": "uint256",
         "name": "_depositAmount",
         "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "_isTopUp",
+        "type": "bool"
       }
     ],
-    "name": "getDepositsAllocation",
+    "name": "getDepositAllocations",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "allocated",
+        "name": "totalAllocated",
         "type": "uint256"
       },
       {
         "internalType": "uint256[]",
-        "name": "allocations",
+        "name": "allocated",
         "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "newAllocations",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "moduleId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getModuleValidatorsBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -1456,6 +1784,11 @@
             "internalType": "uint8",
             "name": "withdrawalCredentialsType",
             "type": "uint8"
+          },
+          {
+            "internalType": "uint64",
+            "name": "validatorsBalanceGwei",
+            "type": "uint64"
           }
         ],
         "internalType": "struct StakingModule",
@@ -1479,25 +1812,6 @@
       {
         "internalType": "uint256",
         "name": "activeValidatorsCount",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "moduleId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getStakingModuleBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
         "type": "uint256"
       }
     ],
@@ -1597,6 +1911,11 @@
                 "internalType": "uint8",
                 "name": "withdrawalCredentialsType",
                 "type": "uint8"
+              },
+              {
+                "internalType": "uint64",
+                "name": "validatorsBalanceGwei",
+                "type": "uint64"
               }
             ],
             "internalType": "struct StakingModule",
@@ -1816,12 +2135,7 @@
     "outputs": [
       {
         "internalType": "uint64",
-        "name": "activeBalanceGwei",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint64",
-        "name": "pendingBalanceGwei",
+        "name": "validatorsBalanceGwei",
         "type": "uint64"
       },
       {
@@ -1862,12 +2176,12 @@
           },
           {
             "internalType": "uint16",
-            "name": "depositTargetShare",
+            "name": "stakeShareLimit",
             "type": "uint16"
           },
           {
             "internalType": "uint16",
-            "name": "withdrawalProtectShare",
+            "name": "priorityExitShareThreshold",
             "type": "uint16"
           },
           {
@@ -2079,6 +2393,11 @@
             "internalType": "uint8",
             "name": "withdrawalCredentialsType",
             "type": "uint8"
+          },
+          {
+            "internalType": "uint64",
+            "name": "validatorsBalanceGwei",
+            "type": "uint64"
           }
         ],
         "internalType": "struct StakingModule[]",
@@ -2136,30 +2455,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_depositAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "getTopUpAllocation",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "allocated",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "allocations",
-        "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "getTotalFeeE4Precision",
     "outputs": [
@@ -2174,7 +2469,7 @@
   },
   {
     "inputs": [],
-    "name": "getTotalStakingModulesBalance",
+    "name": "getTotalModulesValidatorsBalance",
     "outputs": [
       {
         "internalType": "uint256",
@@ -2278,13 +2573,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "migrateUpgrade_v4",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "components": [
@@ -2365,29 +2653,6 @@
       },
       {
         "internalType": "uint256[]",
-        "name": "_activeBalancesGwei",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_pendingBalancesGwei",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "reportActiveBalancesByStakingModule",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "_stakingModuleIds",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint256[]",
         "name": "_totalShares",
         "type": "uint256[]"
       }
@@ -2423,22 +2688,17 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_stakingModuleId",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "_stakingModuleIds",
+        "type": "uint256[]"
       },
       {
-        "internalType": "bytes",
-        "name": "_operatorIds",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_effectiveBalances",
-        "type": "bytes"
+        "internalType": "uint256[]",
+        "name": "_validatorBalancesGwei",
+        "type": "uint256[]"
       }
     ],
-    "name": "reportStakingModuleOperatorBalances",
+    "name": "reportValidatorBalancesByStakingModule",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -2631,6 +2891,24 @@
     "inputs": [
       {
         "internalType": "uint256[]",
+        "name": "_stakingModuleFees",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_treasuryFees",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "updateAllStakingModulesFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
         "name": "_stakingModuleIds",
         "type": "uint256[]"
       },
@@ -2648,6 +2926,29 @@
         "type": "uint256"
       }
     ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_stakingModuleId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_stakeShareLimit",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_priorityExitShareThreshold",
+        "type": "uint16"
+      }
+    ],
+    "name": "updateModuleShares",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -2720,6 +3021,24 @@
     "name": "updateTargetValidatorsLimits",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "_stakingModuleIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_validatorBalancesGwei",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "validateReportValidatorBalancesByStakingModule",
+    "outputs": [],
+    "stateMutability": "view",
     "type": "function"
   },
   {

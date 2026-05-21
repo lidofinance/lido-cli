@@ -25,6 +25,21 @@
         "internalType": "uint256",
         "name": "frameDurationInSec",
         "type": "uint256"
+      },
+      {
+        "internalType": "GIndex",
+        "name": "_gIFirstValidatorPrev",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "GIndex",
+        "name": "_gIFirstValidatorCurr",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint64",
+        "name": "_pivotSlot",
+        "type": "uint64"
       }
     ],
     "stateMutability": "nonpayable",
@@ -60,22 +75,6 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "firstArrayLength",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "secondArrayLength",
-        "type": "uint256"
-      }
-    ],
-    "name": "ArraysLengthMismatch",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
         "name": "requestsCount",
         "type": "uint256"
       },
@@ -90,7 +89,28 @@
   },
   {
     "inputs": [],
+    "name": "DSMDepositsPaused",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "groupIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "EmptyGroup",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "FeeRefundFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IndexOutOfRange",
     "type": "error"
   },
   {
@@ -111,17 +131,22 @@
   },
   {
     "inputs": [],
-    "name": "InvalidInitialization",
+    "name": "InvalidPubkeyLength",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidSlot",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LidoDepositsPaused",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "LimitExceeded",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NotInitializing",
     "type": "error"
   },
   {
@@ -137,6 +162,11 @@
   {
     "inputs": [],
     "name": "ResumedExpected",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RootNotFound",
     "type": "error"
   },
   {
@@ -198,19 +228,6 @@
       }
     ],
     "name": "ConsolidationRequestsLimitSet",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint64",
-        "name": "version",
-        "type": "uint64"
-      }
-    ],
-    "name": "Initialized",
     "type": "event"
   },
   {
@@ -322,6 +339,19 @@
   },
   {
     "inputs": [],
+    "name": "BEACON_ROOTS",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "CONSOLIDATION_LIMIT_POSITION",
     "outputs": [
       {
@@ -361,6 +391,58 @@
   },
   {
     "inputs": [],
+    "name": "GI_FIRST_VALIDATOR_CURR",
+    "outputs": [
+      {
+        "internalType": "GIndex",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "GI_FIRST_VALIDATOR_PREV",
+    "outputs": [
+      {
+        "internalType": "GIndex",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "GI_PUBKEY_WC_PARENT",
+    "outputs": [
+      {
+        "internalType": "GIndex",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "GI_STATE_ROOT",
+    "outputs": [
+      {
+        "internalType": "GIndex",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "PAUSE_INFINITELY",
     "outputs": [
       {
@@ -387,6 +469,19 @@
   },
   {
     "inputs": [],
+    "name": "PIVOT_SLOT",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "RESUME_ROLE",
     "outputs": [
       {
@@ -399,29 +494,55 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "VERSION",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
-        "internalType": "bytes[]",
-        "name": "sourcePubkeys",
-        "type": "bytes[]"
-      },
-      {
-        "internalType": "bytes[]",
-        "name": "targetPubkeys",
-        "type": "bytes[]"
+        "components": [
+          {
+            "internalType": "bytes[]",
+            "name": "sourcePubkeys",
+            "type": "bytes[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bytes32[]",
+                "name": "proof",
+                "type": "bytes32[]"
+              },
+              {
+                "internalType": "bytes",
+                "name": "pubkey",
+                "type": "bytes"
+              },
+              {
+                "internalType": "uint256",
+                "name": "validatorIndex",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint64",
+                "name": "childBlockTimestamp",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "slot",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "proposerIndex",
+                "type": "uint64"
+              }
+            ],
+            "internalType": "struct IPredepositGuarantee.ValidatorWitness",
+            "name": "targetWitness",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct ConsolidationGateway.ConsolidationWitnessGroup[]",
+        "name": "groups",
+        "type": "tuple[]"
       },
       {
         "internalType": "address",
