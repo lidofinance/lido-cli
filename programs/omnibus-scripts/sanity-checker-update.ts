@@ -1,7 +1,7 @@
 import { locatorContract } from '@contracts';
 
 import { encodeFromAgent, votingNewVote } from '@scripts';
-import { CallScriptAction, encodeCallScript, forwardVoteFromTm } from '@utils';
+import { CallScriptAction, encodeCallScript, forwardVoteFromTm, forwardVoteFromTmDG } from '@utils';
 import { Interface } from 'ethers';
 
 const NEW_LOCATOR_IMPLEMENTAION = '0xa19a59aF0680F6D9676ABD77E1Ba7e4c205F55a0';
@@ -19,8 +19,11 @@ export const sanityChecker = async () => {
   const calls: CallScriptAction[] = [locatorUpgradeScript];
   const description = `Update locator implementation to ${NEW_LOCATOR_IMPLEMENTAION} with new Sanity Checker`;
 
-  const voteEvmScript = encodeCallScript(calls);
-  const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
-
-  await forwardVoteFromTm(newVoteCalldata);
+  if (process.env.USE_DG === '1') {
+    await forwardVoteFromTmDG(calls, description);
+  } else {
+    const voteEvmScript = encodeCallScript(calls);
+    const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
+    await forwardVoteFromTm(newVoteCalldata);
+  }
 };

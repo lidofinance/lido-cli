@@ -1,6 +1,6 @@
 import { getAppProxyContract, norAddress, sandboxAddress, simpleDVTAddress } from '@contracts';
 import { updateAragonApp, votingNewVote } from '@scripts';
-import { CallScriptAction, encodeCallScript, forwardVoteFromTm } from '@utils';
+import { CallScriptAction, encodeCallScript, forwardVoteFromTm, forwardVoteFromTmDG } from '@utils';
 import { concat, Interface } from 'ethers';
 
 const NOR_IMPLEMENTATION = '0x41646708a7edbe22bd635cb838ff9c0cfa99a3be';
@@ -90,8 +90,11 @@ export const stakingRouterFix = async () => {
     `8. Add updateTargetValidatorsLimits with address ${NEW_TARGET_LIMIT_FACTORY} to EasyTrack`,
   ].join('\n');
 
-  const voteEvmScript = encodeCallScript(calls);
-  const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
-
-  await forwardVoteFromTm(newVoteCalldata);
+  if (process.env.USE_DG === '1') {
+    await forwardVoteFromTmDG(calls, description);
+  } else {
+    const voteEvmScript = encodeCallScript(calls);
+    const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
+    await forwardVoteFromTm(newVoteCalldata);
+  }
 };
