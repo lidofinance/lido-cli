@@ -246,44 +246,53 @@ router
     logger.log('Max deposits', deposits);
   });
 
+const printDepositsAllocation = async (depositsCount: string, isTopUp: boolean) => {
+  const [totalAllocated, allocatedByModules, newAllocationByModules] = (await stakingRouterContract.getDepositAllocations(
+    depositsCount,
+    isTopUp,
+  )) as [bigint, bigint[], bigint[]];
+
+  const allocationTable = new Table({
+    head: ['Module', 'Before', 'After', 'Change'],
+    colAligns: ['left', 'right', 'right', 'right'],
+    style: { head: ['gray'], compact: true },
+  });
+
+  allocationTable.push(
+    ...newAllocationByModules.map((newAllocationToModule, index) => {
+      const allocatedToModule = allocatedByModules[index];
+      const curAllocationToModule = newAllocationToModule - allocatedToModule;
+      return [
+        head(index + 1),
+        Number(curAllocationToModule),
+        Number(newAllocationToModule),
+        allocatedToModule > 0 ? ok(`+${allocatedToModule}`) : String(allocatedToModule),
+      ];
+    }),
+  );
+
+  const unallocated = Number(depositsCount) - Number(totalAllocated);
+
+  logger.log(allocationTable.toString());
+  logger.log();
+  logger.log('Allocated  ', unallocated > 0 ? warn(Number(totalAllocated)) : ok(Number(totalAllocated)));
+  logger.log('Unallocated', unallocated > 0 ? warn(unallocated) : ok(unallocated));
+};
+
 router
   .command('allocation')
-  .description('returns deposits allocation')
+  .description('returns deposits allocation for initial deposits')
   .argument('<deposits>', 'deposits count')
   .action(async (depositsCount) => {
-    const [currentAllocation, newAllocation] = await Promise.all([
-      stakingRouterContract.getDepositsAllocation(0),
-      stakingRouterContract.getDepositsAllocation(depositsCount),
-    ]);
+    await printDepositsAllocation(depositsCount, false);
+  });
 
-    const [, curAllocationByModules] = currentAllocation as [bigint, bigint[]];
-    const [allocated, newAllocationByModules] = newAllocation as [bigint, bigint[]];
-
-    const allocationTable = new Table({
-      head: ['Module', 'Before', 'After', 'Change'],
-      colAligns: ['left', 'right', 'right', 'right'],
-      style: { head: ['gray'], compact: true },
-    });
-
-    allocationTable.push(
-      ...newAllocationByModules.map((newAllocationToModule, index) => {
-        const curAllocationByModule = curAllocationByModules[index];
-        const dif = newAllocationToModule - curAllocationByModule;
-        return [
-          head(index + 1),
-          Number(curAllocationByModule),
-          Number(newAllocationToModule),
-          dif > 0 ? ok(`+${dif}`) : String(dif),
-        ];
-      }),
-    );
-
-    const unallocated = depositsCount - Number(allocated);
-
-    logger.log(allocationTable.toString());
-    logger.log();
-    logger.log('Allocated  ', unallocated > 0 ? warn(Number(allocated)) : ok(Number(allocated)));
-    logger.log('Unallocated', unallocated > 0 ? warn(unallocated) : ok(unallocated));
+router
+  .command('allocation-top-up')
+  .description('returns deposits allocation for top-up')
+  .argument('<deposits>', 'deposits count')
+  .action(async (depositsCount) => {
+    await printDepositsAllocation(depositsCount, true);
   });
 
 router

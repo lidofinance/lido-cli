@@ -186,7 +186,11 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
     .option('-h, --hard-limit', 'hard limit', false)
     .action(async (options) => {
       const { operatorId, limit, hardLimit } = options;
-      await authorizedCall(contract, 'updateTargetValidatorsLimits', [operatorId, hardLimit ? 2 : 1, limit]);
+      await authorizedCall(contract, 'updateTargetValidatorsLimits(uint256,uint256,uint256)', [
+        operatorId,
+        hardLimit ? 2 : 1,
+        limit,
+      ]);
     });
 
   command
@@ -195,7 +199,7 @@ export const addCuratedModuleSubCommands = (command: Command, contract: Contract
     .option('-o, --operator-id <number>', 'node operator id')
     .action(async (options) => {
       const { operatorId } = options;
-      await authorizedCall(contract, 'updateTargetValidatorsLimits', [operatorId, 0, 0]);
+      await authorizedCall(contract, 'updateTargetValidatorsLimits(uint256,uint256,uint256)', [operatorId, 0, 0]);
     });
 
   command
