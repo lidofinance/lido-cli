@@ -1,7 +1,7 @@
 import { program } from '@command';
 import { stakingRouterContract } from '@contracts';
 import { authorizedCall, logger, writeToFile, contractCallTxWithConfirm } from '@utils';
-import { Result, parseEther } from 'ethers';
+import { Result, parseEther, formatEther } from 'ethers';
 import { addAccessControlSubCommands, addLogsCommands, addOssifiableProxyCommands, addParsingCommands } from './common';
 import {
   formatStakingModuleObject,
@@ -246,44 +246,54 @@ router
     logger.log('Max deposits', deposits);
   });
 
+const printDepositsAllocation = async (depositAmountEth: string, isTopUp: boolean) => {
+  const depositAmount = parseEther(depositAmountEth);
+  const [totalAllocated, allocatedByModules, newAllocationByModules] = (await stakingRouterContract.getDepositAllocations(
+    depositAmount,
+    isTopUp,
+  )) as [bigint, bigint[], bigint[]];
+
+  const allocationTable = new Table({
+    head: ['Module', 'Before', 'After', 'Change'],
+    colAligns: ['left', 'right', 'right', 'right'],
+    style: { head: ['gray'], compact: true },
+  });
+
+  allocationTable.push(
+    ...newAllocationByModules.map((newAllocationToModule, index) => {
+      const allocatedToModule = allocatedByModules[index];
+      const curAllocationToModule = newAllocationToModule - allocatedToModule;
+      return [
+        head(index + 1),
+        formatEther(curAllocationToModule),
+        formatEther(newAllocationToModule),
+        allocatedToModule > 0n ? ok(`+${formatEther(allocatedToModule)}`) : formatEther(allocatedToModule),
+      ];
+    }),
+  );
+
+  const unallocated = depositAmount - totalAllocated;
+
+  logger.log(allocationTable.toString());
+  logger.log();
+  logger.log('Allocated  ', unallocated > 0n ? warn(formatEther(totalAllocated)) : ok(formatEther(totalAllocated)));
+  logger.log('Unallocated', unallocated > 0n ? warn(formatEther(unallocated)) : ok(formatEther(unallocated)));
+};
+
 router
   .command('allocation')
-  .description('returns deposits allocation')
-  .argument('<deposits>', 'deposits count')
-  .action(async (depositsCount) => {
-    const [currentAllocation, newAllocation] = await Promise.all([
-      stakingRouterContract.getDepositsAllocation(0),
-      stakingRouterContract.getDepositsAllocation(depositsCount),
-    ]);
+  .description('returns deposits allocation for initial deposits')
+  .argument('<deposit-amount>', 'deposit amount in ETH')
+  .action(async (depositAmount) => {
+    await printDepositsAllocation(depositAmount, false);
+  });
 
-    const [, curAllocationByModules] = currentAllocation as [bigint, bigint[]];
-    const [allocated, newAllocationByModules] = newAllocation as [bigint, bigint[]];
-
-    const allocationTable = new Table({
-      head: ['Module', 'Before', 'After', 'Change'],
-      colAligns: ['left', 'right', 'right', 'right'],
-      style: { head: ['gray'], compact: true },
-    });
-
-    allocationTable.push(
-      ...newAllocationByModules.map((newAllocationToModule, index) => {
-        const curAllocationByModule = curAllocationByModules[index];
-        const dif = newAllocationToModule - curAllocationByModule;
-        return [
-          head(index + 1),
-          Number(curAllocationByModule),
-          Number(newAllocationToModule),
-          dif > 0 ? ok(`+${dif}`) : String(dif),
-        ];
-      }),
-    );
-
-    const unallocated = depositsCount - Number(allocated);
-
-    logger.log(allocationTable.toString());
-    logger.log();
-    logger.log('Allocated  ', unallocated > 0 ? warn(Number(allocated)) : ok(Number(allocated)));
-    logger.log('Unallocated', unallocated > 0 ? warn(unallocated) : ok(unallocated));
+router
+  .command('allocation-top-up')
+  .description('returns deposits allocation for top-up')
+  .argument('<deposit-amount>', 'deposit amount in ETH')
+  .action(async (depositAmount) => {
+    await printDepositsAllocation(depositAmount, true);
   });
 
 router
