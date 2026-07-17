@@ -276,21 +276,14 @@ export const devnetCMv2Start = async () => {
   }
 
   if (!moduleExists) {
-    let canAddModule = true;
-    try {
-      await stakingRouterContract.addStakingModule.staticCall(CS_MODULE_NAME, CS_MODULE_ADDRESS, [
-        CS_STAKE_SHARE_LIMIT,
-        CS_PRIORITY_EXIT_SHARE_THRESHOLD,
-        CS_STAKING_MODULE_FEE,
-        CS_TREASURY_FEE,
-        CS_MAX_DEPOSITS_PER_BLOCK,
-        CS_MIN_DEPOSIT_BLOCK_DISTANCE,
-        CS_WITHDRAWAL_CREDENTIALS_TYPE,
-      ]);
-    } catch {
-      canAddModule = false;
-      console.log('[cmv2] Skipping addStakingModule in vote: call would revert');
-    }
+    // No addStakingModule staticCall precheck here: it would run at vote-BUILD
+    // time from the deployer signer, before this same vote grants
+    // STAKING_MODULE_MANAGE_ROLE to the Agent, so it always reverts with
+    // AccessControl and the module gets wrongly skipped from the vote. The CSM
+    // omnibus (devnet-csm-start.ts) has no such precheck and pushes
+    // addStakingModule unconditionally — match that: the vote grants the role,
+    // then adds the module, in order.
+    const canAddModule = true;
 
     if (canAddModule) {
       items.push(`${itemIdx++}. Add staking module ${CS_MODULE_NAME} with address ${CS_MODULE_ADDRESS}`);
