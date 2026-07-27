@@ -195,6 +195,34 @@ export const devnetCSMStart = async () => {
       items.push(`${itemIdx++}. ${script.desc}`);
       calls.push(script);
     }
+
+    // SUBMIT_DATA_ROLE is NOT implied by consensus membership: the fee oracle gates
+    // submitReportData on it separately, so without this the members reach quorum and
+    // every data submission still reverts — consensus advances while
+    // lastProcessingRefSlot stays frozen, which a pod-phase health check reads as green.
+    // Observed on edf-devnet 2026-07-27: the role was missing for ALL members on BOTH
+    // the CSM and the CMv2 fee oracle (6 grants), so do not assume CMv2 inherits it.
+    // The oracle is the consensus contract's own reportProcessor, so no extra env var.
+    const reportProcessorAddress: string = await consensusForCSMContract.getReportProcessor();
+    const feeOracle = new Contract(
+      reportProcessorAddress,
+      [
+        'function SUBMIT_DATA_ROLE() view returns (bytes32)',
+        'function grantRole(bytes32,address)',
+        'function hasRole(bytes32,address) view returns (bool)',
+      ],
+      provider,
+    );
+    const submitDataRole = await getRoleHash(feeOracle, 'SUBMIT_DATA_ROLE');
+    for (const member of CS_ORACLE_MEMBERS) {
+      if (await feeOracle.hasRole(submitDataRole, member)) continue; // idempotent
+      items.push(`${itemIdx++}. Grant SUBMIT_DATA_ROLE to ${member} on oracle ${reportProcessorAddress}`);
+      const [, grantSubmitDataScript] = encodeFromAgent({
+        to: reportProcessorAddress,
+        data: feeOracle.interface.encodeFunctionData('grantRole', [submitDataRole, member]),
+      });
+      calls.push(grantSubmitDataScript);
+    }
   }
 
   const voteEvmScript = encodeCallScript(calls);
