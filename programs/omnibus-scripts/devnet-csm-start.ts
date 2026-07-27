@@ -2,6 +2,7 @@ import {
   aragonAgentAddress,
   burnerAddress,
   burnerContract,
+  consensusForCSMContract,
   getVersion,
   stakingRouterAddress,
   stakingRouterContract,
@@ -10,6 +11,8 @@ import { provider } from '@providers';
 import { encodeFromAgent, votingNewVote } from '@scripts';
 import { CallScriptAction, encodeCallScript, forwardVoteFromTm, getRoleHash, getRoleHashByAddress } from '@utils';
 import { Contract, Interface } from 'ethers';
+
+import { encodeScriptsOracleMembers, getOracleMinQuorum } from './generators/oracles';
 
 export const devnetCSMStart = async () => {
   const CS_MODULE_ADDRESS = process.env.CS_MODULE_ADDRESS as string;
@@ -167,6 +170,32 @@ export const devnetCSMStart = async () => {
     data: iface.encodeFunctionData('updateInitialEpoch', [CS_ORACLE_INITIAL_EPOCH]),
   });
   calls.push(updateInitialEpochScript);
+
+  // Register the perf-oracle members on the CSM HashConsensus (grant
+  // MANAGE_MEMBERS_AND_QUORUM_ROLE from the Agent + addMember for each), bundled
+  // into this same vote — mirrors how the Core devnet-start seeds the accounting
+  // oracle. Without it the CSM HashConsensus stays empty and the perf-oracle
+  // daemon crash-loops with IsNotMemberException. Skipped when CS_ORACLE_MEMBERS
+  // is unset, so existing callers are unaffected.
+  const CS_ORACLE_MEMBERS = (process.env.CS_ORACLE_MEMBERS ?? '')
+    .split(',')
+    .map((member) => member.trim())
+    .filter(Boolean);
+  if (CS_ORACLE_MEMBERS.length > 0) {
+    const csOracleQuorum = process.env.CS_ORACLE_QUORUM
+      ? Number(process.env.CS_ORACLE_QUORUM)
+      : getOracleMinQuorum(CS_ORACLE_MEMBERS.length);
+    const memberScripts = await encodeScriptsOracleMembers(
+      'CS',
+      consensusForCSMContract,
+      CS_ORACLE_MEMBERS,
+      csOracleQuorum,
+    );
+    for (const script of memberScripts) {
+      items.push(`${itemIdx++}. ${script.desc}`);
+      calls.push(script);
+    }
+  }
 
   const voteEvmScript = encodeCallScript(calls);
   const [newVoteCalldata] = votingNewVote(voteEvmScript, items.join('\n'));
