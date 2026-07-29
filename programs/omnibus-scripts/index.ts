@@ -1,3 +1,6 @@
+export * from './add-cmv2-oracle-members';
+export * from './bump-sanity-limits';
+export * from './reinit-csm-cmv2-consensus';
 export * from './clone-nor-module';
 export * from './csm-update';
 export * from './curated-modules-manager';

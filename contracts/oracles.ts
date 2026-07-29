@@ -31,5 +31,8 @@ export const consensusForExitBusContract = new Contract(consensusForExitBusAddre
 export const consensusForCSMAddress = getOptionalDeployedAddress('csm.hashConsensus.address');
 export const consensusForCSMContract = new Contract(consensusForCSMAddress, consensusAbi, wallet);
 
+export const consensusForCMv2Address = getOptionalDeployedAddress('cmv2.hashConsensus.address');
+export const consensusForCMv2Contract = new Contract(consensusForCMv2Address, consensusAbi, wallet);
+
 export const oracleConfigAddress = getDeployedAddress('oracleDaemonConfig');
 export const oracleConfigContract = new Contract(oracleConfigAddress, configAbi, wallet);

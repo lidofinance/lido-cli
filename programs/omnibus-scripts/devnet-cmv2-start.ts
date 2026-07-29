@@ -2,6 +2,7 @@ import {
   aragonAgentAddress,
   burnerAddress,
   burnerContract,
+  consensusForCMv2Contract,
   stakingRouterAddress,
   stakingRouterContract,
 } from '@contracts';
@@ -9,6 +10,8 @@ import { provider, wallet } from '@providers';
 import { encodeFromAgent, votingNewVote } from '@scripts';
 import { CallScriptAction, encodeCallScript, forwardVoteFromTm, getRoleHash, getRoleHashByAddress } from '@utils';
 import { Contract, Interface } from 'ethers';
+
+import { encodeScriptsOracleMembers, getOracleMinQuorum } from './generators/oracles';
 
 export const devnetCMv2Start = async () => {
   const CS_MODULE_ADDRESS = process.env.CS_MODULE_ADDRESS as string;
@@ -276,21 +279,14 @@ export const devnetCMv2Start = async () => {
   }
 
   if (!moduleExists) {
-    let canAddModule = true;
-    try {
-      await stakingRouterContract.addStakingModule.staticCall(CS_MODULE_NAME, CS_MODULE_ADDRESS, [
-        CS_STAKE_SHARE_LIMIT,
-        CS_PRIORITY_EXIT_SHARE_THRESHOLD,
-        CS_STAKING_MODULE_FEE,
-        CS_TREASURY_FEE,
-        CS_MAX_DEPOSITS_PER_BLOCK,
-        CS_MIN_DEPOSIT_BLOCK_DISTANCE,
-        CS_WITHDRAWAL_CREDENTIALS_TYPE,
-      ]);
-    } catch {
-      canAddModule = false;
-      console.log('[cmv2] Skipping addStakingModule in vote: call would revert');
-    }
+    // No addStakingModule staticCall precheck here: it would run at vote-BUILD
+    // time from the deployer signer, before this same vote grants
+    // STAKING_MODULE_MANAGE_ROLE to the Agent, so it always reverts with
+    // AccessControl and the module gets wrongly skipped from the vote. The CSM
+    // omnibus (devnet-csm-start.ts) has no such precheck and pushes
+    // addStakingModule unconditionally — match that: the vote grants the role,
+    // then adds the module, in order.
+    const canAddModule = true;
 
     if (canAddModule) {
       items.push(`${itemIdx++}. Add staking module ${CS_MODULE_NAME} with address ${CS_MODULE_ADDRESS}`);
@@ -388,6 +384,60 @@ export const devnetCMv2Start = async () => {
     data: iface.encodeFunctionData('updateInitialEpoch', [CS_ORACLE_INITIAL_EPOCH]),
   });
   calls.push(updateInitialEpochScript);
+
+  // Register the perf-oracle members on the CMv2 HashConsensus (grant
+  // MANAGE_MEMBERS_AND_QUORUM_ROLE from the Agent + addMember for each), bundled
+  // into this same vote — mirrors the CSM omnibus and the Core devnet-start
+  // accounting seeding. Without it the CMv2 HashConsensus stays empty and the
+  // perf-oracle daemon crash-loops with IsNotMemberException. Skipped when
+  // CS_ORACLE_MEMBERS is unset, so existing callers are unaffected.
+  const CS_ORACLE_MEMBERS = (process.env.CS_ORACLE_MEMBERS ?? '')
+    .split(',')
+    .map((member) => member.trim())
+    .filter(Boolean);
+  if (CS_ORACLE_MEMBERS.length > 0) {
+    const csOracleQuorum = process.env.CS_ORACLE_QUORUM
+      ? Number(process.env.CS_ORACLE_QUORUM)
+      : getOracleMinQuorum(CS_ORACLE_MEMBERS.length);
+    const memberScripts = await encodeScriptsOracleMembers(
+      'CM',
+      consensusForCMv2Contract,
+      CS_ORACLE_MEMBERS,
+      csOracleQuorum,
+    );
+    for (const script of memberScripts) {
+      items.push(`${itemIdx++}. ${script.desc}`);
+      calls.push(script);
+    }
+
+    // SUBMIT_DATA_ROLE is NOT implied by consensus membership: the fee oracle gates
+    // submitReportData on it separately, so without this the members reach quorum and
+    // every data submission still reverts — consensus advances while
+    // lastProcessingRefSlot stays frozen, which a pod-phase health check reads as green.
+    // Observed on edf-devnet 2026-07-27: the role was missing for ALL members on BOTH
+    // the CSM and the CMv2 fee oracle (6 grants), so do not assume CMv2 inherits it.
+    // The oracle is the consensus contract's own reportProcessor, so no extra env var.
+    const reportProcessorAddress: string = await consensusForCMv2Contract.getReportProcessor();
+    const feeOracle = new Contract(
+      reportProcessorAddress,
+      [
+        'function SUBMIT_DATA_ROLE() view returns (bytes32)',
+        'function grantRole(bytes32,address)',
+        'function hasRole(bytes32,address) view returns (bool)',
+      ],
+      provider,
+    );
+    const submitDataRole = await getRoleHash(feeOracle, 'SUBMIT_DATA_ROLE');
+    for (const member of CS_ORACLE_MEMBERS) {
+      if (await feeOracle.hasRole(submitDataRole, member)) continue; // idempotent
+      items.push(`${itemIdx++}. Grant SUBMIT_DATA_ROLE to ${member} on oracle ${reportProcessorAddress}`);
+      const [, grantSubmitDataScript] = encodeFromAgent({
+        to: reportProcessorAddress,
+        data: feeOracle.interface.encodeFunctionData('grantRole', [submitDataRole, member]),
+      });
+      calls.push(grantSubmitDataScript);
+    }
+  }
 
   const voteEvmScript = encodeCallScript(calls);
   const [newVoteCalldata] = votingNewVote(voteEvmScript, items.join('\n'));

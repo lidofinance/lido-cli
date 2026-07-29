@@ -1122,6 +1122,7 @@ cmv2
   .description('creates or updates MetaRegistry group')
   .requiredOption('--subs <entries...>', 'sub operators as nodeOperatorId,share (e.g. 12,7000 14,3000)')
   .option('--external <entries...>', 'external operators as moduleId,nodeOperatorId (e.g. 1,11 2,13)')
+  .option('-n, --name <string>', 'operator group name (OperatorGroup.name)', '')
   .option('-g, --group-id <number>', 'operator group id to update (defaults to NO_GROUP_ID/create)')
   .option('-m, --meta-registry <string>', 'meta registry address override')
   .action(async (options) => {
@@ -1131,9 +1132,12 @@ cmv2
     const metaRegistry = await resolveMetaRegistryContract(options.metaRegistry);
     const groupId = options.groupId != null ? parseUInt(options.groupId) : await metaRegistry.NO_GROUP_ID();
 
+    // `name` is the FIRST component of OperatorGroup on-chain. Omitting it changes the
+    // selector (0x52d13274 with it, 0x63fe89d7 without), so the call silently targets a
+    // function the proxy does not implement and reverts with empty data.
     await contractCallTxWithConfirm(metaRegistry, 'createOrUpdateOperatorGroup', [
       groupId,
-      { subNodeOperators, externalOperators },
+      { name: options.name ?? '', subNodeOperators, externalOperators },
     ]);
   });
 
