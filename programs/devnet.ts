@@ -168,3 +168,64 @@ devnet
 
     await authorizedCall(locatorProxyContract, 'proxy__upgradeTo', [newLocatorImplementationAddress]);
   });
+
+devnet
+  .command('restore-dsm')
+  .description('undoes replace-dsm-with-eoa: upgrades the LidoLocator proxy back to an implementation that carries the real DepositSecurityModule')
+  .argument('<implementation>', 'LidoLocator implementation address to restore (the pre-swap one; it still exists on chain)')
+  .action(async (implementation) => {
+    // replace-dsm-with-eoa deploys a NEW locator implementation with the DSM address
+    // bytes string-replaced by an EOA, then proxy__upgradeTo's onto it. LidoLocator
+    // holds every address as an immutable, so the two implementations differ in exactly
+    // one getter. The inverse is therefore not a deployment at all: the original
+    // implementation is still on chain, and upgrading back to it restores the exact
+    // pre-swap bytecode — strictly smaller and more reversible than deploying a third.
+    const getProxyAddress = async () => await locatorContract.getAddress();
+    const locatorProxyContract = getProxyContract(getProxyAddress);
+    const curLocatorImplementationAddress = await locatorProxyContract.proxy__getImplementation();
+
+    if (implementation.toLowerCase() === curLocatorImplementationAddress.toLowerCase()) {
+      logger.error('Locator already points at this implementation, nothing to do');
+      return;
+    }
+
+    const targetLocatorContract = getLocatorContract(implementation);
+    const targetDSM = await targetLocatorContract.depositSecurityModule();
+
+    // Guard: the point of the restore is that the DSM becomes a CONTRACT again. An EOA
+    // has no code, and the DSM services resolve it through the locator at boot, so
+    // pointing at another EOA-carrying implementation would leave them crash-looping
+    // (council 'Init contracts error', depositor bot BadFunctionCallOutput) with no
+    // obvious cause. Refuse rather than restore the same broken shape.
+    const dsmCode = await wallet.provider!.getCode(targetDSM);
+    if (dsmCode === '0x') {
+      logger.error(`depositSecurityModule() of ${implementation} is ${targetDSM}, which has no code — that is an EOA, not the DSM`);
+      return;
+    }
+
+    logger.log('Locator implementations diff');
+
+    const curLocatorImplementationContract = getLocatorContract(curLocatorImplementationAddress);
+
+    await compareContractCalls(
+      [curLocatorImplementationContract, targetLocatorContract],
+      [
+        { method: 'accountingOracle' },
+        { method: 'depositSecurityModule' },
+        { method: 'elRewardsVault' },
+        { method: 'legacyOracle' },
+        { method: 'lido' },
+        { method: 'oracleReportSanityChecker' },
+        { method: 'postTokenRebaseReceiver' },
+        { method: 'burner' },
+        { method: 'stakingRouter' },
+        { method: 'treasury' },
+        { method: 'validatorsExitBusOracle' },
+        { method: 'withdrawalQueue' },
+        { method: 'withdrawalVault' },
+        { method: 'oracleDaemonConfig' },
+      ],
+    );
+
+    await authorizedCall(locatorProxyContract, 'proxy__upgradeTo', [implementation]);
+  });
