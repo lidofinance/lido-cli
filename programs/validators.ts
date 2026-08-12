@@ -219,6 +219,50 @@ validators
   });
 
 validators
+  .command('exit-message')
+  .description('sign a voluntary exit and write it to a JSON file (for the validator-ejector messages folder)')
+  .argument('<mnemonic>', 'mnemonic')
+  .argument('<index>', 'index of key')
+  .option('-o, --out-dir <string>', 'directory to write the message file into', '.')
+  .action(async (mnemonic, index, options) => {
+    const masterSK = deriveKeyFromMnemonic(mnemonic);
+    const { signing } = deriveEth2ValidatorKeys(masterSK, index);
+
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { SecretKey } = require('@chainsafe/blst');
+    const sk = SecretKey.fromBytes(signing);
+    const pkHex = hexlify(sk.toPublicKey().toBytes());
+
+    const genesis = await fetchGenesis();
+    const genesisValidatorsRoot = getBytes(genesis.genesis_validators_root);
+
+    const headBlockHeader = await fetchBlockHeader('head');
+    const headSlot = Number(headBlockHeader.header.message.slot);
+
+    const { validator, index: validatorIndex } = await fetchValidator(pkHex);
+    if (validator.exit_epoch != FAR_FUTURE_EPOCH.toString()) {
+      logger.warn(`Validator ${validatorIndex} is already exiting, skipping`);
+      return;
+    }
+
+    const spec = await fetchSpec();
+    const exitEpoch = String(Math.floor(headSlot / Number(spec.SLOTS_PER_EPOCH)));
+    const forkVersion = getBytes(spec.CAPELLA_FORK_VERSION);
+
+    const DOMAIN_VOLUNTARY_EXIT = Uint8Array.from([4, 0, 0, 0]);
+    const domain = computeDomain(DOMAIN_VOLUNTARY_EXIT, forkVersion, genesisValidatorsRoot);
+
+    const message = { epoch: exitEpoch, validator_index: validatorIndex };
+    const voluntaryExit = {
+      message,
+      signature: hexlify(signVoluntaryExit(domain, sk, VoluntaryExit.fromJson(message))),
+    };
+
+    await writeToFile(`${options.outDir}/exit-${validatorIndex}.json`, JSON.stringify(voluntaryExit, null, 2));
+    logger.log('Exit message written', { validatorIndex, pubkey: pkHex, file: `exit-${validatorIndex}.json` });
+  });
+
+validators
   .command('slash-by-attestations')
   .description('slash a validator by attestations')
   .argument('<mnemonic>', 'mnemonic')

@@ -33,3 +33,4 @@ export * from './withdrawal-request';
 export * from './withdrawal-vault';
 export * from './wsteth';
 export * from './consolidation-gateway';
+export * from './top-up-gateway';
