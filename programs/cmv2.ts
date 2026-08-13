@@ -33,7 +33,7 @@ import {
   DepositData,
 } from '@utils';
 import { provider, wallet } from '@providers';
-import { Contract, Interface, ZeroAddress, formatEther, getBytes, id, solidityPacked } from 'ethers';
+import { Contract, Interface, ZeroAddress, formatEther, getBytes, id, isAddress, solidityPacked } from 'ethers';
 import Table from 'cli-table3';
 import chalk from 'chalk';
 import { getNodeOperatorsMap } from './staking-module';
@@ -151,6 +151,10 @@ const setDefaultDepositAllocationWeight = async (weight: bigint, parametersRegis
 };
 
 const resolveMetaRegistryContract = async (override?: string, blockTag?: number): Promise<Contract> => {
+  if (override != null && !isAddress(override)) {
+    throw new Error(`--meta-registry expects an address: ${override}`);
+  }
+
   const overrides = getCallOverrides(blockTag);
   const metaRegistryAddress = override ?? (await cmv2ModuleContract.META_REGISTRY(overrides));
   const metaRegistry = new Contract(metaRegistryAddress, cmv2MetaRegistryContract.interface, wallet);
@@ -177,6 +181,7 @@ type ParsedExternalOperatorData = {
 
 type FormattedOperatorGroup = {
   groupId: string;
+  name: string;
   subNodeOperators: { nodeOperatorId: string; name: string; share: string; weight: string }[];
   externalOperators: ParsedExternalOperatorData[];
 };
@@ -285,12 +290,14 @@ const formatOperatorGroup = async (
   operatorsByModule: Map<string, Promise<Record<number, { name: string }>>>,
 ): Promise<FormattedOperatorGroup> => {
   const group = (await metaRegistry.getOperatorGroup(groupId)).toObject() as {
+    name: string;
     subNodeOperators: { nodeOperatorId: bigint; share: bigint }[];
     externalOperators: { data: string }[];
   };
 
   return {
     groupId: groupId.toString(),
+    name: group.name,
     subNodeOperators: await Promise.all(
       group.subNodeOperators.map(async ({ nodeOperatorId, share }) => {
         const [metadata, weight] = await Promise.all([
@@ -356,7 +363,7 @@ const printOperatorGroup = (group: FormattedOperatorGroup) => {
   });
 
   logger.log();
-  logger.log(`Group ${group.groupId} (${operatorCount} operators)`);
+  logger.log(`Group ${group.groupId}${group.name ? ` ${group.name}` : ''} (${operatorCount} operators)`);
   logger.log(table.toString());
 };
 
@@ -1123,17 +1130,24 @@ cmv2
   .requiredOption('--subs <entries...>', 'sub operators as nodeOperatorId,share (e.g. 12,7000 14,3000)')
   .option('--external <entries...>', 'external operators as moduleId,nodeOperatorId (e.g. 1,11 2,13)')
   .option('-g, --group-id <number>', 'operator group id to update (defaults to NO_GROUP_ID/create)')
+  .option('-n, --name <string>', 'group name (defaults to the current one on update, empty on create)')
   .option('-m, --meta-registry <string>', 'meta registry address override')
   .action(async (options) => {
     const subNodeOperators = toSubNodeOperators(options.subs);
     const externalOperators = toExternalOperators(options.external ?? []);
 
     const metaRegistry = await resolveMetaRegistryContract(options.metaRegistry);
-    const groupId = options.groupId != null ? parseUInt(options.groupId) : await metaRegistry.NO_GROUP_ID();
+    const noGroupId: bigint = await metaRegistry.NO_GROUP_ID();
+    const groupId = options.groupId != null ? parseUInt(options.groupId) : noGroupId;
+    const name =
+      options.name ??
+      (groupId === noGroupId
+        ? ''
+        : ((await metaRegistry.getOperatorGroup(groupId)).toObject() as { name: string }).name);
 
     await contractCallTxWithConfirm(metaRegistry, 'createOrUpdateOperatorGroup', [
       groupId,
-      { subNodeOperators, externalOperators },
+      { name, subNodeOperators, externalOperators },
     ]);
   });
 
@@ -1141,6 +1155,7 @@ cmv2
   .command('operator-groups')
   .description('lists configured MetaRegistry operator groups')
   .option('-g, --group-id <number>', 'single group id to show')
+  .option('-n, --name <string>', 'show only groups whose name contains this text (case-insensitive)')
   .option('-m, --meta-registry <string>', 'meta registry address override')
   .action(async (options) => {
     const metaRegistry = await resolveMetaRegistryContract(options.metaRegistry);
@@ -1164,12 +1179,15 @@ cmv2
       groups.push(await formatOperatorGroup(metaRegistry, groupId, operatorsByModule));
     }
 
-    if (groups.length === 0) {
-      logger.log('No configured operator groups');
+    const query: string | undefined = options.name?.toLowerCase();
+    const matched = query == null ? groups : groups.filter(({ name }) => name.toLowerCase().includes(query));
+
+    if (matched.length === 0) {
+      logger.log(query == null ? 'No configured operator groups' : `No operator groups matching "${options.name}"`);
       return;
     }
 
-    groups.forEach(printOperatorGroup);
+    matched.forEach(printOperatorGroup);
   });
 
 cmv2
