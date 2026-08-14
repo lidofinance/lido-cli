@@ -369,6 +369,25 @@ const printOperatorGroup = (group: FormattedOperatorGroup) => {
 
 const getCallOverrides = (blockTag?: number) => (blockTag == null ? {} : { blockTag });
 
+const printTargetLimitEffect = async (operatorId: string, targetLimit: bigint) => {
+  const summary = (await cmv2ModuleContract.getNodeOperatorSummary(operatorId)).toObject() as {
+    targetLimitMode: bigint;
+    targetValidatorsCount: bigint;
+    totalExitedValidators: bigint;
+    totalDepositedValidators: bigint;
+  };
+  const activeKeys = summary.totalDepositedValidators - summary.totalExitedValidators;
+  const excess = activeKeys > targetLimit ? activeKeys - targetLimit : 0n;
+
+  logger.log('Current target limit mode', summary.targetLimitMode, 'limit', summary.targetValidatorsCount);
+  logger.log(
+    'Active keys',
+    activeKeys,
+    `(deposited ${summary.totalDepositedValidators} - exited ${summary.totalExitedValidators})`,
+  );
+  logger.log('Keys above the new limit', excess > 0n ? chalk.yellow(excess.toString()) : excess.toString());
+};
+
 const listExistingOperatorIds = async (blockTag?: number): Promise<bigint[]> => {
   const overrides = getCallOverrides(blockTag);
   const total = await cmv2ModuleContract.getNodeOperatorsCount(overrides);
@@ -1341,6 +1360,29 @@ cmv2
     const { operatorId } = options;
 
     await contractCallTxWithConfirm(cmv2ModuleContract, 'confirmNodeOperatorManagerAddressChange', [operatorId]);
+  });
+
+cmv2
+  .command('set-target-limit')
+  .description('sets target validators limit (signer must hold STAKING_ROUTER_ROLE on the module)')
+  .requiredOption('-o, --operator-id <number>', 'node operator id')
+  .requiredOption('-l, --limit <number>', 'target limit')
+  .option('-h, --hard-limit', 'hard limit, forces exits of the keys above the limit', false)
+  .action(async (options) => {
+    const { operatorId, limit, hardLimit } = options;
+
+    await printTargetLimitEffect(operatorId, parseUInt(limit));
+    await authorizedCall(cmv2ModuleContract, 'updateTargetValidatorsLimits', [operatorId, hardLimit ? 2 : 1, limit]);
+  });
+
+cmv2
+  .command('unset-target-limit')
+  .description('unsets target validators limit')
+  .requiredOption('-o, --operator-id <number>', 'node operator id')
+  .action(async (options) => {
+    const { operatorId } = options;
+
+    await authorizedCall(cmv2ModuleContract, 'updateTargetValidatorsLimits', [operatorId, 0, 0]);
   });
 
 cmv2
