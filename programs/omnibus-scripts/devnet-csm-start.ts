@@ -8,7 +8,7 @@ import {
 } from '@contracts';
 import { provider } from '@providers';
 import { encodeFromAgent, votingNewVote } from '@scripts';
-import { CallScriptAction, encodeCallScript, forwardVoteFromTm, getRoleHash, getRoleHashByAddress } from '@utils';
+import { CallScriptAction, encodeCallScript, forwardVoteFromTm, forwardVoteFromTmDG, getRoleHash, getRoleHashByAddress } from '@utils';
 import { Contract, Interface } from 'ethers';
 
 export const devnetCSMStart = async () => {
@@ -168,8 +168,11 @@ export const devnetCSMStart = async () => {
   });
   calls.push(updateInitialEpochScript);
 
-  const voteEvmScript = encodeCallScript(calls);
-  const [newVoteCalldata] = votingNewVote(voteEvmScript, items.join('\n'));
-
-  await forwardVoteFromTm(newVoteCalldata);
+  if (process.env.USE_DG === '1') {
+    await forwardVoteFromTmDG(calls, items.join('\n'));
+  } else {
+    const voteEvmScript = encodeCallScript(calls);
+    const [newVoteCalldata] = votingNewVote(voteEvmScript, items.join('\n'));
+    await forwardVoteFromTm(newVoteCalldata);
+  }
 };

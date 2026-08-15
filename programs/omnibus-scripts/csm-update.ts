@@ -7,7 +7,7 @@ import {
 } from '@contracts';
 
 import { encodeFromAgent, votingNewVote } from '@scripts';
-import { CallScriptActionWithDescription, encodeCallScript, forwardVoteFromTm } from '@utils';
+import { CallScriptActionWithDescription, encodeCallScript, forwardVoteFromTm, forwardVoteFromTmDG } from '@utils';
 import { Interface } from 'ethers';
 import { joinVotingDesc } from './generators';
 
@@ -80,8 +80,11 @@ export const csmUpdate = async () => {
   ];
   const description = joinVotingDesc(votingCalls);
 
-  const voteEvmScript = encodeCallScript(votingCalls);
-  const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
-
-  await forwardVoteFromTm(newVoteCalldata);
+  if (process.env.USE_DG === '1') {
+    await forwardVoteFromTmDG(votingCalls, description);
+  } else {
+    const voteEvmScript = encodeCallScript(votingCalls);
+    const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
+    await forwardVoteFromTm(newVoteCalldata);
+  }
 };

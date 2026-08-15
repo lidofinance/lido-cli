@@ -1,9 +1,12 @@
-import { dualGovernanceContract, emergencyProtectedTimelockContract } from '@contracts';
+import { dualGovernanceAddress, dualGovernanceContract, emergencyProtectedTimelockContract } from '@contracts';
 import { contractCallTx } from './call-tx';
 import { logger } from './logger';
 import { provider } from '@providers';
 import { waitWithProgressBar } from './progress-bar';
 import { ContractTransactionReceipt } from 'ethers';
+import { CallScriptAction, encodeCallScript } from './scripts';
+import { forwardVoteFromTm } from './voting';
+import { votingNewVote } from '@scripts';
 
 export interface ProposalDetails {
   id: number;
@@ -103,4 +106,40 @@ export const extractDgProposalId = async (receipt: ContractTransactionReceipt) =
   }
 
   return null;
+};
+
+/**
+ * Drop-in DG-flavored replacement for forwardVoteFromTm in non-interactive omnibus scripts.
+ * Takes the same CallScriptAction[] that would have been encoded into a direct Voting EVMScript,
+ * wraps them as one DG submitProposal item, forwards via TM, then schedules+executes through DG.
+ */
+export const forwardVoteFromTmDG = async (calls: CallScriptAction[], description: string) => {
+  const externalCalls = calls.map((call) => ({
+    target: call.to,
+    value: 0,
+    payload: call.data,
+  }));
+
+  const dgCall: CallScriptAction = {
+    to: dualGovernanceAddress,
+    data: dualGovernanceContract.interface.encodeFunctionData('submitProposal', [externalCalls, '']),
+  };
+
+  const voteEvmScript = encodeCallScript([dgCall]);
+  const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
+
+  const result = await forwardVoteFromTm(newVoteCalldata);
+  if (!result) {
+    logger.warn('Vote submission aborted (forwardVoteFromTm returned null)');
+    return;
+  }
+
+  const [, receipt] = result;
+  const proposalId = await extractDgProposalId(receipt);
+  if (proposalId == null) {
+    logger.warn('DG proposalId not found in receipt — DG submitProposal did not emit ProposalSubmitted');
+    return;
+  }
+
+  await dgScheduleAndExecuteProposal(Number(proposalId));
 };
