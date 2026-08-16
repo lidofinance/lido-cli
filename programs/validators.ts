@@ -17,10 +17,12 @@ import {
   AttestationDataBigint,
   VoluntaryExit,
   computeDomain,
+  computeSigningRoot,
   signAttestationData,
   signVoluntaryExit,
 } from '@consensus';
-import { getBytes, hexlify } from 'ethers';
+import { depositContract } from '@contracts';
+import { getBytes, hexlify, parseEther } from 'ethers';
 import { detectConsensusVersionByEpoch, logger, writeToFile } from '@utils';
 
 const validators = program.command('validators').description('validators utils');
@@ -260,6 +262,81 @@ validators
 
     await writeToFile(`${options.outDir}/exit-${validatorIndex}.json`, JSON.stringify(voluntaryExit, null, 2));
     logger.log('Exit message written', { validatorIndex, pubkey: pkHex, file: `exit-${validatorIndex}.json` });
+  });
+
+validators
+  .command('frontrun-deposit')
+  .description(
+    'deposit an operator key to the deposit contract with a chosen (non-Lido) withdrawal credentials — creates the historical front-run the council pauses on',
+  )
+  .argument('<mnemonic>', 'mnemonic')
+  .argument('<index>', 'index of key')
+  .argument('<withdrawal-credentials>', '0x-prefixed 32-byte WC (non-Lido, to simulate the theft)')
+  .option(
+    '-f, --fork-version <string>',
+    'genesis fork version for a chain without a CL to query (e.g. an EL-only fork); use the devnet genesisForkVersion',
+  )
+  .option(
+    '-a, --amount <string>',
+    'deposit amount in ETH (>= 1); the first deposit sets the WC, so 1 is enough to front-run',
+    '1',
+  )
+  .action(async (mnemonic, index, wc, options) => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { ContainerType, ByteVectorType, UintBigintType } = require('@chainsafe/ssz');
+    const Bytes48 = new ByteVectorType(48);
+    const Bytes32 = new ByteVectorType(32);
+    const Bytes96 = new ByteVectorType(96);
+    const UintBn64 = new UintBigintType(8);
+    // SSZ field order follows the ETH2 spec: pubkey, wc, amount, signature.
+    const DepositMessage = new ContainerType({ pubkey: Bytes48, withdrawalCredentials: Bytes32, amount: UintBn64 });
+    const DepositData = new ContainerType({
+      pubkey: Bytes48,
+      withdrawalCredentials: Bytes32,
+      amount: UintBn64,
+      signature: Bytes96,
+    });
+
+    const wcBytes = getBytes(wc);
+    if (wcBytes.length !== 32) throw new Error('withdrawal-credentials must be 32 bytes');
+
+    const masterSK = deriveKeyFromMnemonic(mnemonic);
+    const { signing } = deriveEth2ValidatorKeys(masterSK, index);
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { SecretKey } = require('@chainsafe/blst');
+    const sk = SecretKey.fromBytes(signing);
+    const pubkey = sk.toPublicKey().toBytes();
+    const value = parseEther(options.amount);
+    const amountGwei = value / 1_000_000_000n; // gwei, as the deposit contract computes it
+
+    // Deposits are cross-fork: domain uses the genesis fork version and a zero
+    // genesis validators root. Read it from the CL, or take the override when
+    // there is no CL (an EL-only fork). The deposit contract does not verify the
+    // BLS signature, so this only affects the (unchecked) signature bytes.
+    const forkVersion = getBytes(options.forkVersion ?? (await fetchSpec()).GENESIS_FORK_VERSION);
+    const DOMAIN_DEPOSIT = Uint8Array.from([3, 0, 0, 0]);
+    const domain = computeDomain(DOMAIN_DEPOSIT, forkVersion, new Uint8Array(32));
+
+    const message = { pubkey, withdrawalCredentials: wcBytes, amount: amountGwei };
+    const sig = sk.sign(computeSigningRoot(DepositMessage, message, domain)).toBytes();
+    const depositDataRoot = DepositData.hashTreeRoot({ ...message, signature: sig });
+
+    logger.log('Front-run deposit', {
+      pubkey: hexlify(pubkey),
+      withdrawalCredentials: hexlify(wcBytes),
+      depositDataRoot: hexlify(depositDataRoot),
+    });
+    const tx = await depositContract.deposit(
+      hexlify(pubkey),
+      hexlify(wcBytes),
+      hexlify(sig),
+      hexlify(depositDataRoot),
+      {
+        value,
+      },
+    );
+    const receipt = await tx.wait();
+    logger.log('Deposit sent', { tx: tx.hash, status: receipt?.status });
   });
 
 validators
