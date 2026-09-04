@@ -1,76 +1,122 @@
-import { aragonAgentAddress } from '@contracts';
+import { aragonAgentAddress, consensusForCMv2Address, consensusForCMv2Contract } from '@contracts';
 import { provider } from '@providers';
 import { encodeFromAgent, votingNewVote } from '@scripts';
-import { CallScriptAction, encodeCallScript, forwardVoteFromTm } from '@utils';
-import { Contract, Interface } from 'ethers';
+import { CallScriptAction, encodeCallScript, forwardVoteFromTm, getRoleHash } from '@utils';
+import { Contract } from 'ethers';
 
-// One-off fix: register CMv2 performance-oracle consensus members + grant SUBMIT_DATA_ROLE.
-// devnet-cmv2-start.ts sets updateInitialEpoch + role grants but never calls addMember, so the
-// CMv2 HashConsensus stays empty and cm-1/cm-2 crash with IsNotMemberException. Mirror the main
-// AccountingOracle consensus (3 members, quorum 2). All calls executed from the Aragon Agent.
+import { getOracleMinQuorum, validateOracleQuorum } from './generators/oracles';
+
+// CMv2 consensus repair in one Agent vote: initial epoch, Agent manage role, members + quorum,
+// SUBMIT_DATA_ROLE on the report processor — only the items the chain still lacks.
+// Env: CS_ORACLE_MEMBERS (required), CS_ORACLE_QUORUM (default: minimal majority),
+// CS_ORACLE_INITIAL_EPOCH (default: current epoch + epochsPerFrame + 2; used only when unset on-chain).
 export const addCmv2OracleMembers = async () => {
-  const HASH_CONSENSUS = '0x43a1dc2D481bc3B48c152a332a90E28924CA9617';
-  const ORACLE = '0xE072523bbb01c10C3AA3fc21b15F213A421c6Ec8';
-  const SUBMIT_DATA_ROLE = '0x65fa0c17458517c727737e4153dd477fa3e328cf706640b0f68b1a285c5990da';
-
-  const members = [
-    '0xb52bA7cD8D31C4fb94773B8b56d0696CeFDb9573',
-    '0xb949E971F6D076F6a22D24f7E4290fB14FC61899',
-    '0xCC343048aCB49DA92d752f1a46D47093258D1060',
-  ];
-  // progressive quorum so each addMember keeps quorum > totalMembers / 2; final = 2
-  const quorums = [1, 2, 2];
-
-  const hcIface = new Interface([
-    'function addMember(address,uint256)',
-    'function getMembers() view returns (address[],uint256[])',
-    'function getQuorum() view returns (uint256)',
-  ]);
-  const oracleIface = new Interface([
-    'function grantRole(bytes32,address)',
-    'function hasRole(bytes32,address) view returns (bool)',
-  ]);
-
-  const hc = new Contract(HASH_CONSENSUS, hcIface, provider);
-  const oracle = new Contract(ORACLE, oracleIface, provider);
-
-  const [existing] = await hc.getMembers();
-  const existingLc: string[] = existing.map((a: string) => a.toLowerCase());
-  console.log('[cmv2-oracle] existing members:', existingLc, 'quorum:', (await hc.getQuorum()).toString());
+  const hc = consensusForCMv2Contract;
+  const members = (process.env.CS_ORACLE_MEMBERS ?? '')
+    .split(',')
+    .map((m) => m.trim())
+    .filter(Boolean);
+  if (members.length === 0) {
+    throw new Error('CS_ORACLE_MEMBERS is required: comma-separated oracle member addresses');
+  }
+  const quorum = process.env.CS_ORACLE_QUORUM
+    ? Number(process.env.CS_ORACLE_QUORUM)
+    : getOracleMinQuorum(members.length);
+  if (!validateOracleQuorum(quorum, members.length)) {
+    throw new Error(`Quorum ${quorum} is not in range [${getOracleMinQuorum(members.length)}...${members.length}]`);
+  }
 
   const calls: CallScriptAction[] = [];
   const items: string[] = [];
   let i = 0;
 
-  for (let k = 0; k < members.length; k++) {
-    const m = members[k];
-    if (existingLc.includes(m.toLowerCase())) {
-      console.log('[cmv2-oracle] already a member, skip addMember:', m);
-      continue;
-    }
-    items.push(`${i++}. Add oracle consensus member ${m} (quorum ${quorums[k]})`);
+  // Initial epoch: the constructor leaves it at a far-future sentinel until updateInitialEpoch runs.
+  const { initialEpoch, epochsPerFrame } = await hc.getFrameConfig();
+  const { slotsPerEpoch, secondsPerSlot, genesisTime } = await hc.getChainConfig();
+  const block = await provider.getBlock('latest');
+  if (!block) throw new Error('Cannot read the latest block');
+  const currentEpoch = Math.floor(
+    (block.timestamp - Number(genesisTime)) / (Number(secondsPerSlot) * Number(slotsPerEpoch)),
+  );
+  const initialEpochUnset = Number(initialEpoch) > currentEpoch + 1_000_000;
+  if (initialEpochUnset) {
+    const target = Number(process.env.CS_ORACLE_INITIAL_EPOCH ?? currentEpoch + Number(epochsPerFrame) + 2);
+    items.push(`${i++}. Update CMv2 consensus initial epoch to ${target}`);
     const [, script] = encodeFromAgent({
-      to: HASH_CONSENSUS,
-      data: hcIface.encodeFunctionData('addMember', [m, quorums[k]]),
+      to: consensusForCMv2Address,
+      data: hc.interface.encodeFunctionData('updateInitialEpoch', [target]),
+    });
+    calls.push(script);
+  } else {
+    console.log('[cmv2-oracle] initial epoch already set:', initialEpoch.toString());
+  }
+
+  const manageRole = await getRoleHash(hc, 'MANAGE_MEMBERS_AND_QUORUM_ROLE');
+  if (!(await hc.hasRole(manageRole, aragonAgentAddress))) {
+    items.push(`${i++}. Grant MANAGE_MEMBERS_AND_QUORUM_ROLE on CMv2 consensus to ${aragonAgentAddress}`);
+    const [, script] = encodeFromAgent({
+      to: consensusForCMv2Address,
+      data: hc.interface.encodeFunctionData('grantRole', [manageRole, aragonAgentAddress]),
     });
     calls.push(script);
   }
 
+  const [existing] = await hc.getMembers();
+  const existingLc: string[] = existing.map((a: string) => a.toLowerCase());
+  console.log('[cmv2-oracle] existing members:', existingLc, 'quorum:', (await hc.getQuorum()).toString());
+  let total = existingLc.length;
   for (const m of members) {
-    if (await oracle.hasRole(SUBMIT_DATA_ROLE, m)) {
+    if (existingLc.includes(m.toLowerCase())) {
+      console.log('[cmv2-oracle] already a member, skip addMember:', m);
+      continue;
+    }
+    total += 1;
+    // addMember requires quorum > total / 2 after each addition; converge on the target quorum.
+    const quorumForIteration = Math.min(Math.max(getOracleMinQuorum(total), 1), quorum);
+    items.push(`${i++}. Add CMv2 consensus member ${m} (quorum ${quorumForIteration})`);
+    const [, script] = encodeFromAgent({
+      to: consensusForCMv2Address,
+      data: hc.interface.encodeFunctionData('addMember', [m, quorumForIteration]),
+    });
+    calls.push(script);
+  }
+  const membersMissing = members.some((m) => !existingLc.includes(m.toLowerCase()));
+  if (!membersMissing && Number(await hc.getQuorum()) !== quorum) {
+    items.push(`${i++}. Set CMv2 consensus quorum to ${quorum}`);
+    const [, script] = encodeFromAgent({
+      to: consensusForCMv2Address,
+      data: hc.interface.encodeFunctionData('setQuorum', [quorum]),
+    });
+    calls.push(script);
+  }
+
+  // SUBMIT_DATA_ROLE is not implied by membership: the oracle gates submitReportData on it separately.
+  const oracleAddress: string = await hc.getReportProcessor();
+  const oracle = new Contract(
+    oracleAddress,
+    [
+      'function SUBMIT_DATA_ROLE() view returns (bytes32)',
+      'function grantRole(bytes32,address)',
+      'function hasRole(bytes32,address) view returns (bool)',
+    ],
+    provider,
+  );
+  const submitDataRole = await getRoleHash(oracle, 'SUBMIT_DATA_ROLE');
+  for (const m of members) {
+    if (await oracle.hasRole(submitDataRole, m)) {
       console.log('[cmv2-oracle] already has SUBMIT_DATA_ROLE, skip grant:', m);
       continue;
     }
-    items.push(`${i++}. Grant SUBMIT_DATA_ROLE to ${m} on CMv2 oracle ${ORACLE}`);
+    items.push(`${i++}. Grant SUBMIT_DATA_ROLE to ${m} on CMv2 oracle ${oracleAddress}`);
     const [, script] = encodeFromAgent({
-      to: ORACLE,
-      data: oracleIface.encodeFunctionData('grantRole', [SUBMIT_DATA_ROLE, m]),
+      to: oracleAddress,
+      data: oracle.interface.encodeFunctionData('grantRole', [submitDataRole, m]),
     });
     calls.push(script);
   }
 
   if (calls.length === 0) {
-    console.log('[cmv2-oracle] nothing to do; members + roles already set');
+    console.log('[cmv2-oracle] nothing to do; initial epoch, members, quorum and roles already set');
     return;
   }
 
