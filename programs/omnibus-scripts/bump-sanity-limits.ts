@@ -1,4 +1,4 @@
-import { aragonAgentAddress } from '@contracts';
+import { aragonAgentAddress, sanityCheckerAddress } from '@contracts';
 import { provider } from '@providers';
 import { encodeFromAgent, votingNewVote } from '@scripts';
 import { CallScriptAction, encodeCallScript, forwardVoteFromTm } from '@utils';
@@ -13,7 +13,7 @@ import { Contract, Interface, ZeroAddress } from 'ethers';
 // subsequent single-frame deltas are tiny and would pass even at the original limits.
 // All calls executed from the Aragon Agent (DEFAULT_ADMIN of the sanity checker).
 export const bumpSanityLimits = async () => {
-  const SANITY_CHECKER = '0xc396E2CCC6F4Ff202cd5e4CE750EAaE0E580CAb1';
+  const SANITY_CHECKER = sanityCheckerAddress;
   const ALL_LIMITS_MANAGER_ROLE = '0x5bf88568a012dfc9fe67407ad6775052bddc4ac89902dea1f4373ef5d9f1e35b';
 
   // LimitsList index -> field (see OracleReportSanityChecker.LimitsList)
