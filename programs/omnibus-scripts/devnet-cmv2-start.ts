@@ -64,7 +64,8 @@ export const devnetCMv2Start = async () => {
     (m) => m.stakingModuleAddress.toLowerCase() === CS_MODULE_ADDRESS.toLowerCase(),
   );
   const moduleExistsByName = modules.some((m) => m.name === CS_MODULE_NAME);
-  const moduleExists = moduleExistsByAddress || moduleExistsByName;
+  // Refreshed after the direct add below: the vote built later must not re-add the module.
+  let moduleExists = moduleExistsByAddress || moduleExistsByName;
   console.log(
     '[cmv2] staking modules:',
     modules.length,
@@ -98,6 +99,7 @@ export const devnetCMv2Start = async () => {
           CS_WITHDRAWAL_CREDENTIALS_TYPE,
         ])
       ).wait();
+      moduleExists = true;
       console.log('[cmv2] addStakingModule executed directly by admin');
     } catch (e) {
       console.log('[cmv2] direct addStakingModule failed, will attempt via vote');
