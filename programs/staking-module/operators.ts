@@ -1,4 +1,10 @@
-import { getStakingModuleContract, norContract } from '@contracts';
+import {
+  getModuleMetaRegistryAddress,
+  getCmv2MetaRegistryContract,
+  getStakingModuleContract,
+  norContract,
+} from '@contracts';
+import { ZeroAddress } from 'ethers';
 import { getStakingModules } from './modules';
 
 export type NodeOperator = {
@@ -51,9 +57,23 @@ export const getNodeOperators = async (moduleAddress: string): Promise<NodeOpera
         return { operatorId, name: result.name };
       }),
     );
-  } else {
-    return operatorIds.map((operatorId) => ({ operatorId, name: 'unknown' }));
   }
+
+  // CMv2 keeps operator names in MetaRegistry, not in the module
+  const metaRegistryAddress = await getModuleMetaRegistryAddress(moduleAddress);
+
+  if (metaRegistryAddress !== ZeroAddress) {
+    const metaRegistry = getCmv2MetaRegistryContract(metaRegistryAddress);
+
+    return await Promise.all(
+      operatorIds.map(async (operatorId) => {
+        const metadata = await metaRegistry.getOperatorMetadata(operatorId);
+        return { operatorId, name: metadata.toObject().name || 'unknown' };
+      }),
+    );
+  }
+
+  return operatorIds.map((operatorId) => ({ operatorId, name: 'unknown' }));
 };
 
 export const getNodeOperatorsMap = async (moduleAddress: string) => {

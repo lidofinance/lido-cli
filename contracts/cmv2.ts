@@ -1,4 +1,4 @@
-import { BaseContract, Contract, Provider } from 'ethers';
+import { BaseContract, Contract, Provider, ZeroAddress } from 'ethers';
 import { wallet } from '@providers';
 import { getOptionalDeployedAddress, getOptionalMethodAddress } from '@configs';
 import curatedModuleAbi from 'abi/csm/CuratedModule.json';
@@ -35,6 +35,33 @@ export const cmv2MetaRegistryContract = new BaseContract(
   metaRegistryAbi,
   wallet,
 ) as Contract;
+
+export const getModuleMetaRegistryAddress = async (
+  moduleAddress: string,
+  overrides: { blockTag?: number } = {},
+): Promise<string> => {
+  const moduleContract = cmv2ModuleContract.attach(moduleAddress) as Contract;
+
+  try {
+    const metaRegistryAddress: string = await moduleContract.META_REGISTRY(overrides);
+    return metaRegistryAddress || ZeroAddress;
+  } catch (error) {
+    // a module without META_REGISTRY either reverts or returns empty data
+    if (
+      error != null &&
+      typeof error === 'object' &&
+      'code' in error &&
+      (error.code === 'CALL_EXCEPTION' || error.code === 'BAD_DATA')
+    ) {
+      return ZeroAddress;
+    }
+
+    throw error;
+  }
+};
+
+export const getCmv2MetaRegistryContract = (metaRegistryAddress: string): Contract =>
+  new Contract(metaRegistryAddress, metaRegistryAbi, wallet);
 
 export async function getCMv2Version(provider: Provider | null): Promise<bigint> {
   if (!provider) throw new Error('No provider available for `getCMv2Version`');

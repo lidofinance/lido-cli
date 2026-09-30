@@ -2,9 +2,11 @@ import { program } from '@command';
 import {
   cmv2AccountingContract,
   cmv2EjectorContract,
+  cmv2ModuleAddress,
   cmv2ModuleContract,
-  cmv2MetaRegistryContract,
   cmv2CuratedGateAddress,
+  getModuleMetaRegistryAddress,
+  getCmv2MetaRegistryContract,
   lidoContract,
   stakingRouterContract,
   withdrawalVaultContract,
@@ -155,13 +157,12 @@ const resolveMetaRegistryContract = async (override?: string, blockTag?: number)
     throw new Error(`--meta-registry expects an address: ${override}`);
   }
 
-  const overrides = getCallOverrides(blockTag);
-  const metaRegistryAddress = override ?? (await cmv2ModuleContract.META_REGISTRY(overrides));
-  const metaRegistry = new Contract(metaRegistryAddress, cmv2MetaRegistryContract.interface, wallet);
+  const metaRegistryAddress =
+    override ?? (await getModuleMetaRegistryAddress(cmv2ModuleAddress, getCallOverrides(blockTag)));
   if (!metaRegistryAddress || metaRegistryAddress === ZeroAddress) {
     throw new Error('MetaRegistry address not found on CMv2 module');
   }
-  return metaRegistry;
+  return getCmv2MetaRegistryContract(metaRegistryAddress);
 };
 
 const EXTERNAL_OPERATOR_TYPE_NOR = 0n;
