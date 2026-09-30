@@ -13,7 +13,7 @@ import {
 } from '@contracts';
 import { provider } from '@providers';
 import { encodeFromAgent, updateAragonApp, votingNewVote } from '@scripts';
-import { CallScriptAction, encodeCallScript, forwardVoteFromTm, getRoleHash } from '@utils';
+import { CallScriptAction, encodeCallScript, forwardVoteFromTm, forwardVoteFromTmDG, getRoleHash } from '@utils';
 import { concat, Contract, Interface } from 'ethers';
 
 // SR 2
@@ -288,8 +288,11 @@ export const stakingRouterV2 = async () => {
     `21. Add CS settle EL stealing factory to ET with address ${CS_SETTLE_EL_STEALING_ADDRESS}`,
   ].join('\n');
 
-  const voteEvmScript = encodeCallScript(calls);
-  const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
-
-  await forwardVoteFromTm(newVoteCalldata);
+  if (process.env.USE_DG === '1') {
+    await forwardVoteFromTmDG(calls, description);
+  } else {
+    const voteEvmScript = encodeCallScript(calls);
+    const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
+    await forwardVoteFromTm(newVoteCalldata);
+  }
 };

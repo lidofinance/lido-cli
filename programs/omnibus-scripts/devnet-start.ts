@@ -1,5 +1,5 @@
 import { votingNewVote } from '@scripts';
-import { CallScriptActionWithDescription, encodeCallScript, forwardVoteFromTm, logger } from '@utils';
+import { CallScriptActionWithDescription, encodeCallScript, forwardVoteFromTm, forwardVoteFromTmDG, logger } from '@utils';
 import {
   encodeScriptsWQResumeIfPaused,
   promptScriptsLidoResumeIfStopped,
@@ -64,7 +64,11 @@ export const devnetStart = async () => {
   logger.log();
 
   // Voting start
-  const voteEvmScript = encodeCallScript(votingCalls);
-  const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
-  await forwardVoteFromTm(newVoteCalldata);
+  if (process.env.USE_DG === '1') {
+    await forwardVoteFromTmDG(votingCalls, description);
+  } else {
+    const voteEvmScript = encodeCallScript(votingCalls);
+    const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
+    await forwardVoteFromTm(newVoteCalldata);
+  }
 };

@@ -7,8 +7,8 @@ import {
 } from '@contracts';
 import { provider, wallet } from '@providers';
 import { encodeFromAgent, votingNewVote } from '@scripts';
-import { CallScriptAction, encodeCallScript, forwardVoteFromTm, getRoleHash, getRoleHashByAddress } from '@utils';
-import { Contract, Interface } from 'ethers';
+import { CallScriptAction, encodeCallScript, forwardVoteFromTm, forwardVoteFromTmDG, getRoleHash, getRoleHashByAddress } from '@utils';
+import { Contract, Interface, id } from 'ethers';
 
 export const devnetCMv2Start = async () => {
   const CS_MODULE_ADDRESS = process.env.CS_MODULE_ADDRESS as string;
@@ -389,8 +389,56 @@ export const devnetCMv2Start = async () => {
   });
   calls.push(updateInitialEpochScript);
 
-  const voteEvmScript = encodeCallScript(calls);
-  const [newVoteCalldata] = votingNewVote(voteEvmScript, items.join('\n'));
+  // Append role grants previously executed by separate `cmv2 grant-*-role-vote`
+  // commands. Bundling them into the omnibus means a single DG cycle covers
+  // the full CMv2 activation and the follow-up `cmv2 set-default-keys-limit`
+  // direct tx finds MANAGE_KEYS_LIMIT_ROLE already granted.
 
-  await forwardVoteFromTm(newVoteCalldata);
+  const grantRoleIface = new Interface(['function grantRole(bytes32,address)']);
+  const accessControlGrantRoleData = (role: string, account: string) =>
+    grantRoleIface.encodeFunctionData('grantRole', [role, account]);
+
+  const metaRegistryAddressForGrant = await cmv2ModuleContract.META_REGISTRY();
+  if (metaRegistryAddressForGrant && metaRegistryAddressForGrant !== '0x0000000000000000000000000000000000000000') {
+    const manageOperatorGroupsRole = id('MANAGE_OPERATOR_GROUPS_ROLE');
+    items.push(
+      `${itemIdx++}. Grant MANAGE_OPERATOR_GROUPS_ROLE to ${CS_META_REGISTRY_ROLE_GRANTEE} on MetaRegistry ${metaRegistryAddressForGrant}`,
+    );
+    const [, grantManageOperatorGroupsScript] = encodeFromAgent({
+      to: metaRegistryAddressForGrant,
+      data: accessControlGrantRoleData(manageOperatorGroupsRole, CS_META_REGISTRY_ROLE_GRANTEE),
+    });
+    calls.push(grantManageOperatorGroupsScript);
+  }
+
+  const parametersRegistryAddress: string = await cmv2ModuleContract.PARAMETERS_REGISTRY().catch(() => '');
+  if (parametersRegistryAddress && parametersRegistryAddress !== '0x0000000000000000000000000000000000000000') {
+    const parametersRegistryReadonly = new Contract(
+      parametersRegistryAddress,
+      ['function MANAGE_KEYS_LIMIT_ROLE() view returns (bytes32)'],
+      provider,
+    );
+    let manageKeysLimitRole: string;
+    try {
+      manageKeysLimitRole = await parametersRegistryReadonly.MANAGE_KEYS_LIMIT_ROLE();
+    } catch {
+      manageKeysLimitRole = id('MANAGE_KEYS_LIMIT_ROLE');
+    }
+    items.push(
+      `${itemIdx++}. Grant MANAGE_KEYS_LIMIT_ROLE to ${walletAddress} on ParametersRegistry ${parametersRegistryAddress}`,
+    );
+    const [, grantManageKeysLimitScript] = encodeFromAgent({
+      to: parametersRegistryAddress,
+      data: accessControlGrantRoleData(manageKeysLimitRole, walletAddress),
+    });
+    calls.push(grantManageKeysLimitScript);
+  }
+
+  if (process.env.USE_DG === '1') {
+    await forwardVoteFromTmDG(calls, items.join('\n'));
+  } else {
+    const voteEvmScript = encodeCallScript(calls);
+    const [newVoteCalldata] = votingNewVote(voteEvmScript, items.join('\n'));
+    await forwardVoteFromTm(newVoteCalldata);
+  }
 };

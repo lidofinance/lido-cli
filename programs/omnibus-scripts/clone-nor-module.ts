@@ -15,7 +15,7 @@ import {
   votingAddress,
 } from '@contracts';
 import { encodeFromAgent, votingNewVote } from '@scripts';
-import { CallScriptActionWithDescription, encodeCallScript, forwardVoteFromTm, getRoleHash } from '@utils';
+import { CallScriptActionWithDescription, encodeCallScript, forwardVoteFromTm, forwardVoteFromTmDG, getRoleHash } from '@utils';
 import { Contract, Interface, namehash } from 'ethers';
 import { joinVotingDesc } from './generators';
 import { wallet } from '@providers';
@@ -138,8 +138,12 @@ export const cloneNorModule = async () => {
   ];
 
   const description = joinVotingDesc(calls);
-  const voteEvmScript = encodeCallScript(calls);
-  const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
 
-  await forwardVoteFromTm(newVoteCalldata);
+  if (process.env.USE_DG === '1') {
+    await forwardVoteFromTmDG(calls, description);
+  } else {
+    const voteEvmScript = encodeCallScript(calls);
+    const [newVoteCalldata] = votingNewVote(voteEvmScript, description);
+    await forwardVoteFromTm(newVoteCalldata);
+  }
 };
